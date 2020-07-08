@@ -1,5 +1,8 @@
 import psycopg2
+
 import smtplib
+from email.message import EmailMessage
+
 from datetime import date, timedelta
 
 import yaml
@@ -21,7 +24,7 @@ def main():
     mailSender(msg)
 
 def connect():
-    """ Connect to the PostgreSQL database server """
+    #Connect to the PostgreSQL database server
     conn = None
     try:
         print('Connecting to the PostgreSQL database...')
@@ -62,26 +65,28 @@ def getJobInDealine(conn):
             print("The database connection is closed")
 
 def mailComposer(queryResult):
-    msg = "\"\"\""
-    msg += "\nSubject: RSPP in scadenza tra il " + date.today().strftime('%d/%m/%Y') + " e il " + (date.today() + timedelta(days=1)).strftime('%d/%m/%Y') + "\n\n"
+    msg = ""
     for row in queryResult:
         msg += "Ragione sociale: " + row[0]
         msg += "\n"
         msg += "Scadenza" + row[1].strftime('%d/%m/%Y')
         msg += "\n\n"
+    msg = msg.strip()
 
-    msg += "\"\"\""
-    return msg
+    message = EmailMessage()
+    msg.set_content(msg)
+    msg['Subject'] = "RSPP in scadenza tra il " + date.today().strftime('%d/%m/%Y') + " e il " + (date.today() + timedelta(days=1)).strftime('%d/%m/%Y')
+    return message
 
 def mailSender(message):
     try:
-        server = smtplib.SMTP(cfg["Email"]["smtpServer"])
-        server.ehlo()
-        server.starttls()
-
+        server = smtplib.SMTP_SSL(cfg["Email"]["smtpServer"], cfg["Email"]["smtpPort"])
         server.login(cfg["Email"]["user"], cfg["Email"]["password"])
 
-        server.sendmail(cfg["Email"]["mailFrom"], cfg["Email"]["mailTo"], message)
+        message['From'] = cfg["Email"]["mailFrom"]
+        message['To'] = cfg["Email"]["mailTo"]
+
+        server.send_message(message)
     except:
         print ('Something went wrong...')
     

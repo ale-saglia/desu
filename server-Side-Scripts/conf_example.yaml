@@ -11,6 +11,7 @@ Database:
 
 Email:
   smtpServer:
+  smtpPort:
   user:
   password:
   mailFrom:

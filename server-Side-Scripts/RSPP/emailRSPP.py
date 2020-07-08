@@ -74,7 +74,7 @@ def mailComposer(queryResult):
     msg = msg.strip()
 
     message = EmailMessage()
-    msg.set_content(msg)
+    message.set_content(msg)
     msg['Subject'] = "RSPP in scadenza tra il " + date.today().strftime('%d/%m/%Y') + " e il " + (date.today() + timedelta(days=1)).strftime('%d/%m/%Y')
     return message
 

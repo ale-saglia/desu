@@ -46,7 +46,7 @@ def getJobInDealine(conn):
             return
         cursor = conn.cursor()
 
-        query = 'SELECT a."name", r.jobend FROM deadlines.rspp r, accounts.accounts a where r.fiscalcode = a.fiscalcode and r.jobend between current_date and CURRENT_DATE + INTERVAL \'14 day\' ORDER by r.jobend asc '
+        query = "SELECT a.'name', r.jobend FROM deadlines.rspp r, accounts.accounts a where r.fiscalcode = a.fiscalcode and r.jobend between current_date and CURRENT_DATE + INTERVAL '" + cfg["General"]["daysAdvance"] + " day' ORDER by r.jobend asc "
         cursor.execute(query)
 
         # Row 0 should contain account name and row 1 should contains the deadline
@@ -75,7 +75,7 @@ def mailComposer(queryResult):
 
     message = EmailMessage()
     message.set_content(msg)
-    message['Subject'] = "RSPP in scadenza tra il " + date.today().strftime('%d/%m/%Y') + " e il " + (date.today() + timedelta(days=1)).strftime('%d/%m/%Y')
+    message['Subject'] = "RSPP in scadenza tra il " + date.today().strftime('%d/%m/%Y') + " e il " + (date.today() + timedelta(cfg["General"]["daysAdvance"])).strftime('%d/%m/%Y')
     return message
 
 def mailSender(message):
@@ -89,7 +89,6 @@ def mailSender(message):
         server.send_message(message)
     except:
         print ('Something went wrong...')
-    
     finally:
         server.quit()
 

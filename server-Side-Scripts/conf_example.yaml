@@ -1,0 +1,17 @@
+# Config File
+
+General:
+  daysAdvance:
+
+Database:
+  host:
+  database:
+  user:
+  password:
+
+Email:
+  smtpServer:
+  user:
+  password:
+  mailFrom:
+  mailTo:

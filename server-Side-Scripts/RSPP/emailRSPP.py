@@ -46,7 +46,7 @@ def getJobInDealine(conn):
             return
         cursor = conn.cursor()
 
-        query = "SELECT a.'name', r.jobend FROM deadlines.rspp r, accounts.accounts a where r.fiscalcode = a.fiscalcode and r.jobend between current_date and CURRENT_DATE + INTERVAL '" + cfg["General"]["daysAdvance"] + " day' ORDER by r.jobend asc "
+        query = "SELECT a.'name', r.jobend FROM deadlines.rspp r, accounts.accounts a where r.fiscalcode = a.fiscalcode and r.jobend between current_date and CURRENT_DATE + INTERVAL '" + str(cfg["General"]["daysAdvance"]) + " day' ORDER by r.jobend asc "
         cursor.execute(query)
 
         # Row 0 should contain account name and row 1 should contains the deadline

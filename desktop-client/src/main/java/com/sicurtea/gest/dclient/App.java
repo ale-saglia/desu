@@ -1,4 +1,4 @@
-package dclient;
+package com.sicurtea.gest.dclient;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

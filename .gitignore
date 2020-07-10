@@ -1,2 +1,4 @@
 server-Side-Scripts/conf.yaml
 .vscode/settings.json
+desktop-client/bin
+desktop-client/target

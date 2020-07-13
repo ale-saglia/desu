@@ -2,14 +2,14 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox alignment="CENTER" prefHeight="624.0" prefWidth="665.0" spacing="20.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sicurtea.gest.dclient.MainController">
    <children>
-      <TableView prefHeight="593.0" prefWidth="625.0">
+      <TableView maxHeight="1.7976931348623157E308" prefHeight="1080.0">
         <columns>
           <TableColumn editable="false" prefWidth="177.0" text="Ragione Sociale" />
           <TableColumn editable="false" minWidth="9.0" prefWidth="101.0" text="Tipologia" />
@@ -21,11 +21,12 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <HBox alignment="CENTER_RIGHT" prefHeight="0.0" prefWidth="756.0">
-         <children>
-            <Button fx:id="primaryButton" alignment="CENTER_RIGHT" onAction="#switchToSecondary" text="Switch to Secondary View" />
-         </children>
-      </HBox>
+      <ButtonBar maxHeight="40.0" prefHeight="40.0" prefWidth="200.0">
+        <buttons>
+            <Button mnemonicParsing="false" prefWidth="260.0" text="Filtra risultati" />
+          <Button mnemonicParsing="false" onAction="#switchToViewEdit" prefHeight="26.0" prefWidth="260.0" text="Visualizza/Modifica" />
+        </buttons>
+      </ButtonBar>
    </children>
    <padding>
       <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />

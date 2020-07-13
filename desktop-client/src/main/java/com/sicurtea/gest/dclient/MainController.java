@@ -1,12 +1,20 @@
 package com.sicurtea.gest.dclient;
 
-import java.io.IOException;
-import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.stage.Stage;
+import javafx.scene.Scene;
 
 public class MainController {
-
-    @FXML
-    private void switchToSecondary() throws IOException {
-        App.setRoot("secondary");
+    public void switchToViewEdit() throws Exception {               
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("edit.fxml"));
+            Parent rootViewEdit = (Parent) fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(rootViewEdit));  
+            stage.show();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 }

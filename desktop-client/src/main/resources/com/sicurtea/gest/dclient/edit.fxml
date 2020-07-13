@@ -193,7 +193,7 @@
       <ButtonBar prefHeight="40.0" prefWidth="200.0">
         <buttons>
           <Button mnemonicParsing="false" text="Salva ed Esci" />
-            <Button layoutX="565.0" layoutY="10.0" mnemonicParsing="false" text="Esci senza salvare" />
+            <Button fx:id="closeButton" layoutX="565.0" layoutY="10.0" mnemonicParsing="false" onAction="#closeButtonAction" text="Esci senza salvare" />
         </buttons>
       </ButtonBar>
     </children>

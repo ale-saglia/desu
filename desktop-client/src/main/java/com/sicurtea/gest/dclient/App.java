@@ -12,7 +12,7 @@ import java.io.IOException;
  * JavaFX App
  */
 public class App extends Application {
-
+    //TODO error build is extend https://stackoverflow.com/a/38133937
     private static Scene scene;
 
     @Override

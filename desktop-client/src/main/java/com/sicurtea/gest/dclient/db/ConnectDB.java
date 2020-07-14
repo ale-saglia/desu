@@ -61,10 +61,6 @@ public class ConnectDB {
         String sshPassword;
 
         public LoaderDBConf(String fileName) {
-            dbHost = dbUser = dbPassword = dbName = null;
-            sshUser = sshHost = sshPassword = null;
-            dbPort = sshPort = -1;
-
             dbConfig = new Properties();
             try {
                 dbConfig.load(this.getClass().getResourceAsStream(fileName));

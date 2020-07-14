@@ -13,7 +13,7 @@ public class ConnectDB {
     static String CONFIG_FILE_NAME = "dbConfig.properties";
 
     public static Connection getConnection() {
-        LoaderDBConf dbc = new LoaderDBConf(CONFIG_FILE_NAME);
+        LoaderDBConf dbc = (new ConnectDB()).new LoaderDBConf(CONFIG_FILE_NAME);
 
         Connection conn = null;
         Session session = null;
@@ -46,7 +46,7 @@ public class ConnectDB {
         return conn;
     }
 
-    private static class LoaderDBConf {
+    private class LoaderDBConf {
         Properties dbConfig;
 
         String dbHost;

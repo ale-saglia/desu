@@ -1,5 +1,7 @@
 package com.sicurtea.gest.dclient.db;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
@@ -7,32 +9,20 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 
 import java.util.Map;
+import java.util.Properties;
 
+import org.yaml.snakeyaml.Yaml;
 
 public class ConnectDB {
     static String CONFIG_FILE_NAME = "dbSetting.yaml";
 
-    public static void main(String args[]) {
+    public static Connection getConnection() {
+        Properties dbConfig = new Properties();
+
         Connection conn = null;
         Session session = null;
 
-        String dbHost = null;
-        int dbPort = 0;
-        String dbUser = null;
-        String dbPassword = null;
-        String dbName = null;
-
-        String sshUser = null;
-        String sshHost = null;
-        int sshPort = 0;
-        String sshPassword = null;
-
-        Yaml yaml = new Yaml();
-	    InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("customer.yaml");
-	    Map<String, Object> obj = yaml.load(inputStream);
-	    System.out.println(obj);
-
-        //TODO reading file variables from YAML config  
+        // TODO reading file variables from YAML config
 
         try {
             // SSH connection setup && port forwarding
@@ -40,25 +30,54 @@ public class ConnectDB {
             config.put("StrictHostKeyChecking", "no"); // Set StrictHostKeyChecking property to no to avoid
                                                        // UnknownHostKey issue
             JSch jsch = new JSch();
-            session = jsch.getSession(sshUser, sshHost, sshPort);
-            session.setPassword(sshPassword);
+            session = jsch.getSession(dbconf.sshUser, dbconf.sshHost, dbconf.sshPort);
+            session.setPassword(dbconf.sshPassword);
             session.setConfig(config);
             session.connect();
             System.out.println("Connected");
-            int assinged_port = session.setPortForwardingL(dbPort, dbHost, dbPort);
-            System.out.println("localhost:" + assinged_port + " -> " + dbPort + ":" + dbPort);
+            int assinged_port = session.setPortForwardingL(dbconf.dbPort, dbconf.dbHost, dbconf.dbPort);
+            System.out.println("localhost:" + assinged_port + " -> " + dbconf.dbPort + ":" + dbconf.dbPort);
             System.out.println("Port Forwarded");
 
             Class.forName("org.postgresql.Driver");
 
             conn = DriverManager.getConnection(
-                    "jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName, dbUser,
-                    dbPassword);
+                    "jdbc:postgresql://" + dbconf.dbHost + ":" + dbconf.dbPort + "/" + dbconf.dbName, dbconf.dbUser,
+                    dbconf.dbPassword);
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
         }
         System.out.println("Opened database successfully");
+        return conn;
+    }
+
+    private class LoaderDBConf {
+        Properties dbConfig;
+
+        String dbHost;
+        int dbPort;
+        String dbUser;
+        String dbPassword;
+        String dbName;
+
+        String sshUser;
+        String sshHost;
+        int sshPort;
+        String sshPassword;
+
+        public LoaderDBConf(String fileName) {
+            dbConfig = new Properties();
+            try {
+                dbConfig.load(this.getClass().getResourceAsStream("dbConfig.properties"));
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+        public String getDBproperties(){
+            
+        }
     }
 }

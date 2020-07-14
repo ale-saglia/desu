@@ -10,7 +10,7 @@ import com.jcraft.jsch.Session;
 import java.util.Properties;
 
 public class ConnectDB {
-    static String CONFIG_FILE_NAME = "dbSetting.yaml";
+    static String CONFIG_FILE_NAME = "dbConfig.properties";
 
     public static Connection getConnection() {
         LoaderDBConf dbc = new LoaderDBConf(CONFIG_FILE_NAME);

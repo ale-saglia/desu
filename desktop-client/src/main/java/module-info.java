@@ -3,7 +3,6 @@ module com.sicurtea.gest.dclient {
     requires javafx.fxml;
     requires java.sql;
     requires jsch;
-    requires snakeyaml;
 
     opens com.sicurtea.gest.dclient to javafx.fxml;
     exports com.sicurtea.gest.dclient;

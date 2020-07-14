@@ -6,6 +6,9 @@ import java.sql.DriverManager;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 
+import java.util.Map;
+
+
 public class ConnectDB {
     static String CONFIG_FILE_NAME = "dbSetting.yaml";
 
@@ -24,7 +27,12 @@ public class ConnectDB {
         int sshPort = 0;
         String sshPassword = null;
 
-        //TODO reading file variables from YAML config
+        Yaml yaml = new Yaml();
+	    InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("customer.yaml");
+	    Map<String, Object> obj = yaml.load(inputStream);
+	    System.out.println(obj);
+
+        //TODO reading file variables from YAML config  
 
         try {
             // SSH connection setup && port forwarding

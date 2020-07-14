@@ -1,4 +1,4 @@
-package com.sicurtea.gest.dclient.model;
+package model;
 
 import java.util.Set;
 

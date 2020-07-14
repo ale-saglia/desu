@@ -3,4 +3,4 @@ server-Side-Scripts/conf.yaml
 desktop-client/bin
 desktop-client/target
 desktop-client/build-jar
-desktop-client/src/main/resources/com/sicurtea/gest/dclient/dbConfig.properties
+desktop-client/src/main/resources/dbConfig.properties

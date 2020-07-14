@@ -1,4 +1,4 @@
-package com.sicurtea.gest.dclient;
+package controllers;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

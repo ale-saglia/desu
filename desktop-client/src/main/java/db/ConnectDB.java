@@ -1,13 +1,12 @@
-package com.sicurtea.gest.dclient.db;
+package db;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.Properties;
 
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
-
-import java.util.Properties;
 
 public class ConnectDB {
     static String CONFIG_FILE_NAME = "dbConfig.properties";

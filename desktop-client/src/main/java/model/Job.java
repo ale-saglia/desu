@@ -1,4 +1,4 @@
-package com.sicurtea.gest.dclient.model;
+package model;
 
 public class Job {
     int id;

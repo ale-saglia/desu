@@ -67,6 +67,7 @@ public class ConnectDB {
         String sshPassword;
 
         public LoaderDBConf(String fileName) {
+            //TODO Find a way to encrypt properties file for realease.
             dbConfig = new Properties();
             try {
                 dbConfig.load(ConnectDB.class.getResourceAsStream(fileName));

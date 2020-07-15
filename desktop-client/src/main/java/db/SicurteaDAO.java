@@ -13,12 +13,12 @@ import java.util.Map;
 public class SicurteaDAO {
 	
 	public List<Map<String, String>> getDataForTable(){
-		String sql = "select *\n" + 
+		String sql = Queries.getRSPPtable();/*"select *\n" + 
 				"from (SELECT a.\"name\" as \"name\", a.customer_category as category, r.jobend as jobend, i.invoiceid as invoiceid, i.payed as payed\n" + 
 				"FROM accounts.accounts a, deadlines.rspp r, invoices.invoices  i, jobs.jobs j\n" + 
 				"union\n" + 
 				"SELECT a.\"name\"as \"name\", a.customer_category as category, r.jobend as jobend, null as invoiceid, null as payed\n" + 
-				"FROM accounts.accounts a, deadlines.rspp r, jobs.jobs j) as a";
+				"FROM accounts.accounts a, deadlines.rspp r, jobs.jobs j) as a";*/
 		
 		List<Map<String, String>> tableElements = new ArrayList<Map<String, String>>();
 		Map<String, String> temp;

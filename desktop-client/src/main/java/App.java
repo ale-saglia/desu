@@ -1,34 +1,34 @@
 
-import java.io.IOException;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.stage.Stage;  
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import model.Model;  
 
 /**
  * JavaFX App
  */
 public class App extends Application {
-    //TODO error build is extend https://stackoverflow.com/a/38133937
-    private static Scene scene;
-
     @Override
-    public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("main"), 960, 720);
-        stage.setScene(scene);
-        stage.setTitle("Scadenziario RSPP");
-        stage.show();
-    }
-
-    public static void setRoot(String fxml) throws IOException {
-        scene.setRoot(loadFXML(fxml));
-    }
-
-    private static Parent loadFXML(String fxml) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
-        return fxmlLoader.load();
+    public void start(Stage stage) {
+    	
+    	try {
+    		FXMLLoader loader = new FXMLLoader(getClass().getResource("main.fxml"));
+    		VBox root = (VBox) loader.load();
+    		MainController controller = loader.getController();
+    	
+    		Model model = new Model();
+    		controller.setModel(model);
+    	
+    		Scene scene = new Scene(root, 960, 720);
+    		stage.setScene(scene);
+    		stage.setTitle("Scadenziario RSPP");
+    		stage.show();
+    	}  catch (Exception e) {
+			e.printStackTrace();
+    	}
+    	
     }
 
     public static void main(String[] args) {

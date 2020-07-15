@@ -9,7 +9,7 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 
 public class ConnectDB {
-    static String CONFIG_FILE_NAME = "dbConfig.properties";
+    static String CONFIG_FILE_NAME = "config.properties";
 
     public static Connection getConnection() {
         LoaderDBConf dbc = (new ConnectDB()).new LoaderDBConf(CONFIG_FILE_NAME);
@@ -62,8 +62,10 @@ public class ConnectDB {
         public LoaderDBConf(String fileName) {
             dbConfig = new Properties();
             try {
-                dbConfig.load(this.getClass().getResourceAsStream(fileName));
+                dbConfig.load(ConnectDB.class.getResourceAsStream(fileName));
+                System.out.println("Ciao");
 
+                
                 dbHost = dbConfig.getProperty("dbHost");
                 dbPort = Integer.parseInt(dbConfig.getProperty("dbPort"));
                 dbUser = dbConfig.getProperty("dbUser");

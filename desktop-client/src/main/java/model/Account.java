@@ -6,6 +6,7 @@ public class Account {
     String fiscalCode;
     String name;
     String numberVAT;
+    String atecoCode;
     String legalAddress;
     String category;
     Set<Contact> contacts;

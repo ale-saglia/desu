@@ -11,22 +11,22 @@
 
 <VBox alignment="CENTER" prefHeight="624.0" prefWidth="665.0" spacing="20.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainController">
    <children>
-      <HBox prefHeight="100.0" prefWidth="200.0">
+      <HBox>
          <children>
-            <TextField prefWidth="1080.0" promptText="Cerca per Ragione Sociale" />
-            <Button minWidth="60.0" mnemonicParsing="false" text="Cerca">
+            <TextField minHeight="-Infinity" minWidth="-Infinity" promptText="Cerca per Ragione Sociale" HBox.hgrow="ALWAYS" />
+            <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="Cerca">
                <HBox.margin>
                   <Insets left="7.0" />
                </HBox.margin>
             </Button>
-            <Button disable="true" minWidth="110.0" mnemonicParsing="false" text="Ricerca Avanzata">
+            <Button disable="true" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="Ricerca Avanzata">
                <HBox.margin>
                   <Insets left="7.0" />
                </HBox.margin>
             </Button>
          </children>
       </HBox>
-      <TableView fx:id="rsppTable" maxHeight="1.7976931348623157E308" prefHeight="1080.0">
+      <TableView fx:id="rsppTable" maxHeight="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="ALWAYS">
         <columns>
           <TableColumn editable="false" prefWidth="177.0" text="Ragione Sociale" />
           <TableColumn editable="false" minWidth="9.0" prefWidth="101.0" text="Tipologia" />
@@ -41,11 +41,11 @@
             <Insets bottom="-7.0" />
          </VBox.margin>
       </TableView>
-      <HBox prefHeight="100.0" prefWidth="200.0">
+      <HBox minHeight="-Infinity" minWidth="-Infinity">
          <children>
-            <CheckBox minWidth="180.0" mnemonicParsing="false" selected="true" text="Incarichi in scadenza" />
-            <HBox prefHeight="25.0" prefWidth="680.0" HBox.hgrow="ALWAYS" />
-          <Button minWidth="120.0" mnemonicParsing="false" onAction="#switchToViewEdit" prefHeight="26.0" prefWidth="120.0" text="Visualizza/Modifica" />
+            <CheckBox minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" selected="true" text="Incarichi in scadenza" />
+            <HBox HBox.hgrow="ALWAYS" />
+          <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#switchToViewEdit" text="Visualizza/Modifica" />
          </children>
       </HBox>
    </children>

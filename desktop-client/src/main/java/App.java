@@ -1,3 +1,4 @@
+
 import java.io.IOException;
 
 import javafx.application.Application;
@@ -15,7 +16,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("main"), 640, 480);
+        scene = new Scene(loadFXML("main"), 960, 720);
         stage.setScene(scene);
         stage.setTitle("Scadenziario RSPP");
         stage.show();

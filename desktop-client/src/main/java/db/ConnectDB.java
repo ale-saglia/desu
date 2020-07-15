@@ -10,6 +10,7 @@ import com.jcraft.jsch.Session;
 
 public class ConnectDB {
     static String CONFIG_FILE_NAME = "config.properties";
+    int assinged_port;
 
     public static Connection getConnection() {
         LoaderDBConf dbc = (new ConnectDB()).new LoaderDBConf(CONFIG_FILE_NAME);
@@ -28,15 +29,19 @@ public class ConnectDB {
             session.setConfig(config);
             session.connect();
             System.out.println("Connected");
-            int assinged_port = session.setPortForwardingL(dbc.getDbPort(), dbc.getDbHost(), dbc.getDbPort());
-            System.out.println("localhost:" + assinged_port + " -> " + dbc.getDbPort() + ":" + dbc.getDbPort());
+            int assigned_port = session.setPortForwardingL(0, dbc.getDbHost(), dbc.getDbPort());
+            
+            System.out.println(session.getPortForwardingL());
+            
+            System.out.println("localhost:" + assigned_port + " -> " + dbc.getDbPort());
             System.out.println("Port Forwarded");
-
+            
+            // DB connection
             Class.forName("org.postgresql.Driver");
-
-            conn = DriverManager.getConnection(
-                    "jdbc:postgresql://" + dbc.getDbHost() + ":" + dbc.getDbPort() + "/" + dbc.getDbName(),
-                    dbc.getDbUser(), dbc.getDbPassword());
+            String dbString = "jdbc:postgresql://" + dbc.getDbHost() + ":" + assigned_port + "/" + dbc.getDbName();           
+            
+            conn = DriverManager.getConnection(dbString, (dbc.getDbUser()), (dbc.getDbPassword()));
+            
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -44,6 +49,8 @@ public class ConnectDB {
         System.out.println("Opened database successfully");
         return conn;
     }
+    
+
 
     private class LoaderDBConf {
         Properties dbConfig;
@@ -69,7 +76,7 @@ public class ConnectDB {
                 dbHost = dbConfig.getProperty("dbHost");
                 dbPort = Integer.parseInt(dbConfig.getProperty("dbPort"));
                 dbUser = dbConfig.getProperty("dbUser");
-                dbPassword = dbConfig.getProperty("dbHost");
+                dbPassword = dbConfig.getProperty("dbPassword");
                 dbName = dbConfig.getProperty("dbName");
 
                 sshUser = dbConfig.getProperty("sshUser");

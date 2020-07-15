@@ -21,7 +21,8 @@ public class App extends Application {
     		Model model = new Model();
     		controller.setModel(model);
     	
-    		Scene scene = new Scene(root, 960, 720);
+			Scene scene = new Scene(root, 960, 720);
+			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
     		stage.setScene(scene);
     		stage.setTitle("Scadenziario RSPP");
     		stage.show();

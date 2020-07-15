@@ -2,17 +2,6 @@ package db;
 
 public class Queries {
 
-    /*
-     * Query to return elements for RSPP gui select * from (select r.rspp_jobid as
-     * jobid, r.jobstart as jobstart, r.jobstart as jobend, a."name" as "name",
-     * a.customer_category as category, r.invoiceid as invoiceid, i.payed as payed
-     * from accounts.accounts a, deadlines.rspp r, invoices.invoices i, jobs.jobs j
-     * where r.invoiceid = i.invoiceid union select r.rspp_jobid as jobid,
-     * r.jobstart as jobstart, r.jobstart as jobend, a."name" as "name",
-     * a.customer_category as category, null as invoiceid, false as payed from
-     * accounts.accounts a, deadlines.rspp r, jobs.jobs j where r.invoiceid is null)
-     * as tab ORDER BY "name", jobend
-     */
     public static String getRSPPtable() {
         return (
             "   SELECT *  "  + 

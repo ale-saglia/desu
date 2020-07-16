@@ -13,12 +13,7 @@ import java.util.Map;
 public class SicurteaDAO {
 	
 	public List<Map<String, String>> getDataForTable(){
-		String sql = Queries.getRSPPtable();/*"select *\n" + 
-				"from (SELECT a.\"name\" as \"name\", a.customer_category as category, r.jobend as jobend, i.invoiceid as invoiceid, i.payed as payed\n" + 
-				"FROM accounts.accounts a, deadlines.rspp r, invoices.invoices  i, jobs.jobs j\n" + 
-				"union\n" + 
-				"SELECT a.\"name\"as \"name\", a.customer_category as category, r.jobend as jobend, null as invoiceid, null as payed\n" + 
-				"FROM accounts.accounts a, deadlines.rspp r, jobs.jobs j) as a";*/
+		String sql = Queries.getRSPPtable();
 		
 		List<Map<String, String>> tableElements = new ArrayList<Map<String, String>>();
 		Map<String, String> temp;
@@ -31,10 +26,14 @@ public class SicurteaDAO {
 			while (res.next()) {
 				temp = new HashMap<String, String>();
 				temp.put("name", res.getString("name"));
-				temp.put("category", res.getString("name"));
+				temp.put("category", res.getString("category"));
 				temp.put("jobend", (new SimpleDateFormat("dd/MM/yyyy")).format(res.getDate("jobend")));
 				temp.put("invoiceid", res.getString("invoiceid"));
 				temp.put("payed", String.valueOf(res.getBoolean("payed")));
+				
+				//Useful for tracking selected field when view / edit
+				temp.put("jobid", res.getString("jobid"));
+				temp.put("jobstart", (new SimpleDateFormat("dd/MM/yyyy")).format(res.getDate("jobstart")));
 				tableElements.add(temp);
 			}
 

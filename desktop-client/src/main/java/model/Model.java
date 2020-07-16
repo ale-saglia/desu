@@ -11,9 +11,4 @@ public class Model {
 	public Model() {
 		this.dao = new SicurteaDAO();
 	}
-	
-	public List<Map<String, String>> getDataForTable(boolean deadlineOn, String search){
-		return dao.getDataForTable(deadlineOn, search);
-	}
-
 }

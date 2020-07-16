@@ -2,6 +2,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import db.SicurteaDAO;
 import javafx.beans.property.SimpleStringProperty;
@@ -56,6 +57,7 @@ public class MainController {
 	private Button viewEditButton;
 
 	private ObservableList<RSPPtableElement> rsppElements;
+	private FilteredList<RSPPtableElement> filteredrsppElements;
 
 	SicurteaDAO dao;
 	Model model;
@@ -70,7 +72,7 @@ public class MainController {
 			rsppElements.add(new RSPPtableElement(rsppElement));
 		}
 
-		FilteredList<RSPPtableElement> filteredData = new FilteredList<>(rsppElements, p -> true);
+		filteredrsppElements = new FilteredList<RSPPtableElement>(rsppElements);
 
 		nameColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("accountName"));
 		categoryColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("category"));
@@ -78,27 +80,11 @@ public class MainController {
 		invoiceColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("invoiceID"));
 		payedColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("payed"));
 
-		searchButton.textProperty().addListener((observable, oldValue, newValue) -> {
-			filteredData.setPredicate(rspp -> {
-				// If filter text is empty, display all persons.
-				if (newValue == null || newValue.isEmpty()) {
-					return true;
-				}
-
-				// Compare first name and last name of every person with filter text.
-				String lowerCaseFilter = newValue.toLowerCase();
-
-				if (rspp.getAccountName().toLowerCase().contains(lowerCaseFilter)) {
-					return true; // Filter matches first name.
-				}
-				return false; // Does not match.
-			});
+		filteredrsppElements.setPredicate(new Predicate<RSPPtableElement>() {
+			public boolean test(RSPPtableElement rspp) {
+				return false; // To  implement
+			}
 		});
-
-		SortedList<RSPPtableElement> sortedData = new SortedList<>(filteredData);
-		sortedData.comparatorProperty().bind(rsppTable.comparatorProperty());
-
-		rsppTable.setItems(sortedData);
 	}
 
 	public class RSPPtableElement {

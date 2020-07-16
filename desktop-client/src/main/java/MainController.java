@@ -3,10 +3,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
+import db.SicurteaDAO;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,11 +26,11 @@ import model.Model;
 
 public class MainController {
 	@FXML
-    private TextField searchField;	
-	
-    @FXML
-    private Button searchButton;
-	
+	private TextField searchField;
+
+	@FXML
+	private Button searchButton;
+
 	@FXML
 	private TableView<RSPPtableElement> rsppTable;
 
@@ -45,24 +48,29 @@ public class MainController {
 
 	@FXML
 	private TableColumn<RSPPtableElement, String> payedColumn;
-	
-    @FXML
-    private CheckBox checkBoxDeadline;
-    
-    @FXML
-    private Button viewEditButton;
+
+	@FXML
+	private CheckBox checkBoxDeadline;
+
+	@FXML
+	private Button viewEditButton;
 
 	private ObservableList<RSPPtableElement> rsppElements;
 
+	SicurteaDAO dao;
 	Model model;
 
-	public void initialize(Model model) {
-		rsppElements = FXCollections.observableArrayList();
-		this.model = model;
+	@FXML
+	public void initialize() {
+		dao = new SicurteaDAO();
 
-		for (Map<String, String> rsppElement : model.getDataForTable(false, null)) {
+		rsppElements = FXCollections.observableArrayList();
+
+		for (Map<String, String> rsppElement : dao.getDataForTable(false)) {
 			rsppElements.add(new RSPPtableElement(rsppElement));
 		}
+
+		FilteredList<RSPPtableElement> filteredData = new FilteredList<>(rsppElements, p -> true);
 
 		nameColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("accountName"));
 		categoryColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("category"));
@@ -70,8 +78,27 @@ public class MainController {
 		invoiceColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("invoiceID"));
 		payedColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("payed"));
 
-		rsppTable.getItems().setAll(rsppElements);
+		searchButton.textProperty().addListener((observable, oldValue, newValue) -> {
+			filteredData.setPredicate(rspp -> {
+				// If filter text is empty, display all persons.
+				if (newValue == null || newValue.isEmpty()) {
+					return true;
+				}
 
+				// Compare first name and last name of every person with filter text.
+				String lowerCaseFilter = newValue.toLowerCase();
+
+				if (rspp.getAccountName().toLowerCase().contains(lowerCaseFilter)) {
+					return true; // Filter matches first name.
+				}
+				return false; // Does not match.
+			});
+		});
+
+		SortedList<RSPPtableElement> sortedData = new SortedList<>(filteredData);
+		sortedData.comparatorProperty().bind(rsppTable.comparatorProperty());
+
+		rsppTable.setItems(sortedData);
 	}
 
 	public class RSPPtableElement {
@@ -156,12 +183,17 @@ public class MainController {
 		}
 
 	}
-	
+
 	@FXML
 	public void search(ActionEvent event) {
-		//TODO SETUP FILTER (explaination on https://code.makery.ch/blog/javafx-8-tableview-sorting-filtering/ )
+		// TODO SETUP FILTER (explaination on
+		// https://code.makery.ch/blog/javafx-8-tableview-sorting-filtering/ )
 	}
-	
+
+	public void setModel(Model model) {
+		this.model = model;
+	}
+
 	@FXML
 	public void switchToViewEdit(ActionEvent event) throws Exception {
 		try {

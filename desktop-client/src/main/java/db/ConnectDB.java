@@ -71,8 +71,6 @@ public class ConnectDB {
             dbConfig = new Properties();
             try {
                 dbConfig.load(ConnectDB.class.getResourceAsStream(fileName));
-                System.out.println("Ciao");
-
                 
                 dbHost = dbConfig.getProperty("dbHost");
                 dbPort = Integer.parseInt(dbConfig.getProperty("dbPort"));

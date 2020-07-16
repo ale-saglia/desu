@@ -12,14 +12,14 @@ import model.Model;
 public class App extends Application {
     @Override
     public void start(Stage stage) {
+    	Model model;
     	
     	try {
     		FXMLLoader loader = new FXMLLoader(getClass().getResource("main.fxml"));
     		VBox root = (VBox) loader.load();
     		MainController controller = loader.getController();
-    	
-    		Model model = new Model();
-    		controller.initialize(model);
+    		model = new Model();
+    		controller.setModel(model);
     	
 			Scene scene = new Scene(root, 960, 720);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());

@@ -14,7 +14,7 @@ public class SicurteaDAO {
 	final int DEADLINES_DAYS_ADVANCE = 14;
 	
 	
-	public List<Map<String, String>> getDataForTable(boolean deadlineOn, String search) {
+	public List<Map<String, String>> getDataForTable(boolean deadlineOn) {
 		String sql = Queries.getRSPPtable();
 		List<Map<String, String>> tableElements;
 

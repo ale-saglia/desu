@@ -11,16 +11,21 @@ import java.util.List;
 import java.util.Map;
 
 public class SicurteaDAO {
+	final int DEADLINES_DAYS_ADVANCE = 14;
 	
-	public List<Map<String, String>> getDataForTable(){
+	
+	public List<Map<String, String>> getDataForTable(boolean deadlineOn, String search) {
 		String sql = Queries.getRSPPtable();
-		
-		List<Map<String, String>> tableElements = new ArrayList<Map<String, String>>();
-		Map<String, String> temp;
-		
+		List<Map<String, String>> tableElements;
+
 		try {
 			Connection conn = ConnectDB.getConnection();
+
+			tableElements = new ArrayList<Map<String, String>>();
+			Map<String, String> temp;
+
 			PreparedStatement st = conn.prepareStatement(sql);
+
 			ResultSet res = st.executeQuery();
 
 			while (res.next()) {
@@ -30,8 +35,8 @@ public class SicurteaDAO {
 				temp.put("jobend", (new SimpleDateFormat("dd/MM/yyyy")).format(res.getDate("jobend")));
 				temp.put("invoiceid", res.getString("invoiceid"));
 				temp.put("payed", String.valueOf(res.getBoolean("payed")));
-				
-				//Useful for tracking selected field when view / edit
+
+				// Useful for tracking selected field when view / edit
 				temp.put("jobid", res.getString("jobid"));
 				temp.put("jobstart", (new SimpleDateFormat("dd/MM/yyyy")).format(res.getDate("jobstart")));
 				tableElements.add(temp);
@@ -46,6 +51,5 @@ public class SicurteaDAO {
 		}
 
 		return tableElements;
-	
 	}
 }

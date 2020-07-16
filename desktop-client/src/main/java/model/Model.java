@@ -10,11 +10,10 @@ public class Model {
 	
 	public Model() {
 		this.dao = new SicurteaDAO();
-		System.out.println(getDataForTable());
 	}
 	
-	public List<Map<String, String>> getDataForTable(){
-		return dao.getDataForTable();
+	public List<Map<String, String>> getDataForTable(boolean deadlineOn, String search){
+		return dao.getDataForTable(deadlineOn, search);
 	}
 
 }

@@ -12,6 +12,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -22,6 +24,9 @@ import model.Model;
 public class MainController {
 	@FXML
     private TextField searchField;	
+	
+    @FXML
+    private Button searchButton;
 	
 	@FXML
 	private TableView<RSPPtableElement> rsppTable;
@@ -40,6 +45,12 @@ public class MainController {
 
 	@FXML
 	private TableColumn<RSPPtableElement, String> payedColumn;
+	
+    @FXML
+    private CheckBox checkBoxDeadline;
+    
+    @FXML
+    private Button viewEditButton;
 
 	private ObservableList<RSPPtableElement> rsppElements;
 
@@ -49,8 +60,7 @@ public class MainController {
 		rsppElements = FXCollections.observableArrayList();
 		this.model = model;
 
-		System.out.println(model.getDataForTable());
-		for (Map<String, String> rsppElement : model.getDataForTable()) {
+		for (Map<String, String> rsppElement : model.getDataForTable(false, null)) {
 			rsppElements.add(new RSPPtableElement(rsppElement));
 		}
 
@@ -149,11 +159,8 @@ public class MainController {
 	
 	@FXML
 	public void search(ActionEvent event) {
-		String searchKeyword = searchField.getText();
-		rsppElements.removeAll();
+		//TODO SETUP FILTER (explaination on https://code.makery.ch/blog/javafx-8-tableview-sorting-filtering/ )
 	}
-	
-	//public get 
 	
 	@FXML
 	public void switchToViewEdit(ActionEvent event) throws Exception {

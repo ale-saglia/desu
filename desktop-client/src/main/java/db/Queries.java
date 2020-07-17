@@ -33,5 +33,4 @@ public class Queries {
             "            jobend    " 
         );
     }
-
 }

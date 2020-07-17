@@ -18,12 +18,16 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.Model;
 
@@ -101,10 +105,19 @@ public class MainController {
 
 		rsppTable.setItems(SortedFilteredrsppElements);
 
+		rsppTable.setRowFactory(tv -> {
+			TableRow<RSPPtableElement> row = new TableRow<>();
+			row.setOnMouseClicked(event -> {
+				if (event.getClickCount() == 2 && (!row.isEmpty())) {
+					switchToViewEdit();
+				}
+			});
+			return row;
+		});
 	}
 
 	private boolean dateFilter(RSPPtableElement rspp) {
-		if(checkBoxDeadline.isSelected()) {
+		if (checkBoxDeadline.isSelected()) {
 			if (rspp.jobEndDate().isAfter(LocalDate.now())
 					&& rspp.jobEndDate().isBefore(LocalDate.now().plusDays(DAYS_ADVANCE)))
 				return true;
@@ -199,27 +212,53 @@ public class MainController {
 			return payed.get();
 		}
 
+		public String getJobID() {
+			return jobID;
+		}
+
+		public LocalDate getJobStart() {
+			return jobStart;
+		}
+
 	}
 
 	public void setModel(Model model) {
 		this.model = model;
 	}
-	
+
 	public void refresh() {
 		initialize();
 	}
 
 	@FXML
-	public void switchToViewEdit(ActionEvent event) throws Exception {
-		try {
-			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("edit.fxml"));
-			Parent rootViewEdit = (Parent) fxmlLoader.load();
-			Stage stage = new Stage();
-			stage.setScene(new Scene(rootViewEdit));
-			stage.show();
+	public void switchToViewEdit() {
+		RSPPtableElement selectedItems = rsppTable.getSelectionModel().getSelectedItem();
+		if (selectedItems != null) {
+			try {
+				Stage stage = new Stage();
 
-		} catch (Exception e) {
-			e.printStackTrace();
+				FXMLLoader loader = new FXMLLoader(getClass().getResource("edit.fxml"));
+				VBox root = (VBox) loader.load();
+				ViewEditController controller = loader.getController();
+				model = new Model();
+				controller.setRSPP(selectedItems.getJobID(), selectedItems.getJobStart(), selectedItems.jobEndDate());
+
+				Scene scene = new Scene(root);
+				scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+				stage.setScene(scene);
+				stage.show();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else {
+			Alert alert = new Alert(AlertType.WARNING);
+			alert.setTitle("Attenzione!");
+			alert.setHeaderText("Riga RSPP non selezionata");
+			alert.setContentText(
+					"Come fare?\nPer utilizzare la funziona \"visualizza e modifica\" di questo programma occorre selezionare la riga della tabella e successivamente procedere cliccando il pulsante.");
+
+			alert.showAndWait();
 		}
 
 	}

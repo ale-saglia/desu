@@ -20,7 +20,10 @@ public class App extends Application {
     		MainController controller = loader.getController();
     		model = new Model();
     		controller.setModel(model);
-    	
+    		
+    		stage.setMinWidth(640);
+    		stage.setMinHeight(560);
+    		
 			Scene scene = new Scene(root, 960, 720);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
     		stage.setScene(scene);

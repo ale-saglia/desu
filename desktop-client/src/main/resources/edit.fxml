@@ -6,6 +6,9 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -21,46 +24,92 @@
                </font></Label>
             <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="490.0">
                <children>
-                  <Label text="Ragione sociale">
+                  <Label maxWidth="85.0" minWidth="85.0" prefWidth="85.0" text="Ragione sociale">
                      <HBox.margin>
                         <Insets right="10.0" />
                      </HBox.margin>
                   </Label>
-                  <TextField editable="false" />
+                  <TextField fx:id="nameField" editable="false" HBox.hgrow="ALWAYS" />
                </children>
+               <padding>
+                  <Insets bottom="5.0" />
+               </padding>
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="490.0">
                <children>
-                  <Label text="Codice Fiscale">
+                  <Label maxWidth="85.0" minWidth="85.0" prefWidth="85.0" text="Codice Fiscale">
                      <HBox.margin>
                         <Insets right="10.0" />
                      </HBox.margin>
                   </Label>
-                  <TextField editable="false" />
-                  <Label text="Partita IVA" />
-                  <TextField editable="false" />
+                  <TextField fx:id="fiscalCodeText" editable="false" HBox.hgrow="ALWAYS" />
+                  <Label text="Partita IVA">
+                     <padding>
+                        <Insets left="15.0" right="7.0" />
+                     </padding></Label>
+                  <TextField fx:id="numberVATField" editable="false" HBox.hgrow="ALWAYS" />
                </children>
+               <padding>
+                  <Insets bottom="5.0" />
+               </padding>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="70.0" prefHeight="34.0" prefWidth="490.0">
+               <children>
+                  <Label maxWidth="85.0" minWidth="85.0" prefWidth="85.0" text="Tipologia">
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
+                  </Label>
+                  <TextField fx:id="categoryField" editable="false" HBox.hgrow="ALWAYS" />
+                  <Label text="Codice Ateco">
+                     <padding>
+                        <Insets left="15.0" right="7.0" />
+                     </padding>
+                  </Label>
+                  <TextField fx:id="atecoCodeField" editable="false" />
+               </children>
+               <padding>
+                  <Insets bottom="5.0" />
+               </padding>
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="490.0">
                <children>
-                  <Label text="Sede Legale">
+                  <Label maxWidth="85.0" minWidth="85.0" prefWidth="85.0" text="Sede Legale">
                      <HBox.margin>
                         <Insets right="10.0" />
                      </HBox.margin>
                   </Label>
-                  <TextField editable="false" prefHeight="26.0" prefWidth="538.0" />
+                  <TextField fx:id="addressField" editable="false" prefHeight="26.0" prefWidth="538.0" HBox.hgrow="ALWAYS" />
+               </children>
+               <padding>
+                  <Insets bottom="5.0" />
+               </padding>
+            </HBox>
+            <HBox disable="true" prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Label maxWidth="85.0" minWidth="85.0" prefWidth="85.0" text="Contatti">
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
+                  </Label>
+                  <TableView prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                    <columns>
+                      <TableColumn prefWidth="157.0" text="Tipologia" />
+                      <TableColumn prefWidth="439.0" text="Valore" />
+                    </columns>
+                  </TableView>
                </children>
             </HBox>
-            <Separator prefWidth="200.0">
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
-               <VBox.margin>
-                  <Insets top="10.0" />
-               </VBox.margin>
-            </Separator>
          </children>
       </VBox>
+      <Separator prefWidth="200.0">
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+      </Separator>
       <VBox disable="true" prefHeight="200.0" prefWidth="550.0">
          <children>
             <Label text="Commessa">
@@ -100,17 +149,17 @@
                   <TextField editable="false" prefHeight="26.0" prefWidth="538.0" />
                </children>
             </HBox>
-            <Separator prefWidth="200.0">
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
-               <VBox.margin>
-                  <Insets top="10.0" />
-               </VBox.margin>
-            </Separator>
          </children>
       </VBox>
-      <VBox prefHeight="200.0" prefWidth="550.0">
+      <Separator prefWidth="200.0">
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+      </Separator>
+      <VBox disable="true" prefHeight="200.0" prefWidth="550.0">
          <children>
             <Label text="Incarico">
                <font>
@@ -149,17 +198,19 @@
                   <TextField editable="false" prefHeight="26.0" prefWidth="538.0" />
                </children>
             </HBox>
-            <Separator prefWidth="200.0">
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
-               <VBox.margin>
-                  <Insets top="10.0" />
-               </VBox.margin>
-            </Separator>
+            <Label text="Note" />
+            <TextArea prefHeight="200.0" prefWidth="200.0" />
          </children>
       </VBox>
-      <VBox prefHeight="200.0" prefWidth="550.0">
+      <Separator prefWidth="200.0">
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+      </Separator>
+      <VBox disable="true" prefHeight="200.0" prefWidth="550.0">
          <children>
             <Label text="Dati fattura">
                <font>

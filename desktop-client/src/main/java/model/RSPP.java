@@ -1,16 +1,19 @@
 package model;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class RSPP {
 	Job job;
     Account account;
     
-    Date start;
-    Date end;
-	public RSPP(Job job, Date start, Date end) {
+    LocalDate start;
+    LocalDate end;
+    
+	public RSPP(Job job, LocalDate start, LocalDate end) {
 		this.job = job;
 		this.start = start;
 		this.end = end;
 	}
+	
+	
 }

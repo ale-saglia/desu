@@ -1,8 +1,50 @@
 package model;
 
 public class Job {
-    int id;
-    //TODO enum job category and type
-    String description;
-    Account customer;
+	String id;
+
+	enum jobCategory {
+		// TODO create autofetch of enum from database
+		SICUREZZA;
+	};
+
+	enum jobType {
+		// TODO create autofetch of enum from database
+		RSPP;
+	};
+
+	String description;
+	Account customer;
+	private String jobCategory;
+	private String jobType;
+
+	public Job(String id, String description, String jobCategory, String jobType) {
+		this.id = id;
+		this.description = description;
+		this.jobCategory = jobCategory;
+		this.jobType = jobType;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public Account getCustomer() {
+		return customer;
+	}
+
+	public String getJobCategory() {
+		return jobCategory;
+	}
+
+	public String getJobType() {
+		return jobType;
+	}
+	
+	
+
 }

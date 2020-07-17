@@ -10,10 +10,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import model.Account;
+import model.Job;
+
 public class SicurteaDAO {
 	final int DEADLINES_DAYS_ADVANCE = 14;
-	
-	
+
 	public List<Map<String, String>> getDataForTable(boolean deadlineOn) {
 		String sql = Queries.getRSPPtable();
 		List<Map<String, String>> tableElements;
@@ -52,4 +54,79 @@ public class SicurteaDAO {
 
 		return tableElements;
 	}
+
+	public Job getJob(String job_id) {
+		String sql = "select * from jobs.jobs j where j.jobs_id = ? ";
+		Job job;
+
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setString(1, job_id);
+			System.out.println("Pollo ->" + st);			
+
+			ResultSet res = st.executeQuery();
+			res.next();
+			job = new Job(res.getString("jobs_id"), res.getString("jobs_category"), res.getString("jobs_type"),
+					res.getString("jobs_description"));
+			conn.close();
+			return job;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+	}
+	
+	public Account getAccount(String fiscalCode) {
+		String sql = "select *\n" + "from accounts.accounts a\n" + "where a.fiscalcode = ? ";
+		Account account;
+
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setString(1, fiscalCode);
+
+			ResultSet res = st.executeQuery();
+			res.next();
+			account = new Account(res.getString("fiscalcode"), res.getString("name"), res.getString("numbervat"),
+					res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"));
+			conn.close();
+			return account;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+	}
+	
+	public Account getAccountFromJob(String job_id) {
+		String sql = "select *\n" + 
+				"from accounts.accounts a, (select j.customer\n" + 
+				"from jobs.jobs j where j.jobs_id = ? ) as j\n" + 
+				"where j.customer = a.fiscalcode ";
+		Account account;
+
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setString(1, job_id);
+
+			ResultSet res = st.executeQuery();
+			res.next();
+			account = new Account(res.getString("fiscalcode"), res.getString("name"), res.getString("numbervat"),
+					res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"));
+			conn.close();
+			return account;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+	}
+	
+	
 }

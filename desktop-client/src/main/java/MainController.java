@@ -1,10 +1,12 @@
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.function.Predicate;
 
 import db.SicurteaDAO;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -26,11 +28,10 @@ import javafx.stage.Stage;
 import model.Model;
 
 public class MainController {
-	@FXML
-	private TextField searchField;
+	public final long DAYS_ADVANCE = 14;
 
 	@FXML
-	private Button searchButton;
+	private TextField searchField;
 
 	@FXML
 	private TableView<RSPPtableElement> rsppTable;
@@ -58,6 +59,7 @@ public class MainController {
 
 	private ObservableList<RSPPtableElement> rsppElements;
 	private FilteredList<RSPPtableElement> filteredrsppElements;
+	private SortedList<RSPPtableElement> SortedFilteredrsppElements;
 
 	SicurteaDAO dao;
 	Model model;
@@ -80,31 +82,56 @@ public class MainController {
 		invoiceColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("invoiceID"));
 		payedColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("payed"));
 
-		filteredrsppElements.setPredicate(new Predicate<RSPPtableElement>() {
-			public boolean test(RSPPtableElement rspp) {
-				return false; // To  implement
-			}
-		});
+		System.out.println(searchField.getText());
+
+		ObjectProperty<Predicate<RSPPtableElement>> nameFilter = new SimpleObjectProperty<>();
+		ObjectProperty<Predicate<RSPPtableElement>> dateFilter = new SimpleObjectProperty<>();
+
+		nameFilter.bind(Bindings.createObjectBinding(
+				() -> rspp -> rspp.getAccountName().toLowerCase().contains(searchField.getText().toLowerCase()),
+				searchField.textProperty()));
+
+		dateFilter.bind(
+				Bindings.createObjectBinding(() -> rspp -> dateFilter(rspp), checkBoxDeadline.selectedProperty()));
+
+		filteredrsppElements.predicateProperty().bind(
+				Bindings.createObjectBinding(() -> nameFilter.get().and(dateFilter.get()), nameFilter, dateFilter));
+
+		SortedFilteredrsppElements = new SortedList<>(filteredrsppElements);
+
+		rsppTable.setItems(SortedFilteredrsppElements);
+
+	}
+
+	private boolean dateFilter(RSPPtableElement rspp) {
+		if(checkBoxDeadline.isSelected()) {
+			if (rspp.jobEndDate().isAfter(LocalDate.now())
+					&& rspp.jobEndDate().isBefore(LocalDate.now().plusDays(DAYS_ADVANCE)))
+				return true;
+			else
+				return false;
+		}
+		return true;
 	}
 
 	public class RSPPtableElement {
-		String jobID;
-		Date jobStart;
+		DateTimeFormatter formatter;
 
-		Date jobEnd;
+		String jobID;
+		LocalDate jobStart;
+
+		LocalDate jobEnd;
 		StringProperty accountName;
 		StringProperty category;
 		StringProperty invoiceID;
 		StringProperty payed;
 
 		public RSPPtableElement(Map<String, String> rsspElement) {
+			formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
 			this.jobID = rsspElement.get("jobid");
-			try {
-				this.jobStart = new SimpleDateFormat("dd/MM/yyyy").parse(rsspElement.get("jobstart"));
-				this.jobEnd = new SimpleDateFormat("dd/MM/yyyy").parse(rsspElement.get("jobend"));
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
+			this.jobStart = LocalDate.parse(rsspElement.get("jobstart"), formatter);
+			this.jobEnd = LocalDate.parse(rsspElement.get("jobend"), formatter);
 			this.accountName = new SimpleStringProperty(rsspElement.get("name"));
 			switch (rsspElement.get("category")) {
 			case "b2b":
@@ -145,11 +172,15 @@ public class MainController {
 		}
 
 		public StringProperty jobEndProperty() {
-			return new SimpleStringProperty((new SimpleDateFormat("dd/MM/yyyy")).format(jobEnd));
+			return new SimpleStringProperty(jobEnd.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 		}
 
 		public String getJobEnd() {
-			return (new SimpleDateFormat("dd/MM/yyyy")).format(jobEnd);
+			return (jobEnd.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+		}
+
+		public LocalDate jobEndDate() {
+			return jobEnd;
 		}
 
 		public StringProperty invoiceIDProperty() {
@@ -170,14 +201,12 @@ public class MainController {
 
 	}
 
-	@FXML
-	public void search(ActionEvent event) {
-		// TODO SETUP FILTER (explaination on
-		// https://code.makery.ch/blog/javafx-8-tableview-sorting-filtering/ )
-	}
-
 	public void setModel(Model model) {
 		this.model = model;
+	}
+	
+	public void refresh() {
+		initialize();
 	}
 
 	@FXML

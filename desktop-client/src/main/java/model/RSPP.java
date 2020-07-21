@@ -4,8 +4,7 @@ import java.time.LocalDate;
 
 public class RSPP {
 	Job job;
-    Account account;
-    
+
     LocalDate start;
     LocalDate end;
     
@@ -14,6 +13,8 @@ public class RSPP {
 		this.start = start;
 		this.end = end;
 	}
-	
-	
+
+	public Job getJob() {
+		return job;
+	}
 }

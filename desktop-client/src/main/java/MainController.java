@@ -240,7 +240,9 @@ public class MainController {
 				VBox root = (VBox) loader.load();
 				ViewEditController controller = loader.getController();
 				model = new Model();
-				controller.setRSPP(selectedItems.getJobID(), selectedItems.getJobStart(), selectedItems.jobEndDate());
+				controller.setModel(model);
+				controller.setCombo();
+				controller.setRSPP(selectedItems.getJobID(), selectedItems.getJobStart());
 
 				Scene scene = new Scene(root);
 				scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());

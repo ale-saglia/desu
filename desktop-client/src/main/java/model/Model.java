@@ -1,5 +1,6 @@
 package model;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -19,5 +20,21 @@ public class Model {
 		accountCategories = dao.getAccountsCategories();
 		jobCategories = dao.getJobCategories();
 		jobTypes = dao.getJobTypes();
+	}
+	
+	public RSPP getRSPP(String jobID, LocalDate jobStart) {
+		return dao.getRSPP(jobID, jobStart);
+	}
+
+	public Map<String, String> getAccountCategories() {
+		return accountCategories;
+	}
+
+	public List<String> getJobCategories() {
+		return jobCategories;
+	}
+
+	public List<String> getJobTypes() {
+		return jobTypes;
 	}
 }

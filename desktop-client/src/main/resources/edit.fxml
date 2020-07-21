@@ -62,7 +62,7 @@
                         <Insets right="10.0" />
                      </HBox.margin>
                   </Label>
-                  <TextField fx:id="categoryField" editable="false" HBox.hgrow="ALWAYS" />
+                  <ComboBox fx:id="categoryAccountCombo" prefWidth="150.0" />
                   <Label text="Codice Ateco">
                      <padding>
                         <Insets left="15.0" right="7.0" />
@@ -135,12 +135,12 @@
                         <Insets right="10.0" />
                      </HBox.margin>
                   </Label>
-                  <ComboBox minWidth="-Infinity" />
+                  <ComboBox fx:id="categoryJobCombo" minWidth="-Infinity" />
                   <Label minHeight="-Infinity" text="Sottocategoria">
                      <HBox.margin>
                         <Insets left="15.0" right="12.0" />
                      </HBox.margin></Label>
-                  <ComboBox layoutX="84.0" layoutY="10.0" minWidth="-Infinity" />
+                  <ComboBox fx:id="categoryTypeCombo" layoutX="84.0" layoutY="10.0" minWidth="-Infinity" />
                </children>
                <VBox.margin>
                   <Insets bottom="5.0" />

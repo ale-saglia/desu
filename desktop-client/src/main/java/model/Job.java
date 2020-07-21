@@ -18,11 +18,12 @@ public class Job {
 	private String jobCategory;
 	private String jobType;
 
-	public Job(String id, String description, String jobCategory, String jobType) {
+	public Job(String id, String description, String jobCategory, String jobType, Account customer) {
 		this.id = id;
 		this.description = description;
 		this.jobCategory = jobCategory;
 		this.jobType = jobType;
+		this.customer = customer;
 	}
 
 	public String getId() {

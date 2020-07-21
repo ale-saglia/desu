@@ -1,6 +1,4 @@
 server-Side-Scripts/conf.yaml
-.vscode/settings.json
+.vscode
 desktop-client/bin
 desktop-client/target
-desktop-client/build-jar
-desktop-client/src/main/resources/db/config.properties

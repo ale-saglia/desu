@@ -1,6 +1,9 @@
+package dclient;
 
 import java.time.LocalDate;
 
+import dclient.model.Model;
+import dclient.model.RSPP;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -9,8 +12,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import model.Model;
-import model.RSPP;
 
 public class ViewEditController {
 	private Model model;

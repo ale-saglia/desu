@@ -1,4 +1,4 @@
-package model;
+package dclient.model;
 
 import java.time.LocalDate;
 

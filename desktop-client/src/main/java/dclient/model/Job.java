@@ -1,4 +1,4 @@
-package model;
+package dclient.model;
 
 public class Job {
 	String id;

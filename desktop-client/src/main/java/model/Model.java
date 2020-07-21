@@ -37,4 +37,8 @@ public class Model {
 	public List<String> getJobTypes() {
 		return jobTypes;
 	}
+	
+	public String getRSPPnote(String fiscalCode) {
+		return dao.getRSPPnote(fiscalCode);
+	}
 }

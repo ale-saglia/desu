@@ -190,4 +190,30 @@ public class SicurteaDAO {
 			throw new RuntimeException("Error Connection Database");
 		}
 	}
+	
+	public String getRSPPnote(String fiscalCode) {
+		String sql = "select * from deadlines.rspp_notes r where r.fiscalcode = ? ";
+		String notes;
+
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setString(1, fiscalCode);
+
+			ResultSet res = st.executeQuery();
+			if(res.next() == false)
+				return "";
+			else {
+				notes = res.getString("notes");
+				conn.close();
+				return notes;
+			}
+			
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+	}
 }

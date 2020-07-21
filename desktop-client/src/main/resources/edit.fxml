@@ -126,7 +126,7 @@
                         <Insets right="10.0" />
                      </HBox.margin>
                   </Label>
-                  <TextField editable="false">
+                  <TextField fx:id="jobCodeField" editable="false">
                      <HBox.margin>
                         <Insets right="12.0" />
                      </HBox.margin></TextField>
@@ -153,7 +153,7 @@
                         <Insets right="10.0" />
                      </HBox.margin>
                   </Label>
-                  <TextField editable="false" HBox.hgrow="ALWAYS" />
+                  <TextField fx:id="jobdDescriptionField" editable="false" HBox.hgrow="ALWAYS" />
                </children>
                <padding>
                   <Insets bottom="5.0" />
@@ -209,7 +209,7 @@
                   <Insets bottom="5.0" />
                </VBox.margin>
             </Label>
-            <TextArea prefHeight="200.0" prefWidth="200.0" />
+            <TextArea fx:id="noteField" prefHeight="200.0" prefWidth="200.0" />
          </children>
       </VBox>
       <Separator prefWidth="200.0">
@@ -234,9 +234,9 @@
                         <Insets right="10.0" />
                      </HBox.margin>
                   </Label>
-                  <DatePicker HBox.hgrow="ALWAYS" />
+                  <DatePicker fx:id="jobStartField" HBox.hgrow="ALWAYS" />
                   <Label text="Data fine" />
-                  <DatePicker layoutX="90.0" layoutY="10.0" HBox.hgrow="ALWAYS" />
+                  <DatePicker fx:id="jobEndField" layoutX="90.0" layoutY="10.0" HBox.hgrow="ALWAYS" />
                </children>
             </HBox>
          </children>
@@ -249,7 +249,7 @@
             <Insets />
          </VBox.margin>
       </Separator>
-      <VBox prefHeight="200.0" prefWidth="550.0">
+      <VBox disable="true" prefHeight="200.0" prefWidth="550.0">
          <children>
             <Label text="Dati fattura">
                <font>

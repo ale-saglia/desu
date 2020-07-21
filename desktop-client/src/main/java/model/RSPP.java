@@ -17,4 +17,14 @@ public class RSPP {
 	public Job getJob() {
 		return job;
 	}
+
+	public LocalDate getStart() {
+		return start;
+	}
+
+	public LocalDate getEnd() {
+		return end;
+	}
+	
+	
 }

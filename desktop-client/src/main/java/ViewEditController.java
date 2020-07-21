@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -31,6 +33,12 @@ public class ViewEditController {
 
     @FXML
     private TextField addressField;
+    
+    @FXML
+    private TextField jobCodeField;
+    
+    @FXML
+    private TextField jobdDescriptionField;
 
     @FXML
     private ComboBox<String> categoryJobCombo;
@@ -40,6 +48,15 @@ public class ViewEditController {
 
     @FXML
     private VBox paReferences;
+    
+    @FXML
+    private TextArea noteField;
+    
+    @FXML
+    private DatePicker jobStartField;
+
+    @FXML
+    private DatePicker jobEndField;
 
     @FXML
     private Button closeButton;
@@ -69,9 +86,11 @@ public class ViewEditController {
 			paReferences.getChildren().clear();
 		
 		setAnagrafica();
+		setJobs();
+		setRSPP();
 	}
 
-	public void setAnagrafica() {
+	private void setAnagrafica() {
 		nameField.setText(rspp.getJob().getCustomer().getName());
 		fiscalCodeText.setText(rspp.getJob().getCustomer().getFiscalCode());
 		numberVATField.setText(rspp.getJob().getCustomer().getNumberVAT());
@@ -80,11 +99,21 @@ public class ViewEditController {
 		addressField.setText(rspp.getJob().getCustomer().getLegalAddress());
 	}
 	
-	public void setJobs() {
+	private void setJobs() {
+		jobCodeField.setText(rspp.getJob().getId());
+		categoryJobCombo.setValue(rspp.getJob().getJobCategory());
+		categoryTypeCombo.setValue(rspp.getJob().getJobType());
+		jobdDescriptionField.setText(rspp.getJob().getDescription());
+		noteField.setText(model.getRSPPnote(rspp.getJob().getCustomer().getFiscalCode()));
 		
+		if(rspp.getJob().getCustomer().getCategory() == "pa") {
+			
+		}
 	}
 
-	public void setJob() {
-
+	private void setRSPP() {
+		jobStartField.setValue(rspp.getStart());
+		jobEndField.setValue(rspp.getEnd());
+		
 	}
 }

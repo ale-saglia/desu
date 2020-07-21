@@ -18,7 +18,7 @@ public class Job {
 	private String jobCategory;
 	private String jobType;
 
-	public Job(String id, String description, String jobCategory, String jobType, Account customer) {
+	public Job(String id, String jobCategory, String jobType, String description, Account customer) {
 		this.id = id;
 		this.description = description;
 		this.jobCategory = jobCategory;
@@ -45,7 +45,5 @@ public class Job {
 	public String getJobType() {
 		return jobType;
 	}
-	
-	
 
 }

@@ -1,34 +1,52 @@
 package dclient;
 
+import dclient.model.Model;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
-import java.io.IOException;
+import javafx.stage.WindowEvent;
 
 /**
  * JavaFX App
  */
 public class App extends Application {
-
-    private static Scene scene;
-
     @Override
-    public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("primary"), 640, 480);
-        stage.setScene(scene);
-        stage.show();
-    }
+    public void start(Stage stage) {
+    	Model model;
+    	
+    	try {
+    		FXMLLoader loader = new FXMLLoader(getClass().getResource("main.fxml"));
+    		VBox root = (VBox) loader.load();
+    		MainController controller = loader.getController();
+    		model = new Model();
+    		controller.setModel(model);
+    		controller.createTable();
+    		
+    		stage.setMinWidth(640);
+    		stage.setMinHeight(560);
+    		
+			Scene scene = new Scene(root, 960, 720);
+			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+    		stage.setScene(scene);
+    		stage.setTitle("Scadenziario RSPP");
+    		stage.show();
+			stage.setOnCloseRequest((EventHandler<WindowEvent>) new EventHandler<WindowEvent>() {
+  	          public void handle(WindowEvent we) {
+  	        	  System.out.println("\n" + model.closeSession());
 
-    static void setRoot(String fxml) throws IOException {
-        scene.setRoot(loadFXML(fxml));
-    }
-
-    private static Parent loadFXML(String fxml) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
-        return fxmlLoader.load();
+  	              Platform.exit();
+  	              System.exit(0);
+  	          }
+  	      });  
+    		
+    	}  catch (Exception e) {
+			e.printStackTrace();
+    	}
+    	
     }
 
     public static void main(String[] args) {

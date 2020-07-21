@@ -37,8 +37,8 @@
             <TableColumn fx:id="nameColumn" prefWidth="75.0" text="Ragione Sociale" />
             <TableColumn fx:id="categoryColumn" prefWidth="75.0" text="Categoria" />
             <TableColumn fx:id="deadlineColumn" prefWidth="75.0" text="Scadenza" />
-            <TableColumn fx:id="invoiceColumn" prefWidth="75.0" text="Fattura" />
-            <TableColumn id="payedColumn" fx:id="payedColumn" editable="false" maxWidth="70.0" minWidth="60.0" prefWidth="60.0" text="Pagato" />
+            <TableColumn fx:id="invoiceColumn" prefWidth="75.0" text="Fattura" visible="false" />
+            <TableColumn id="payedColumn" fx:id="payedColumn" editable="false" maxWidth="70.0" minWidth="60.0" prefWidth="60.0" text="Pagato" visible="false" />
          </columns>
       </TableView>
       <HBox minHeight="-Infinity" minWidth="-Infinity">

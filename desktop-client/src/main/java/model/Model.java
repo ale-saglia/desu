@@ -45,4 +45,9 @@ public class Model {
 	public List<Map<String, String>> getDataForTable(){
 		return dao.getDataForTable();
 	}
+	
+	public void refreshSession() {
+		if (!dao.getSession().isConnected())
+			dao.getNewSession();		
+	}
 }

@@ -66,11 +66,11 @@ public class SicurteaDAO {
 
 		return tableElements;
 	}
-	
-	public Map<String, String> getAccountsCategories(){
+
+	public Map<String, String> getAccountsCategories() {
 		String sql = "select * from accounts.accounts_categories ac ";
 		Map<String, String> categories = new TreeMap<String, String>();
-		
+
 		try {
 			Connection conn = ConnectDB.getConnection(session);
 			PreparedStatement st = conn.prepareStatement(sql);
@@ -79,7 +79,7 @@ public class SicurteaDAO {
 			while (res.next()) {
 				categories.put(res.getString("categories"), res.getString("extended"));
 			}
-			
+
 			return categories;
 
 		} catch (SQLException e) {
@@ -87,12 +87,12 @@ public class SicurteaDAO {
 			System.out.println("Errore connessione al database");
 			throw new RuntimeException("Error Connection Database");
 		}
-	}	
-	
-	public List<String> getJobCategories(){
+	}
+
+	public List<String> getJobCategories() {
 		String sql = "select * from jobs.jobs_categories jc";
 		List<String> categories = new LinkedList<String>();
-		
+
 		try {
 			Connection conn = ConnectDB.getConnection(session);
 			PreparedStatement st = conn.prepareStatement(sql);
@@ -101,7 +101,7 @@ public class SicurteaDAO {
 			while (res.next()) {
 				categories.add(res.getString("categories"));
 			}
-			
+
 			return categories;
 
 		} catch (SQLException e) {
@@ -109,12 +109,12 @@ public class SicurteaDAO {
 			System.out.println("Errore connessione al database");
 			throw new RuntimeException("Error Connection Database");
 		}
-	}	
-	
-	public List<String> getJobTypes(){
+	}
+
+	public List<String> getJobTypes() {
 		String sql = "select * from jobs.job_types jt ";
 		List<String> types = new LinkedList<String>();
-		
+
 		try {
 			Connection conn = ConnectDB.getConnection(session);
 			PreparedStatement st = conn.prepareStatement(sql);
@@ -123,7 +123,7 @@ public class SicurteaDAO {
 			while (res.next()) {
 				types.add(res.getString("types"));
 			}
-			
+
 			return types;
 
 		} catch (SQLException e) {
@@ -132,7 +132,7 @@ public class SicurteaDAO {
 			throw new RuntimeException("Error Connection Database");
 		}
 	}
-	
+
 	public RSPP getRSPP(String jobID, LocalDate startJob) {
 		String sql = "select * from deadlines.rspp r where r.rspp_jobid = ? and r.jobstart = ? ";
 		RSPP rspp;
@@ -145,7 +145,8 @@ public class SicurteaDAO {
 
 			ResultSet res = st.executeQuery();
 			res.next();
-			rspp = new RSPP(getJob(res.getString("rspp_jobid"), conn), res.getDate("jobstart").toLocalDate(),  res.getDate("jobend").toLocalDate());
+			rspp = new RSPP(getJob(res.getString("rspp_jobid")), res.getDate("jobstart").toLocalDate(),
+					res.getDate("jobend").toLocalDate());
 			conn.close();
 			return rspp;
 
@@ -155,19 +156,20 @@ public class SicurteaDAO {
 			throw new RuntimeException("Error Connection Database");
 		}
 	}
-	
-	private Job getJob(String job_id, Connection conn) {
+
+	private Job getJob(String job_id) {
 		String sql = "select * from jobs.jobs j where j.jobs_id = ? ";
 		Job job;
 
 		try {
+			Connection conn = ConnectDB.getConnection(session);
 			PreparedStatement st = conn.prepareStatement(sql);
-			st.setString(1, job_id);		
+			st.setString(1, job_id);
 
 			ResultSet res = st.executeQuery();
 			res.next();
 			job = new Job(res.getString("jobs_id"), res.getString("jobs_category"), res.getString("jobs_type"),
-					res.getString("jobs_description"), getAccount(res.getString("customer"), conn));
+					res.getString("jobs_description"), getAccount(res.getString("customer")));
 			return job;
 
 		} catch (SQLException e) {
@@ -176,12 +178,13 @@ public class SicurteaDAO {
 			throw new RuntimeException("Error Connection Database");
 		}
 	}
-	
-	private Account getAccount(String fiscalCode, Connection conn) {
+
+	private Account getAccount(String fiscalCode) {
 		String sql = "select * from accounts.accounts a where a.fiscalcode = ? ";
 		Account account;
 
 		try {
+			Connection conn = ConnectDB.getConnection(session);
 			PreparedStatement st = conn.prepareStatement(sql);
 			st.setString(1, fiscalCode);
 
@@ -197,7 +200,7 @@ public class SicurteaDAO {
 			throw new RuntimeException("Error Connection Database");
 		}
 	}
-	
+
 	public String getRSPPnote(String fiscalCode) {
 		String sql = "select * from deadlines.rspp_notes r where r.fiscalcode = ? ";
 		String notes;
@@ -208,14 +211,13 @@ public class SicurteaDAO {
 			st.setString(1, fiscalCode);
 
 			ResultSet res = st.executeQuery();
-			if(res.next() == false)
+			if (res.next() == false)
 				return "";
 			else {
 				notes = res.getString("notes");
 				conn.close();
 				return notes;
 			}
-			
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -223,4 +225,19 @@ public class SicurteaDAO {
 			throw new RuntimeException("Error Connection Database");
 		}
 	}
+
+	public Session getSession() {
+		return session;
+	}
+
+	public void getNewSession() {
+		this.session = ConnectDB.getSession();
+	}
+	
+	//TODO run this on windows close
+	public void closeSession() {
+		this.session.disconnect();
+	}
+	
+	
 }

@@ -66,6 +66,8 @@ public class MainController {
 	Model model;
 
 	public void createTable() {
+		model.refreshSession();
+		
 		rsppElements = FXCollections.observableArrayList();
 
 		for (Map<String, String> rsppElement : model.getDataForTable()) {
@@ -234,7 +236,9 @@ public class MainController {
 				FXMLLoader loader = new FXMLLoader(getClass().getResource("edit.fxml"));
 				VBox root = (VBox) loader.load();
 				ViewEditController controller = loader.getController();
-				model = new Model();
+				
+				model.refreshSession();
+				
 				controller.setModel(model);
 				controller.setCombo();
 				controller.setRSPP(selectedItems.getJobID(), selectedItems.getJobStart());

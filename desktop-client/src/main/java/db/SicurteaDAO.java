@@ -240,7 +240,6 @@ public class SicurteaDAO {
 		try {
 			message = "Closing: " + session.getPortForwardingL();
 		} catch (JSchException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		this.session.disconnect();

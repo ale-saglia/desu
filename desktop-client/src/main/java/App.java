@@ -1,9 +1,11 @@
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import model.Model;  
 
 /**
@@ -30,6 +32,12 @@ public class App extends Application {
     		stage.setScene(scene);
     		stage.setTitle("Scadenziario RSPP");
     		stage.show();
+    		stage.setOnCloseRequest((EventHandler<WindowEvent>) new EventHandler<WindowEvent>() {
+    	          public void handle(WindowEvent we) {
+    	              model.closeSession();;
+    	          }
+    	      });  
+    		
     	}  catch (Exception e) {
 			e.printStackTrace();
     	}

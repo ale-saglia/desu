@@ -1,5 +1,6 @@
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -32,11 +33,14 @@ public class App extends Application {
     		stage.setScene(scene);
     		stage.setTitle("Scadenziario RSPP");
     		stage.show();
-    		stage.setOnCloseRequest((EventHandler<WindowEvent>) new EventHandler<WindowEvent>() {
-    	          public void handle(WindowEvent we) {
-    	              model.closeSession();;
-    	          }
-    	      });  
+			stage.setOnCloseRequest((EventHandler<WindowEvent>) new EventHandler<WindowEvent>() {
+  	          public void handle(WindowEvent we) {
+  	        	  System.out.println("\nClosing active session");
+  	              model.closeSession();
+  	              Platform.exit();
+  	              System.exit(0);
+  	          }
+  	      });  
     		
     	}  catch (Exception e) {
 			e.printStackTrace();

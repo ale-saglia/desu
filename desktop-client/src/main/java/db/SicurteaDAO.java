@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
 import model.Account;
@@ -234,10 +235,16 @@ public class SicurteaDAO {
 		this.session = ConnectDB.getSession();
 	}
 	
-	//TODO run this on windows close
-	public void closeSession() {
+	public String closeSession() {
+		String message = null;
+		try {
+			message = "Closing: " + session.getPortForwardingL();
+		} catch (JSchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.session.disconnect();
+		return message;
 	}
-	
 	
 }

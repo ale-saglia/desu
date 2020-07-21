@@ -35,8 +35,8 @@ public class App extends Application {
     		stage.show();
 			stage.setOnCloseRequest((EventHandler<WindowEvent>) new EventHandler<WindowEvent>() {
   	          public void handle(WindowEvent we) {
-  	        	  System.out.println("\nClosing active session");
-  	              model.closeSession();
+  	        	  System.out.println("\n" + model.closeSession());
+
   	              Platform.exit();
   	              System.exit(0);
   	          }

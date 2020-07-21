@@ -51,7 +51,7 @@ public class Model {
 			dao.getNewSession();
 	}
 
-	public void closeSession() {
-		dao.closeSession();
+	public String closeSession() {
+		return dao.closeSession();
 	}
 }

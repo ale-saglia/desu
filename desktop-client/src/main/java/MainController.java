@@ -30,6 +30,7 @@ import javafx.stage.Stage;
 import model.Model;
 
 public class MainController {
+	// Change this to change deadlines checkbox behavior (set interval between today and DAYS_ADVANCE days from now
 	public final long DAYS_ADVANCE = 14;
 
 	@FXML

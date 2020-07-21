@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.Model;
 import model.RSPP;
@@ -38,6 +39,9 @@ public class ViewEditController {
     private ComboBox<String> categoryTypeCombo;
 
     @FXML
+    private VBox paReferences;
+
+    @FXML
     private Button closeButton;
 
 	
@@ -60,6 +64,10 @@ public class ViewEditController {
 
 	public void setRSPP(String jobID, LocalDate jobStart) {
 		rspp = model.getRSPP(jobID, jobStart);
+		
+		if(rspp.getJob().getCustomer().getCategory() != "pa")
+			paReferences.getChildren().clear();
+		
 		setAnagrafica();
 	}
 
@@ -70,6 +78,10 @@ public class ViewEditController {
 		categoryAccountCombo.setValue(model.getAccountCategories().get(rspp.getJob().getCustomer().getCategory()));
 		atecoCodeField.setText(rspp.getJob().getCustomer().getAtecoCode());
 		addressField.setText(rspp.getJob().getCustomer().getLegalAddress());
+	}
+	
+	public void setJobs() {
+		
 	}
 
 	public void setJob() {

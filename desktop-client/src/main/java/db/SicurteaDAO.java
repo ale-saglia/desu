@@ -14,19 +14,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.jcraft.jsch.Session;
+
 import model.Account;
 import model.Job;
 import model.RSPP;
 
 public class SicurteaDAO {
 	final int DEADLINES_DAYS_ADVANCE = 14;
+	Session session;
 
-	public List<Map<String, String>> getDataForTable(boolean deadlineOn) {
+	public SicurteaDAO() {
+		this.session = ConnectDB.getSession();
+	}
+
+	public List<Map<String, String>> getDataForTable() {
 		String sql = Queries.getRSPPtable();
 		List<Map<String, String>> tableElements;
 
 		try {
-			Connection conn = ConnectDB.getConnection();
+			Connection conn = ConnectDB.getConnection(session);
 
 			tableElements = new ArrayList<Map<String, String>>();
 			Map<String, String> temp;
@@ -65,7 +72,7 @@ public class SicurteaDAO {
 		Map<String, String> categories = new TreeMap<String, String>();
 		
 		try {
-			Connection conn = ConnectDB.getConnection();
+			Connection conn = ConnectDB.getConnection(session);
 			PreparedStatement st = conn.prepareStatement(sql);
 
 			ResultSet res = st.executeQuery();
@@ -87,7 +94,7 @@ public class SicurteaDAO {
 		List<String> categories = new LinkedList<String>();
 		
 		try {
-			Connection conn = ConnectDB.getConnection();
+			Connection conn = ConnectDB.getConnection(session);
 			PreparedStatement st = conn.prepareStatement(sql);
 
 			ResultSet res = st.executeQuery();
@@ -109,7 +116,7 @@ public class SicurteaDAO {
 		List<String> types = new LinkedList<String>();
 		
 		try {
-			Connection conn = ConnectDB.getConnection();
+			Connection conn = ConnectDB.getConnection(session);
 			PreparedStatement st = conn.prepareStatement(sql);
 
 			ResultSet res = st.executeQuery();
@@ -131,7 +138,7 @@ public class SicurteaDAO {
 		RSPP rspp;
 
 		try {
-			Connection conn = ConnectDB.getConnection();
+			Connection conn = ConnectDB.getConnection(session);
 			PreparedStatement st = conn.prepareStatement(sql);
 			st.setString(1, jobID);
 			st.setDate(2, Date.valueOf(startJob));
@@ -196,7 +203,7 @@ public class SicurteaDAO {
 		String notes;
 
 		try {
-			Connection conn = ConnectDB.getConnection();
+			Connection conn = ConnectDB.getConnection(session);
 			PreparedStatement st = conn.prepareStatement(sql);
 			st.setString(1, fiscalCode);
 

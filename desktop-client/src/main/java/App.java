@@ -20,6 +20,7 @@ public class App extends Application {
     		MainController controller = loader.getController();
     		model = new Model();
     		controller.setModel(model);
+    		controller.createTable();
     		
     		stage.setMinWidth(640);
     		stage.setMinHeight(560);

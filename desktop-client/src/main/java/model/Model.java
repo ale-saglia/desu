@@ -41,4 +41,8 @@ public class Model {
 	public String getRSPPnote(String fiscalCode) {
 		return dao.getRSPPnote(fiscalCode);
 	}
+	
+	public List<Map<String, String>> getDataForTable(){
+		return dao.getDataForTable();
+	}
 }

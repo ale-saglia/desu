@@ -3,7 +3,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import db.SicurteaDAO;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -64,16 +63,12 @@ public class MainController {
 	private FilteredList<RSPPtableElement> filteredrsppElements;
 	private SortedList<RSPPtableElement> SortedFilteredrsppElements;
 
-	SicurteaDAO dao;
 	Model model;
 
-	@FXML
-	public void initialize() {
-		dao = new SicurteaDAO();
-
+	public void createTable() {
 		rsppElements = FXCollections.observableArrayList();
 
-		for (Map<String, String> rsppElement : dao.getDataForTable(false)) {
+		for (Map<String, String> rsppElement : model.getDataForTable()) {
 			rsppElements.add(new RSPPtableElement(rsppElement));
 		}
 
@@ -226,7 +221,7 @@ public class MainController {
 	}
 
 	public void refresh() {
-		initialize();
+		createTable();
 	}
 
 	@FXML

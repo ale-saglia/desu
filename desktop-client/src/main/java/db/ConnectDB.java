@@ -9,121 +9,127 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 
 public class ConnectDB {
-    static String CONFIG_FILE_NAME = "config.properties";
-    int assinged_port;
+	static String CONFIG_FILE_NAME = "config.properties";
 
-    public static Connection getConnection() {
-        LoaderDBConf dbc = (new ConnectDB()).new LoaderDBConf(CONFIG_FILE_NAME);
+	public static Session getSession() {
+		Session session = null;
+		LoaderDBConf dbc = (new ConnectDB()).new LoaderDBConf(CONFIG_FILE_NAME);
 
-        Connection conn = null;
-        Session session = null;
+		try {
+			// SSH connection setup && port forwarding
+			java.util.Properties config = new java.util.Properties();
+			config.put("StrictHostKeyChecking", "no"); // Set StrictHostKeyChecking property to no to avoid
+														// UnknownHostKey issue
+			JSch jsch = new JSch();
+			session = jsch.getSession(dbc.getSshUser(), dbc.getSshHost(), dbc.getSshPort());
+			session.setPassword(dbc.getSshPassword());
+			session.setConfig(config);
+			session.connect();
+			System.out.println("Connected");
 
-        try {
-            // SSH connection setup && port forwarding
-            java.util.Properties config = new java.util.Properties();
-            config.put("StrictHostKeyChecking", "no"); // Set StrictHostKeyChecking property to no to avoid
-                                                       // UnknownHostKey issue
-            JSch jsch = new JSch();
-            session = jsch.getSession(dbc.getSshUser(), dbc.getSshHost(), dbc.getSshPort());
-            session.setPassword(dbc.getSshPassword());
-            session.setConfig(config);
-            session.connect();
-            System.out.println("Connected");
-            int assigned_port = session.setPortForwardingL(0, dbc.getDbHost(), dbc.getDbPort());
-            
-            System.out.println(session.getPortForwardingL());
-            
-            System.out.println("localhost:" + assigned_port + " -> " + dbc.getDbPort());
-            System.out.println("Port Forwarded");
-            
-            // DB connection
-            Class.forName("org.postgresql.Driver");
-            String dbString = "jdbc:postgresql://" + dbc.getDbHost() + ":" + assigned_port + "/" + dbc.getDbName();           
-            
-            conn = DriverManager.getConnection(dbString, (dbc.getDbUser()), (dbc.getDbPassword()));
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }
-        System.out.println("Opened database successfully");
-        return conn;
-    }
-    
+			System.out.println(session.getPortForwardingL());
 
+			System.out.println("localhost:" + session.setPortForwardingL(0, dbc.getDbHost(), dbc.getDbPort()) + " -> " + dbc.getDbPort());
+			System.out.println("Port Forwarded");
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+		}
+		return session;
+	}
 
-    private class LoaderDBConf {
-        Properties dbConfig;
+	public static Connection getConnection(Session session) {
+		LoaderDBConf dbc = (new ConnectDB()).new LoaderDBConf(CONFIG_FILE_NAME);
+		Connection conn = null;
 
-        String dbHost;
-        int dbPort;
-        String dbUser;
-        String dbPassword;
-        String dbName;
+		try {
+			// DB connection
+			Class.forName("org.postgresql.Driver");
+			String dbString = "jdbc:postgresql://" + dbc.getDbHost() + ":" + session.setPortForwardingL(0, dbc.getDbHost(), dbc.getDbPort()) + "/" + dbc.getDbName();
 
-        String sshUser;
-        String sshHost;
-        int sshPort;
-        String sshPassword;
+			conn = DriverManager.getConnection(dbString, (dbc.getDbUser()), (dbc.getDbPassword()));
 
-        public LoaderDBConf(String fileName) {
-            //TODO Find a way to encrypt properties file for realease.
-            dbConfig = new Properties();
-            try {
-                dbConfig.load(ConnectDB.class.getResourceAsStream(fileName));
-                
-                dbHost = dbConfig.getProperty("dbHost");
-                dbPort = Integer.parseInt(dbConfig.getProperty("dbPort"));
-                dbUser = dbConfig.getProperty("dbUser");
-                dbPassword = dbConfig.getProperty("dbPassword");
-                dbName = dbConfig.getProperty("dbName");
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+		}
+		System.out.println("Opened database successfully");
+		return conn;
+	}
 
-                sshUser = dbConfig.getProperty("sshUser");
-                sshHost = dbConfig.getProperty("sshHost");
-                sshPort = Integer.parseInt(dbConfig.getProperty("sshPort"));
-                sshPassword = dbConfig.getProperty("sshPassword");
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (NumberFormatException nfm) {
-                System.out.println("Error in configuration file, missing or invalid field.");
-                nfm.printStackTrace();
-            }
-        }
+	private class LoaderDBConf {
+		Properties dbConfig;
 
-        public String getDbHost() {
-            return this.dbHost;
-        }
+		String dbHost;
+		int dbPort;
+		String dbUser;
+		String dbPassword;
+		String dbName;
 
-        public int getDbPort() {
-            return this.dbPort;
-        }
+		String sshUser;
+		String sshHost;
+		int sshPort;
+		String sshPassword;
 
-        public String getDbUser() {
-            return this.dbUser;
-        }
+		public LoaderDBConf(String fileName) {
+			// TODO Find a way to encrypt properties file for realease.
+			dbConfig = new Properties();
+			try {
+				dbConfig.load(ConnectDB.class.getResourceAsStream(fileName));
 
-        public String getDbPassword() {
-            return this.dbPassword;
-        }
+				dbHost = dbConfig.getProperty("dbHost");
+				dbPort = Integer.parseInt(dbConfig.getProperty("dbPort"));
+				dbUser = dbConfig.getProperty("dbUser");
+				dbPassword = dbConfig.getProperty("dbPassword");
+				dbName = dbConfig.getProperty("dbName");
 
-        public String getDbName() {
-            return this.dbName;
-        }
+				sshUser = dbConfig.getProperty("sshUser");
+				sshHost = dbConfig.getProperty("sshHost");
+				sshPort = Integer.parseInt(dbConfig.getProperty("sshPort"));
+				sshPassword = dbConfig.getProperty("sshPassword");
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (NumberFormatException nfm) {
+				System.out.println("Error in configuration file, missing or invalid field.");
+				nfm.printStackTrace();
+			}
+		}
 
-        public String getSshUser() {
-            return this.sshUser;
-        }
+		public String getDbHost() {
+			return this.dbHost;
+		}
 
-        public String getSshHost() {
-            return this.sshHost;
-        }
+		public int getDbPort() {
+			return this.dbPort;
+		}
 
-        public int getSshPort() {
-            return this.sshPort;
-        }
+		public String getDbUser() {
+			return this.dbUser;
+		}
 
-        public String getSshPassword() {
-            return this.sshPassword;
-        }
-    }
+		public String getDbPassword() {
+			return this.dbPassword;
+		}
+
+		public String getDbName() {
+			return this.dbName;
+		}
+
+		public String getSshUser() {
+			return this.sshUser;
+		}
+
+		public String getSshHost() {
+			return this.sshHost;
+		}
+
+		public int getSshPort() {
+			return this.sshPort;
+		}
+
+		public String getSshPassword() {
+			return this.sshPassword;
+		}
+	}
 }

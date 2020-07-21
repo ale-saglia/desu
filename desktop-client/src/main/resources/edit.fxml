@@ -121,7 +121,7 @@
             </Label>
             <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="490.0">
                <children>
-                  <Label text="Codice identificativo">
+                  <Label minWidth="-Infinity" text="Codice">
                      <HBox.margin>
                         <Insets right="10.0" />
                      </HBox.margin>
@@ -130,6 +130,24 @@
                      <HBox.margin>
                         <Insets right="12.0" />
                      </HBox.margin></TextField>
+                  <Label minHeight="-Infinity" text="Categoria">
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
+                  </Label>
+                  <ComboBox minWidth="-Infinity" />
+                  <Label minHeight="-Infinity" text="Sottocategoria">
+                     <HBox.margin>
+                        <Insets left="15.0" right="12.0" />
+                     </HBox.margin></Label>
+                  <ComboBox layoutX="84.0" layoutY="10.0" minWidth="-Infinity" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="5.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="490.0">
+               <children>
                   <Label text="Descrizione">
                      <HBox.margin>
                         <Insets right="10.0" />
@@ -141,31 +159,13 @@
                   <Insets bottom="5.0" />
                </padding>
             </HBox>
-            <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="490.0">
-               <children>
-                  <Label text="Categoria">
-                     <HBox.margin>
-                        <Insets right="10.0" />
-                     </HBox.margin>
-                  </Label>
-                  <ComboBox prefWidth="150.0" />
-                  <Label text="Sottocategoria">
-                     <HBox.margin>
-                        <Insets right="12.0" />
-                     </HBox.margin></Label>
-                  <ComboBox layoutX="84.0" layoutY="10.0" prefWidth="150.0" />
-               </children>
-               <VBox.margin>
-                  <Insets bottom="5.0" />
-               </VBox.margin>
-            </HBox>
             <VBox prefHeight="200.0" prefWidth="100.0">
                <children>
                   <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="490.0">
                      <children>
                         <Label text="CIG">
                            <HBox.margin>
-                              <Insets right="7.0" />
+                              <Insets right="10.0" />
                            </HBox.margin>
                         </Label>
                         <TextField editable="false" HBox.hgrow="ALWAYS" />
@@ -186,7 +186,10 @@
                               <Insets right="12.0" />
                            </HBox.margin>
                         </TextField>
-                        <Label text="Data Determina" />
+                        <Label text="Data Determina">
+                           <HBox.margin>
+                              <Insets left="15.0" right="10.0" />
+                           </HBox.margin></Label>
                         <DatePicker />
                      </children>
                   </HBox>
@@ -240,7 +243,7 @@
             <Insets />
          </VBox.margin>
       </Separator>
-      <VBox disable="true" prefHeight="200.0" prefWidth="550.0">
+      <VBox prefHeight="200.0" prefWidth="550.0">
          <children>
             <Label text="Dati fattura">
                <font>

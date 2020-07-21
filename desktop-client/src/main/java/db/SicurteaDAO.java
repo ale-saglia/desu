@@ -7,8 +7,10 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import model.Account;
 import model.Job;
@@ -80,7 +82,7 @@ public class SicurteaDAO {
 	}
 	
 	public Account getAccount(String fiscalCode) {
-		String sql = "select *\n" + "from accounts.accounts a\n" + "where a.fiscalcode = ? ";
+		String sql = "select * from accounts.accounts a, accounts.accounts_categories ac where a.fiscalcode = ?  and  a.customer_category = ac.categories";
 		Account account;
 
 		try {
@@ -91,7 +93,7 @@ public class SicurteaDAO {
 			ResultSet res = st.executeQuery();
 			res.next();
 			account = new Account(res.getString("fiscalcode"), res.getString("name"), res.getString("numbervat"),
-					res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"));
+					res.getString("atecocode"), res.getString("legal_address"), res.getString("extended"));
 			conn.close();
 			return account;
 
@@ -105,8 +107,10 @@ public class SicurteaDAO {
 	public Account getAccountFromJob(String job_id) {
 		String sql = "select *\n" + 
 				"from accounts.accounts a, (select j.customer\n" + 
-				"from jobs.jobs j where j.jobs_id = ? ) as j\n" + 
-				"where j.customer = a.fiscalcode ";
+				"from jobs.jobs j where j.jobs_id = ? ) j,\n" + 
+				"accounts.accounts_categories ac\n" + 
+				"where j.customer = a.fiscalcode\n" + 
+				"and  a.customer_category = ac.categories ";
 		Account account;
 
 		try {
@@ -117,7 +121,7 @@ public class SicurteaDAO {
 			ResultSet res = st.executeQuery();
 			res.next();
 			account = new Account(res.getString("fiscalcode"), res.getString("name"), res.getString("numbervat"),
-					res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"));
+					res.getString("atecocode"), res.getString("legal_address"), res.getString("extended"));
 			conn.close();
 			return account;
 
@@ -128,5 +132,69 @@ public class SicurteaDAO {
 		}
 	}
 	
+	public Map<String, String> getAccountsCategories(){
+		String sql = "select * from accounts.accounts_categories ac ";
+		Map<String, String> categories = new TreeMap<String, String>();
+		
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+
+			ResultSet res = st.executeQuery();
+			while (res.next()) {
+				categories.put(res.getString("categories"), res.getString("extended"));
+			}
+			
+			return categories;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+	}	
 	
+	public List<String> getJobCategories(){
+		String sql = "select * from jobs.jobs_categories jc";
+		List<String> categories = new LinkedList<String>();
+		
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+
+			ResultSet res = st.executeQuery();
+			while (res.next()) {
+				categories.add(res.getString("categories"));
+			}
+			
+			return categories;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+	}	
+	
+	public List<String> getJobTypes(){
+		String sql = "select * from jobs.job_types jt ";
+		List<String> types = new LinkedList<String>();
+		
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+
+			ResultSet res = st.executeQuery();
+			while (res.next()) {
+				types.add(res.getString("types"));
+			}
+			
+			return types;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+	}	
 }

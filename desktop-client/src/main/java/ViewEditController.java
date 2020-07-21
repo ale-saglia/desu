@@ -59,4 +59,8 @@ public class ViewEditController {
 		atecoCodeField.setText(account.getAtecoCode());
 		addressField.setText(account.getLegalAddress());		
 	}
+	
+	public void setJob() {
+		
+	}
 }

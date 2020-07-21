@@ -22,7 +22,7 @@ public class ConnectDB {
 														// UnknownHostKey issue
 			JSch jsch = new JSch();
 			session = jsch.getSession(dbc.getSshUser(), dbc.getSshHost(), dbc.getSshPort());
-			session.setPassword(dbc.getSshPassword());
+			Session.setPassword(dbc.getSshPassword());
 			session.setConfig(config);
 			session.connect();
 			System.out.println("Connected");

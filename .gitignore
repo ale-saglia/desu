@@ -2,3 +2,4 @@ server-Side-Scripts/conf.yaml
 .vscode
 desktop-client/bin
 desktop-client/target
+desktop-client/src/main/resources/dclient/db/config.properties

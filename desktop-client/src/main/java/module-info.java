@@ -1,6 +1,7 @@
 module dclient {
     requires transitive javafx.controls;
     requires javafx.fxml;
+    requires org.postgresql.jdbc;
     requires java.sql;
     requires jsch;
     

@@ -1,4 +1,4 @@
-package db;
+package dclient.db;
 
 public class Queries {
 

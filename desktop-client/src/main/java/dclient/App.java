@@ -1,4 +1,6 @@
+package dclient;
 
+import dclient.model.Model;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -7,7 +9,6 @@ import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import model.Model;  
 
 /**
  * JavaFX App

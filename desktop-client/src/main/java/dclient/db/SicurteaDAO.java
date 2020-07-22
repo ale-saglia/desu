@@ -1,4 +1,4 @@
-package db;
+package dclient.db;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -17,9 +17,9 @@ import java.util.TreeMap;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
-import model.Account;
-import model.Job;
-import model.RSPP;
+import dclient.model.Account;
+import dclient.model.Job;
+import dclient.model.RSPP;
 
 public class SicurteaDAO {
 	final int DEADLINES_DAYS_ADVANCE = 14;

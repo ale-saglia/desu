@@ -1,8 +1,11 @@
+package dclient;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import dclient.model.Model;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -26,7 +29,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import model.Model;
 
 public class MainController {
 	// Change this to change deadlines checkbox behavior (set interval between today and DAYS_ADVANCE days from now
@@ -66,8 +68,6 @@ public class MainController {
 	Model model;
 
 	public void createTable() {
-		model.refreshSession();
-		
 		rsppElements = FXCollections.observableArrayList();
 
 		for (Map<String, String> rsppElement : model.getDataForTable()) {
@@ -223,6 +223,7 @@ public class MainController {
 	}
 
 	public void refresh() {
+        //Model.refreshSession();
 		createTable();
 	}
 

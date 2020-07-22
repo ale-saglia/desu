@@ -1,10 +1,10 @@
-package model;
+package dclient.model;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-import db.SicurteaDAO;
+import dclient.db.SicurteaDAO;
 
 public class Model {
 	SicurteaDAO dao;

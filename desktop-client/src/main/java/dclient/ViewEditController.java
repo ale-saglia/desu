@@ -126,7 +126,6 @@ public class ViewEditController {
 		jobdDescriptionField.setText(rspp.getJob().getDescription());
 		noteField.setText(model.getRSPPnote(rspp.getJob().getCustomer().getFiscalCode()));
 
-		// TODO Add if field for data of PA
 		if (rspp.getJob() instanceof JobPA) {
 			JobPA jobPA = (JobPA) rspp.getJob();
 			cigField.setText(jobPA.getCig());

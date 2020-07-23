@@ -8,7 +8,9 @@ import java.util.function.Predicate;
 
 import dclient.model.Model;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -28,6 +30,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -36,6 +39,9 @@ public class MainController {
 	// Change this to change deadlines checkbox behavior (set interval between today
 	// and DAYS_ADVANCE days from now
 	public final long DAYS_ADVANCE = 14;
+
+	//Change this to change date format in tableview
+	public final String DATE_FORMAT = "dd/MM/yyyy";
 
 	@FXML
 	private TextField searchField;
@@ -53,7 +59,7 @@ public class MainController {
 	private TableColumn<RSPPtableElement, String> invoiceColumn;
 
 	@FXML
-	private TableColumn<RSPPtableElement, String> payedColumn;
+	private TableColumn<RSPPtableElement, Boolean> payedColumn;
 
 	@FXML
 	private TableColumn<RSPPtableElement, String> noteColumn;
@@ -92,13 +98,16 @@ public class MainController {
 						setStyle("");
 					} else {
 						// Format date.
-						setText(DateTimeFormatter.ofPattern("dd/MM/yyyy").format(item));
+						setText(DateTimeFormatter.ofPattern(DATE_FORMAT).format(item));
 					}
 				}
 			};
 		});
 		invoiceColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("invoiceID"));
-		payedColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("payed"));
+
+		payedColumn.setCellValueFactory(f -> f.getValue().payedProperty());
+		payedColumn.setCellFactory( tc -> new CheckBoxTableCell<>());
+
 		noteColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("note"));
 
 		System.out.println(searchField.getText());
@@ -143,17 +152,13 @@ public class MainController {
 	}
 
 	public class RSPPtableElement {
-		DateTimeFormatter formatter;
-
 		String jobID;
 		LocalDate jobStart;
-
-		// TODO change this to use Localdate instead of string to sort in tableview
 		ObjectProperty<LocalDate> jobEnd;
 		StringProperty accountName;
 		StringProperty category;
 		StringProperty invoiceID;
-		StringProperty payed;
+		BooleanProperty payed;
 		StringProperty note;
 
 		public RSPPtableElement(final Map<String, String> rsspElement) {
@@ -164,12 +169,7 @@ public class MainController {
 			this.note = new SimpleStringProperty(rsspElement.get("note"));
 			this.category = new SimpleStringProperty(model.getAccountCategories().get(rsspElement.get("category")));
 			this.invoiceID = new SimpleStringProperty(rsspElement.get("invoiceid"));
-
-			// TODO change this to use checkbox instead of ascii char
-			if (rsspElement.get("payed") == "true")
-				payed = new SimpleStringProperty("✔");
-			else
-				payed = new SimpleStringProperty("");
+			this.payed = new SimpleBooleanProperty(rsspElement.get("payed").contains("true"));
 		}
 
 		public StringProperty accountNameProperty() {
@@ -208,11 +208,11 @@ public class MainController {
 			return invoiceID.get();
 		}
 
-		public StringProperty payedProperty() {
+		public BooleanProperty payedProperty() {
 			return payed;
 		}
 
-		public String getPayed() {
+		public Boolean getPayed() {
 			return payed.get();
 		}
 

@@ -31,7 +31,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class MainController {
-	// Change this to change deadlines checkbox behavior (set interval between today and DAYS_ADVANCE days from now
+	// Change this to change deadlines checkbox behavior (set interval between today
+	// and DAYS_ADVANCE days from now
 	public final long DAYS_ADVANCE = 14;
 
 	@FXML
@@ -44,9 +45,6 @@ public class MainController {
 	private TableColumn<RSPPtableElement, String> nameColumn;
 
 	@FXML
-	private TableColumn<RSPPtableElement, String> categoryColumn;
-
-	@FXML
 	private TableColumn<RSPPtableElement, String> deadlineColumn;
 
 	@FXML
@@ -54,6 +52,9 @@ public class MainController {
 
 	@FXML
 	private TableColumn<RSPPtableElement, String> payedColumn;
+	
+	@FXML
+	private TableColumn<RSPPtableElement, String> noteColumn;
 
 	@FXML
 	private CheckBox checkBoxDeadline;
@@ -77,10 +78,10 @@ public class MainController {
 		filteredrsppElements = new FilteredList<RSPPtableElement>(rsppElements);
 
 		nameColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("accountName"));
-		categoryColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("category"));
 		deadlineColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("jobEnd"));
 		invoiceColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("invoiceID"));
 		payedColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("payed"));
+		noteColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("note"));
 
 		System.out.println(searchField.getText());
 
@@ -134,6 +135,7 @@ public class MainController {
 		StringProperty category;
 		StringProperty invoiceID;
 		StringProperty payed;
+		StringProperty note;
 
 		public RSPPtableElement(Map<String, String> rsspElement) {
 			formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -142,6 +144,8 @@ public class MainController {
 			this.jobStart = LocalDate.parse(rsspElement.get("jobstart"), formatter);
 			this.jobEnd = LocalDate.parse(rsspElement.get("jobend"), formatter);
 			this.accountName = new SimpleStringProperty(rsspElement.get("name"));
+			this.note = new SimpleStringProperty(rsspElement.get("note"));
+
 			switch (rsspElement.get("category")) {
 			case "b2b":
 				this.category = new SimpleStringProperty("Azienda");
@@ -216,6 +220,14 @@ public class MainController {
 			return jobStart;
 		}
 
+		public StringProperty noteProperty() {
+			return note;
+		}
+
+		public String getNote() {
+			return note.get();
+		}
+
 	}
 
 	public void setModel(Model model) {
@@ -223,7 +235,7 @@ public class MainController {
 	}
 
 	public void refresh() {
-        //Model.refreshSession();
+		// Model.refreshSession();
 		createTable();
 	}
 
@@ -237,9 +249,9 @@ public class MainController {
 				FXMLLoader loader = new FXMLLoader(getClass().getResource("edit.fxml"));
 				VBox root = (VBox) loader.load();
 				ViewEditController controller = loader.getController();
-				
+
 				model.refreshSession();
-				
+
 				controller.setModel(model);
 				controller.setCombo();
 				controller.setRSPP(selectedItems.getJobID(), selectedItems.getJobStart());

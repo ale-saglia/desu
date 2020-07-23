@@ -50,6 +50,7 @@ public class SicurteaDAO {
 				temp.put("jobend", (new SimpleDateFormat("dd/MM/yyyy")).format(res.getDate("jobend")));
 				temp.put("invoiceid", res.getString("invoiceid"));
 				temp.put("payed", String.valueOf(res.getBoolean("payed")));
+				temp.put("note", res.getString("notes"));
 
 				// Useful for tracking selected field when view / edit
 				temp.put("jobid", res.getString("jobid"));

@@ -32,7 +32,41 @@ public class SicurteaDAO {
 	}
 
 	public List<Map<String, String>> getDataForTable() {
-		String sql = "select r.rspp_jobid as jobid, r.jobstart as jobstart, r.jobstart as jobend, a.\"name\" as \"name\", a.customer_category as category, r.invoiceid as invoiceid, i.payed from accounts.accounts a, deadlines.rspp r, invoices.invoices i, jobs.jobs j where r.rspp_jobid = j.jobs_id and j.customer = a.fiscalcode and i.invoiceid = r.invoiceid order by \"name\", jobstart ";
+		String sql = (
+					"SELECT jobid,\n" + 
+					"       jobstart,\n" + 
+					"       jobend,\n" + 
+					"       \"name\",\n" + 
+					"       category,\n" + 
+					"       n2.invoiceid,\n" + 
+					"       payed,\n" + 
+					"       notes\n" + 
+					"FROM   (SELECT jobid,\n" + 
+					"               jobstart,\n" + 
+					"               jobend,\n" + 
+					"               \"name\",\n" + 
+					"               category,\n" + 
+					"               invoiceid,\n" + 
+					"               notes\n" + 
+					"        FROM   (SELECT r.rspp_jobid        AS jobid,\n" + 
+					"                       r.jobstart          AS jobstart,\n" + 
+					"                       r.jobstart          AS jobend,\n" + 
+					"                       j.customer          AS fiscalcode,\n" + 
+					"                       a.\"name\"            AS \"name\",\n" + 
+					"                       a.customer_category AS category,\n" + 
+					"                       r.invoiceid         AS invoiceid\n" + 
+					"                FROM   accounts.accounts a,\n" + 
+					"                       deadlines.rspp r,\n" + 
+					"                       jobs.jobs j\n" + 
+					"                WHERE  r.rspp_jobid = j.jobs_id\n" + 
+					"                       AND j.customer = a.fiscalcode\n" + 
+					"                ORDER  BY \"name\",\n" + 
+					"                          jobstart) AS n1\n" + 
+					"               LEFT JOIN deadlines.rspp_notes rn\n" + 
+					"                      ON n1.fiscalcode = rn.fiscalcode) AS n2\n" + 
+					"       LEFT JOIN invoices.invoices i\n" + 
+					"              ON i.invoiceid = n2.invoiceid "
+				);
 		List<Map<String, String>> tableElements;
 
 		try {

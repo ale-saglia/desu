@@ -4,14 +4,16 @@ import java.time.LocalDate;
 
 public class RSPP {
 	Job job;
+	Invoice invoice;
 
 	LocalDate start;
 	LocalDate end;
 
-	public RSPP(Job job, LocalDate start, LocalDate end) {
+	public RSPP(Job job, LocalDate start, LocalDate end, Invoice invoice) {
 		this.job = job;
 		this.start = start;
 		this.end = end;
+		this.invoice = invoice;
 	}
 
 	public Job getJob() {
@@ -26,4 +28,9 @@ public class RSPP {
 		return end;
 	}
 
+	public Invoice getInvoice() {
+		return invoice;
+	}
+
+	
 }

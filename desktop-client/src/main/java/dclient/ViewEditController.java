@@ -6,6 +6,7 @@ import dclient.model.Model;
 import dclient.model.RSPP;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
@@ -53,11 +54,23 @@ public class ViewEditController {
 	@FXML
 	private TextArea noteField;
 
-	@FXML
-	private DatePicker jobStartField;
+    @FXML
+    private DatePicker jobStartField;
 
+    @FXML
+    private DatePicker jobEndField;
+	
 	@FXML
-	private DatePicker jobEndField;
+    private TextField invoiceNumberField;
+
+    @FXML
+    private DatePicker invoiceEmissionDateField;
+
+    @FXML
+    private TextField invoiceTypeField;
+
+    @FXML
+    private CheckBox payedCheck;
 
 	@FXML
 	private Button closeButton;
@@ -87,6 +100,7 @@ public class ViewEditController {
 		setAnagrafica();
 		setJobs();
 		setRSPP();
+		setInvoice();
 	}
 
 	private void setAnagrafica() {
@@ -106,7 +120,7 @@ public class ViewEditController {
 		noteField.setText(model.getRSPPnote(rspp.getJob().getCustomer().getFiscalCode()));
 
 		if (rspp.getJob().getCustomer().getCategory() == "pa") {
-
+			
 		}
 	}
 
@@ -114,5 +128,12 @@ public class ViewEditController {
 		jobStartField.setValue(rspp.getStart());
 		jobEndField.setValue(rspp.getEnd());
 
+	}
+	
+	private void setInvoice() {
+		invoiceNumberField.setText(Integer.toString(rspp.getInvoice().getNumber()));
+		invoiceEmissionDateField.setValue(rspp.getInvoice().getEmission());
+		invoiceTypeField.setText(rspp.getInvoice().getType());
+		payedCheck.setSelected(rspp.getInvoice().getPayed());
 	}
 }

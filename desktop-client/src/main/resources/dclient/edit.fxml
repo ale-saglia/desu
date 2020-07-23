@@ -235,11 +235,17 @@
                      </HBox.margin>
                   </Label>
                   <DatePicker fx:id="jobStartField" HBox.hgrow="ALWAYS" />
-                  <Label text="Data fine" />
-                  <DatePicker fx:id="jobEndField" layoutX="90.0" layoutY="10.0" HBox.hgrow="ALWAYS" />
+                  <Label text="Data fine">
+                     <padding>
+                        <Insets left="15.0" right="7.0" />
+                     </padding></Label>
+                  <DatePicker fx:id="jobEndField" layoutX="77.0" layoutY="10.0" />
                </children>
             </HBox>
          </children>
+         <padding>
+            <Insets right="7.0" />
+         </padding>
       </VBox>
       <Separator prefWidth="200.0">
          <opaqueInsets>
@@ -249,7 +255,7 @@
             <Insets />
          </VBox.margin>
       </Separator>
-      <VBox disable="true" prefHeight="200.0" prefWidth="550.0">
+      <VBox prefHeight="200.0" prefWidth="550.0">
          <children>
             <Label text="Dati fattura">
                <font>
@@ -263,10 +269,19 @@
                         <Insets right="10.0" />
                      </HBox.margin>
                   </Label>
-                  <TextField editable="false" />
-                  <Label text="Data fattura" />
-                  <TextField editable="false" />
+                  <TextField fx:id="invoiceNumberField" editable="false" />
+                  <Label text="Data fattura">
+                     <padding>
+                        <Insets left="15.0" right="7.0" />
+                     </padding></Label>
+                  <DatePicker fx:id="invoiceEmissionDateField" HBox.hgrow="ALWAYS" />
                </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+               <padding>
+                  <Insets bottom="5.0" />
+               </padding>
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="490.0">
                <children>
@@ -275,8 +290,11 @@
                         <Insets right="10.0" />
                      </HBox.margin>
                   </Label>
-                  <ComboBox prefWidth="150.0" />
-                  <CheckBox mnemonicParsing="false" text="Pagato" />
+                  <TextField fx:id="invoiceTypeField" editable="false" />
+                  <CheckBox fx:id="payedCheck" mnemonicParsing="false" text="Pagato">
+                     <padding>
+                        <Insets left="15.0" right="7.0" />
+                     </padding></CheckBox>
                </children>
             </HBox>
          </children>

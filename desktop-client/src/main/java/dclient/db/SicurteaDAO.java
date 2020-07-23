@@ -18,6 +18,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
 import dclient.model.Account;
+import dclient.model.Invoice;
 import dclient.model.Job;
 import dclient.model.RSPP;
 
@@ -147,8 +148,8 @@ public class SicurteaDAO {
 
 			ResultSet res = st.executeQuery();
 			res.next();
-			rspp = new RSPP(getJob(res.getString("rspp_jobid")), res.getDate("jobstart").toLocalDate(),
-					res.getDate("jobend").toLocalDate());
+			rspp = new RSPP(getJob(res.getString("rspp_jobid"), conn), res.getDate("jobstart").toLocalDate(),
+					res.getDate("jobend").toLocalDate(), getInvoice(res.getString("invoiceid"), conn));
 			conn.close();
 			return rspp;
 
@@ -159,19 +160,18 @@ public class SicurteaDAO {
 		}
 	}
 
-	private Job getJob(String job_id) {
+	private Job getJob(String job_id, Connection conn) {
 		String sql = "select * from jobs.jobs j where j.jobs_id = ? ";
 		Job job;
 
 		try {
-			Connection conn = ConnectDB.getConnection(session);
 			PreparedStatement st = conn.prepareStatement(sql);
 			st.setString(1, job_id);
 
 			ResultSet res = st.executeQuery();
 			res.next();
 			job = new Job(res.getString("jobs_id"), res.getString("jobs_category"), res.getString("jobs_type"),
-					res.getString("jobs_description"), getAccount(res.getString("customer")));
+					res.getString("jobs_description"), getAccount(res.getString("customer"), conn));
 			return job;
 
 		} catch (SQLException e) {
@@ -180,13 +180,34 @@ public class SicurteaDAO {
 			throw new RuntimeException("Error Connection Database");
 		}
 	}
+	
+	private Invoice getInvoice(String invoiceID, Connection conn) {
+		String sql = "select * from invoices.invoices i where invoiceid = ? ";
+		Invoice invoice;
 
-	private Account getAccount(String fiscalCode) {
+		try {
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setString(1, invoiceID);
+
+			ResultSet res = st.executeQuery();
+			res.next();
+			invoice = new Invoice(res.getString("invoiceid"), res.getInt("number"),
+					res.getDate("emission").toLocalDate(), res.getString("type"), res.getBoolean("payed"));
+			return invoice;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+	}
+
+
+	private Account getAccount(String fiscalCode, Connection conn) {
 		String sql = "select * from accounts.accounts a where a.fiscalcode = ? ";
 		Account account;
 
 		try {
-			Connection conn = ConnectDB.getConnection(session);
 			PreparedStatement st = conn.prepareStatement(sql);
 			st.setString(1, fiscalCode);
 
@@ -203,6 +224,7 @@ public class SicurteaDAO {
 		}
 	}
 
+	
 	public String getRSPPnote(String fiscalCode) {
 		String sql = "select * from deadlines.rspp_notes r where r.fiscalcode = ? ";
 		String notes;
@@ -246,5 +268,4 @@ public class SicurteaDAO {
 		this.session.disconnect();
 		return message;
 	}
-
 }

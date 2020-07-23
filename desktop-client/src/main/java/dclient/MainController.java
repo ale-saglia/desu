@@ -2,6 +2,7 @@ package dclient;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
@@ -69,11 +70,10 @@ public class MainController {
 	Model model;
 
 	public void createTable() {
+		List<Map<String, String>> datas = model.getDataForTable();
 		rsppElements = FXCollections.observableArrayList();
 
-		for (Map<String, String> rsppElement : model.getDataForTable()) {
-			rsppElements.add(new RSPPtableElement(rsppElement));
-		}
+		for (Map<String, String> rsppElement : datas) rsppElements.add(new RSPPtableElement(rsppElement));
 
 		filteredrsppElements = new FilteredList<RSPPtableElement>(rsppElements);
 

@@ -26,7 +26,7 @@
             </Button>
          </children>
       </HBox>
-      <TableView id="table" fx:id="rsppTable" maxHeight="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="ALWAYS">
+      <TableView fx:id="rsppTable" maxHeight="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="ALWAYS">
          <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
@@ -37,7 +37,7 @@
             <TableColumn fx:id="nameColumn" editable="false" prefWidth="75.0" text="Ragione Sociale" />
             <TableColumn fx:id="deadlineColumn" editable="false" prefWidth="75.0" text="Scadenza" />
             <TableColumn fx:id="invoiceColumn" editable="false" prefWidth="75.0" sortable="false" text="Fattura" />
-            <TableColumn id="payedColumn" fx:id="payedColumn" editable="false" maxWidth="70.0" minWidth="60.0" prefWidth="60.0" sortable="false" text="Pagato" visible="false" />
+            <TableColumn fx:id="payedColumn" editable="false" maxWidth="70.0" minWidth="60.0" prefWidth="60.0" sortable="false" style="-fx-alignment: CENTER;" text="Pagato" />
             <TableColumn fx:id="noteColumn" editable="false" prefWidth="75.0" sortable="false" text="Note" />
          </columns>
       </TableView>

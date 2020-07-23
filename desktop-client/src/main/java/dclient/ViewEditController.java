@@ -102,7 +102,7 @@ public class ViewEditController {
 	}
 
 	public void setRSPP(String jobID, LocalDate jobStart) {
-		rspp = model.getRSPP(jobID, jobStart);			
+		rspp = model.getRSPP(jobID, jobStart);
 
 		setAnagrafica();
 		setJobs();
@@ -126,27 +126,25 @@ public class ViewEditController {
 		jobdDescriptionField.setText(rspp.getJob().getDescription());
 		noteField.setText(model.getRSPPnote(rspp.getJob().getCustomer().getFiscalCode()));
 
-		//TODO Add if field for data of PA
+		// TODO Add if field for data of PA
 		if (rspp.getJob() instanceof JobPA) {
 			JobPA jobPA = (JobPA) rspp.getJob();
 			cigField.setText(jobPA.getCig());
 			decreeNumberField.setText(Integer.toString(jobPA.getDecreeNumber()));
 			decreeDateField.setValue(jobPA.getDecreeDate());
-		}
-		else
+		} else
 			paReferences.getChildren().clear();
 	}
 
 	private void setRSPP() {
 		jobStartField.setValue(rspp.getStart());
 		jobEndField.setValue(rspp.getEnd());
-
 	}
 
 	private void setInvoice() {
 		invoiceNumberField.setText(Integer.toString(rspp.getInvoice().getNumber()));
 		invoiceEmissionDateField.setValue(rspp.getInvoice().getEmission());
-		invoiceTypeField.setText(rspp.getInvoice().getType());
+		invoiceTypeField.setText(model.getAccountCategories().get(rspp.getInvoice().getType()));
 		payedCheck.setSelected(rspp.getInvoice().getPayed());
 	}
 }

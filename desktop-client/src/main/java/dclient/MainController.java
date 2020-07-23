@@ -70,10 +70,10 @@ public class MainController {
 	Model model;
 
 	public void createTable() {
-		List<Map<String, String>> datas = model.getDataForTable();
+		final List<Map<String, String>> datas = model.getDataForTable();
 		rsppElements = FXCollections.observableArrayList();
 
-		for (Map<String, String> rsppElement : datas) rsppElements.add(new RSPPtableElement(rsppElement));
+		for (final Map<String, String> rsppElement : datas) rsppElements.add(new RSPPtableElement(rsppElement));
 
 		filteredrsppElements = new FilteredList<RSPPtableElement>(rsppElements);
 
@@ -85,8 +85,8 @@ public class MainController {
 
 		System.out.println(searchField.getText());
 
-		ObjectProperty<Predicate<RSPPtableElement>> nameFilter = new SimpleObjectProperty<>();
-		ObjectProperty<Predicate<RSPPtableElement>> dateFilter = new SimpleObjectProperty<>();
+		final ObjectProperty<Predicate<RSPPtableElement>> nameFilter = new SimpleObjectProperty<>();
+		final ObjectProperty<Predicate<RSPPtableElement>> dateFilter = new SimpleObjectProperty<>();
 
 		nameFilter.bind(Bindings.createObjectBinding(
 				() -> rspp -> rspp.getAccountName().toLowerCase().contains(searchField.getText().toLowerCase()),
@@ -103,7 +103,7 @@ public class MainController {
 		rsppTable.setItems(SortedFilteredrsppElements);
 
 		rsppTable.setRowFactory(tv -> {
-			TableRow<RSPPtableElement> row = new TableRow<>();
+			final TableRow<RSPPtableElement> row = new TableRow<>();
 			row.setOnMouseClicked(event -> {
 				if (event.getClickCount() == 2 && (!row.isEmpty())) {
 					switchToViewEdit();
@@ -113,7 +113,7 @@ public class MainController {
 		});
 	}
 
-	private boolean dateFilter(RSPPtableElement rspp) {
+	private boolean dateFilter(final RSPPtableElement rspp) {
 		if (checkBoxDeadline.isSelected()) {
 			if (rspp.jobEndDate().isAfter(LocalDate.now())
 					&& rspp.jobEndDate().isBefore(LocalDate.now().plusDays(DAYS_ADVANCE)))
@@ -138,7 +138,7 @@ public class MainController {
 		StringProperty payed;
 		StringProperty note;
 
-		public RSPPtableElement(Map<String, String> rsspElement) {
+		public RSPPtableElement(final Map<String, String> rsspElement) {
 			formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
 			this.jobID = rsspElement.get("jobid");
@@ -146,21 +146,7 @@ public class MainController {
 			this.jobEnd = LocalDate.parse(rsspElement.get("jobend"), formatter);
 			this.accountName = new SimpleStringProperty(rsspElement.get("name"));
 			this.note = new SimpleStringProperty(rsspElement.get("note"));
-
-			switch (rsspElement.get("category")) {
-			case "b2b":
-				this.category = new SimpleStringProperty("Azienda");
-				break;
-			case "b2c":
-				this.category = new SimpleStringProperty("Privato");
-				break;
-			case "pa":
-				this.category = new SimpleStringProperty("Pubblica Amministrazione");
-				break;
-			default:
-				throw new IllegalArgumentException();
-			}
-
+			this.category = new SimpleStringProperty(model.getAccountCategories().get(rsspElement.get("category")));
 			this.invoiceID = new SimpleStringProperty(rsspElement.get("invoiceid"));
 
 			
@@ -233,7 +219,7 @@ public class MainController {
 
 	}
 
-	public void setModel(Model model) {
+	public void setModel(final Model model) {
 		this.model = model;
 	}
 
@@ -244,14 +230,14 @@ public class MainController {
 
 	@FXML
 	public void switchToViewEdit() {
-		RSPPtableElement selectedItems = rsppTable.getSelectionModel().getSelectedItem();
+		final RSPPtableElement selectedItems = rsppTable.getSelectionModel().getSelectedItem();
 		if (selectedItems != null) {
 			try {
-				Stage stage = new Stage();
+				final Stage stage = new Stage();
 
-				FXMLLoader loader = new FXMLLoader(getClass().getResource("edit.fxml"));
-				VBox root = (VBox) loader.load();
-				ViewEditController controller = loader.getController();
+				final FXMLLoader loader = new FXMLLoader(getClass().getResource("edit.fxml"));
+				final VBox root = (VBox) loader.load();
+				final ViewEditController controller = loader.getController();
 
 				model.refreshSession();
 
@@ -259,16 +245,16 @@ public class MainController {
 				controller.setCombo();
 				controller.setRSPP(selectedItems.getJobID(), selectedItems.getJobStart());
 
-				Scene scene = new Scene(root);
+				final Scene scene = new Scene(root);
 				scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 				stage.setScene(scene);
 				stage.show();
 
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				e.printStackTrace();
 			}
 		} else {
-			Alert alert = new Alert(AlertType.WARNING);
+			final Alert alert = new Alert(AlertType.WARNING);
 			alert.setTitle("Attenzione!");
 			alert.setHeaderText("Riga RSPP non selezionata");
 			alert.setContentText(

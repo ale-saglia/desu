@@ -25,6 +25,7 @@ public class Invoice {
 		this.payed = payed;
 		createID();
 	}
+	
 	public void createID() {
 		this.id = (number + "/" + type + " " + emission);
 	}
@@ -47,7 +48,5 @@ public class Invoice {
 
 	public Boolean getPayed() {
 		return payed;
-	}
-	
-	
+	}	
 }

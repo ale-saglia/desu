@@ -2,6 +2,7 @@ package dclient;
 
 import java.time.LocalDate;
 
+import dclient.model.JobPA;
 import dclient.model.Model;
 import dclient.model.RSPP;
 import javafx.fxml.FXML;
@@ -126,10 +127,11 @@ public class ViewEditController {
 		noteField.setText(model.getRSPPnote(rspp.getJob().getCustomer().getFiscalCode()));
 
 		//TODO Add if field for data of PA
-		if (rspp.getJob().getCustomer().getCategory() == "pa") {
-			cigField.setText("Non ancora implementato");
-			decreeNumberField.setText("Non ancora implementato");
-			decreeDateField.setValue(LocalDate.now());
+		if (rspp.getJob() instanceof JobPA) {
+			JobPA jobPA = (JobPA) rspp.getJob();
+			cigField.setText(jobPA.getCig());
+			decreeNumberField.setText(Integer.toString(jobPA.getDecreeNumber()));
+			decreeDateField.setValue(jobPA.getDecreeDate());
 		}
 		else
 			paReferences.getChildren().clear();

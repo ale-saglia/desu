@@ -20,6 +20,7 @@ import com.jcraft.jsch.Session;
 import dclient.model.Account;
 import dclient.model.Invoice;
 import dclient.model.Job;
+import dclient.model.JobPA;
 import dclient.model.RSPP;
 
 public class SicurteaDAO {
@@ -172,6 +173,17 @@ public class SicurteaDAO {
 			res.next();
 			job = new Job(res.getString("jobs_id"), res.getString("jobs_category"), res.getString("jobs_type"),
 					res.getString("jobs_description"), getAccount(res.getString("customer"), conn));
+			
+			
+			if (job.getCustomer().getCategory().contains("pa")) {
+				sql = "select * from jobs.jobs_pa where job_id = ? ";
+				st = conn.prepareStatement(sql);
+				st.setString(1, job.getId());
+				res = st.executeQuery();
+				res.next();
+				job = new JobPA(job, res.getString("cig"), res.getInt("decree_number"), res.getDate("decree_date").toLocalDate());
+			}
+			
 			return job;
 
 		} catch (SQLException e) {

@@ -173,17 +173,17 @@ public class SicurteaDAO {
 			res.next();
 			job = new Job(res.getString("jobs_id"), res.getString("jobs_category"), res.getString("jobs_type"),
 					res.getString("jobs_description"), getAccount(res.getString("customer"), conn));
-			
-			
+
 			if (job.getCustomer().getCategory().contains("pa")) {
 				sql = "select * from jobs.jobs_pa where job_id = ? ";
 				st = conn.prepareStatement(sql);
 				st.setString(1, job.getId());
 				res = st.executeQuery();
 				res.next();
-				job = new JobPA(job, res.getString("cig"), res.getInt("decree_number"), res.getDate("decree_date").toLocalDate());
+				job = new JobPA(job, res.getString("cig"), res.getInt("decree_number"),
+						res.getDate("decree_date").toLocalDate());
 			}
-			
+
 			return job;
 
 		} catch (SQLException e) {
@@ -192,7 +192,7 @@ public class SicurteaDAO {
 			throw new RuntimeException("Error Connection Database");
 		}
 	}
-	
+
 	private Invoice getInvoice(String invoiceID, Connection conn) {
 		String sql = "select * from invoices.invoices i where invoiceid = ? ";
 		Invoice invoice;
@@ -213,7 +213,6 @@ public class SicurteaDAO {
 			throw new RuntimeException("Error Connection Database");
 		}
 	}
-
 
 	private Account getAccount(String fiscalCode, Connection conn) {
 		String sql = "select * from accounts.accounts a where a.fiscalcode = ? ";
@@ -236,7 +235,6 @@ public class SicurteaDAO {
 		}
 	}
 
-	
 	public String getRSPPnote(String fiscalCode) {
 		String sql = "select * from deadlines.rspp_notes r where r.fiscalcode = ? ";
 		String notes;

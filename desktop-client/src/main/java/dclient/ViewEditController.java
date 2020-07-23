@@ -52,25 +52,34 @@ public class ViewEditController {
 	private VBox paReferences;
 
 	@FXML
+	private TextField cigField;
+
+	@FXML
+	private TextField decreeNumberField;
+
+	@FXML
+	private DatePicker decreeDateField;
+
+	@FXML
 	private TextArea noteField;
 
-    @FXML
-    private DatePicker jobStartField;
-
-    @FXML
-    private DatePicker jobEndField;
-	
 	@FXML
-    private TextField invoiceNumberField;
+	private DatePicker jobStartField;
 
-    @FXML
-    private DatePicker invoiceEmissionDateField;
+	@FXML
+	private DatePicker jobEndField;
 
-    @FXML
-    private TextField invoiceTypeField;
+	@FXML
+	private TextField invoiceNumberField;
 
-    @FXML
-    private CheckBox payedCheck;
+	@FXML
+	private DatePicker invoiceEmissionDateField;
+
+	@FXML
+	private TextField invoiceTypeField;
+
+	@FXML
+	private CheckBox payedCheck;
 
 	@FXML
 	private Button closeButton;
@@ -92,10 +101,7 @@ public class ViewEditController {
 	}
 
 	public void setRSPP(String jobID, LocalDate jobStart) {
-		rspp = model.getRSPP(jobID, jobStart);
-
-		if (rspp.getJob().getCustomer().getCategory() != "pa")
-			paReferences.getChildren().clear();
+		rspp = model.getRSPP(jobID, jobStart);			
 
 		setAnagrafica();
 		setJobs();
@@ -119,9 +125,14 @@ public class ViewEditController {
 		jobdDescriptionField.setText(rspp.getJob().getDescription());
 		noteField.setText(model.getRSPPnote(rspp.getJob().getCustomer().getFiscalCode()));
 
+		//TODO Add if field for data of PA
 		if (rspp.getJob().getCustomer().getCategory() == "pa") {
-			
+			cigField.setText("Non ancora implementato");
+			decreeNumberField.setText("Non ancora implementato");
+			decreeDateField.setValue(LocalDate.now());
 		}
+		else
+			paReferences.getChildren().clear();
 	}
 
 	private void setRSPP() {
@@ -129,7 +140,7 @@ public class ViewEditController {
 		jobEndField.setValue(rspp.getEnd());
 
 	}
-	
+
 	private void setInvoice() {
 		invoiceNumberField.setText(Integer.toString(rspp.getInvoice().getNumber()));
 		invoiceEmissionDateField.setValue(rspp.getInvoice().getEmission());

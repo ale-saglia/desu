@@ -168,7 +168,7 @@
                               <Insets right="10.0" />
                            </HBox.margin>
                         </Label>
-                        <TextField editable="false" HBox.hgrow="ALWAYS" />
+                        <TextField fx:id="cigField" editable="false" HBox.hgrow="ALWAYS" />
                      </children>
                      <VBox.margin>
                         <Insets bottom="5.0" />
@@ -184,7 +184,7 @@
                               <Insets right="10.0" />
                            </HBox.margin>
                         </Label>
-                        <TextField editable="false" HBox.hgrow="ALWAYS">
+                        <TextField fx:id="decreeNumberField" editable="false" HBox.hgrow="ALWAYS">
                            <HBox.margin>
                               <Insets right="12.0" />
                            </HBox.margin>
@@ -193,7 +193,7 @@
                            <HBox.margin>
                               <Insets left="15.0" right="10.0" />
                            </HBox.margin></Label>
-                        <DatePicker />
+                        <DatePicker fx:id="decreeDateField" />
                      </children>
                      <padding>
                         <Insets bottom="15.0" />

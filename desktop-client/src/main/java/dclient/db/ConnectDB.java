@@ -14,8 +14,8 @@ public class ConnectDB {
 	public static Session getSession() {
 		JSch jsch = new JSch();
 		Session session = null;
-		String privateKeyPath = System.getProperty("user.home") + "/.ssh/id_rsa";
 		LoaderDBConf dbc = (new ConnectDB()).new LoaderDBConf(CONFIG_FILE_NAME);
+		String privateKeyPath = System.getProperty("user.home") + "/.ssh/" + dbc.getSshKeyName();
 
 		try {
 			// SSH connection setup && port forwarding
@@ -75,6 +75,7 @@ public class ConnectDB {
 		String sshUser;
 		String sshHost;
 		int sshPort;
+		String sshKeyName;
 		String sshKeyPassword;
 
 		public LoaderDBConf(String fileName) {
@@ -92,6 +93,7 @@ public class ConnectDB {
 				sshUser = dbConfig.getProperty("sshUser");
 				sshHost = dbConfig.getProperty("sshHost");
 				sshPort = Integer.parseInt(dbConfig.getProperty("sshPort"));
+				sshKeyName = dbConfig.getProperty("sshKeyName");
 				sshKeyPassword = dbConfig.getProperty("sshKeyPassword");
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -133,8 +135,12 @@ public class ConnectDB {
 			return this.sshPort;
 		}
 
+		public String getSshKeyName() {
+			return sshKeyName;
+		}
+		
 		public String getSshKeyPassword() {
 			return this.sshKeyPassword;
-		}
+		}	
 	}
 }

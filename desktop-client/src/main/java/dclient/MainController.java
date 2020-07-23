@@ -23,6 +23,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -46,14 +47,14 @@ public class MainController {
 	private TableColumn<RSPPtableElement, String> nameColumn;
 
 	@FXML
-	private TableColumn<RSPPtableElement, String> deadlineColumn;
+	private TableColumn<RSPPtableElement, LocalDate> deadlineColumn;
 
 	@FXML
 	private TableColumn<RSPPtableElement, String> invoiceColumn;
 
 	@FXML
 	private TableColumn<RSPPtableElement, String> payedColumn;
-	
+
 	@FXML
 	private TableColumn<RSPPtableElement, String> noteColumn;
 
@@ -65,7 +66,7 @@ public class MainController {
 
 	private ObservableList<RSPPtableElement> rsppElements;
 	private FilteredList<RSPPtableElement> filteredrsppElements;
-	private SortedList<RSPPtableElement> SortedFilteredrsppElements;
+	private SortedList<RSPPtableElement> sortedFilteredrsppElements;
 
 	Model model;
 
@@ -73,12 +74,29 @@ public class MainController {
 		final List<Map<String, String>> datas = model.getDataForTable();
 		rsppElements = FXCollections.observableArrayList();
 
-		for (final Map<String, String> rsppElement : datas) rsppElements.add(new RSPPtableElement(rsppElement));
+		for (final Map<String, String> rsppElement : datas)
+			rsppElements.add(new RSPPtableElement(rsppElement));
 
 		filteredrsppElements = new FilteredList<RSPPtableElement>(rsppElements);
 
 		nameColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("accountName"));
-		deadlineColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("jobEnd"));
+		deadlineColumn.setCellValueFactory(cellData -> cellData.getValue().jobEndProperty());
+		deadlineColumn.setCellFactory(column -> {
+			return new TableCell<RSPPtableElement, LocalDate>() {
+				@Override
+				protected void updateItem(LocalDate item, boolean empty) {
+					super.updateItem(item, empty);
+
+					if (item == null || empty) {
+						setText(null);
+						setStyle("");
+					} else {
+						// Format date.
+						setText(DateTimeFormatter.ofPattern("dd/MM/yyyy").format(item));
+					}
+				}
+			};
+		});
 		invoiceColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("invoiceID"));
 		payedColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("payed"));
 		noteColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("note"));
@@ -98,9 +116,9 @@ public class MainController {
 		filteredrsppElements.predicateProperty().bind(
 				Bindings.createObjectBinding(() -> nameFilter.get().and(dateFilter.get()), nameFilter, dateFilter));
 
-		SortedFilteredrsppElements = new SortedList<>(filteredrsppElements);
-
-		rsppTable.setItems(SortedFilteredrsppElements);
+		sortedFilteredrsppElements = new SortedList<>(filteredrsppElements);
+		rsppTable.setItems(sortedFilteredrsppElements);
+		sortedFilteredrsppElements.comparatorProperty().bind(rsppTable.comparatorProperty());
 
 		rsppTable.setRowFactory(tv -> {
 			final TableRow<RSPPtableElement> row = new TableRow<>();
@@ -129,9 +147,9 @@ public class MainController {
 
 		String jobID;
 		LocalDate jobStart;
-		
-		//TODO change this to use Localdate instead of string to sort in tableview
-		LocalDate jobEnd;
+
+		// TODO change this to use Localdate instead of string to sort in tableview
+		ObjectProperty<LocalDate> jobEnd;
 		StringProperty accountName;
 		StringProperty category;
 		StringProperty invoiceID;
@@ -139,18 +157,15 @@ public class MainController {
 		StringProperty note;
 
 		public RSPPtableElement(final Map<String, String> rsspElement) {
-			formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
 			this.jobID = rsspElement.get("jobid");
-			this.jobStart = LocalDate.parse(rsspElement.get("jobstart"), formatter);
-			this.jobEnd = LocalDate.parse(rsspElement.get("jobend"), formatter);
+			this.jobStart = LocalDate.parse(rsspElement.get("jobstart"));
+			this.jobEnd = new SimpleObjectProperty<LocalDate>(LocalDate.parse(rsspElement.get("jobend")));
 			this.accountName = new SimpleStringProperty(rsspElement.get("name"));
 			this.note = new SimpleStringProperty(rsspElement.get("note"));
 			this.category = new SimpleStringProperty(model.getAccountCategories().get(rsspElement.get("category")));
 			this.invoiceID = new SimpleStringProperty(rsspElement.get("invoiceid"));
 
-			
-			//TODO change this to use checkbox instead of ascii char
+			// TODO change this to use checkbox instead of ascii char
 			if (rsspElement.get("payed") == "true")
 				payed = new SimpleStringProperty("✔");
 			else
@@ -173,16 +188,16 @@ public class MainController {
 			return category.get();
 		}
 
-		public StringProperty jobEndProperty() {
-			return new SimpleStringProperty(jobEnd.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+		public ObjectProperty<LocalDate> jobEndProperty() {
+			return jobEnd;
 		}
 
 		public String getJobEnd() {
-			return (jobEnd.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+			return (jobEnd.get().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 		}
 
 		public LocalDate jobEndDate() {
-			return jobEnd;
+			return jobEnd.get();
 		}
 
 		public StringProperty invoiceIDProperty() {
@@ -224,7 +239,7 @@ public class MainController {
 	}
 
 	public void refresh() {
-		// Model.refreshSession();
+		model.refreshSession();
 		createTable();
 	}
 

@@ -83,14 +83,14 @@ public class SicurteaDAO {
 				temp = new HashMap<String, String>();
 				temp.put("name", res.getString("name"));
 				temp.put("category", res.getString("category"));
-				temp.put("jobend", (new SimpleDateFormat("dd/MM/yyyy")).format(res.getDate("jobend")));
+				temp.put("jobend", res.getDate("jobend").toString());
 				temp.put("invoiceid", res.getString("invoiceid"));
 				temp.put("payed", String.valueOf(res.getBoolean("payed")));
 				temp.put("note", res.getString("notes"));
 
 				// Useful for tracking selected field when view / edit
 				temp.put("jobid", res.getString("jobid"));
-				temp.put("jobstart", (new SimpleDateFormat("dd/MM/yyyy")).format(res.getDate("jobstart")));
+				temp.put("jobstart", res.getDate("jobstart").toString());
 				tableElements.add(temp);
 			}
 

@@ -57,13 +57,14 @@
             </HBox>
             <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="70.0" prefHeight="34.0" prefWidth="490.0">
                <children>
-                  <Label maxWidth="-Infinity" text="Tipologia">
+                  <Label maxWidth="-Infinity" minWidth="-Infinity" text="Tipologia">
                      <HBox.margin>
                         <Insets right="10.0" />
                      </HBox.margin>
                   </Label>
-                  <ComboBox fx:id="categoryAccountCombo" prefWidth="150.0" />
-                  <Label text="Codice Ateco">
+                  <ComboBox fx:id="categoryAccountCombo" minWidth="-Infinity" HBox.hgrow="ALWAYS" />
+                  <HBox prefHeight="100.0" prefWidth="200.0" />
+                  <Label minWidth="-Infinity" text="Codice Ateco">
                      <padding>
                         <Insets left="15.0" right="7.0" />
                      </padding>
@@ -135,12 +136,12 @@
                         <Insets right="10.0" />
                      </HBox.margin>
                   </Label>
-                  <ComboBox fx:id="categoryJobCombo" minWidth="-Infinity" />
+                  <ComboBox fx:id="categoryJobCombo" minWidth="-Infinity" HBox.hgrow="ALWAYS" />
                   <Label minHeight="-Infinity" text="Sottocategoria">
                      <HBox.margin>
                         <Insets left="15.0" right="12.0" />
                      </HBox.margin></Label>
-                  <ComboBox fx:id="categoryTypeCombo" layoutX="84.0" layoutY="10.0" minWidth="-Infinity" />
+                  <ComboBox fx:id="categoryTypeCombo" layoutX="84.0" layoutY="10.0" minWidth="-Infinity" HBox.hgrow="ALWAYS" />
                </children>
                <VBox.margin>
                   <Insets bottom="5.0" />
@@ -179,7 +180,7 @@
                   </HBox>
                   <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="490.0">
                      <children>
-                        <Label text="Numero Determina">
+                        <Label minWidth="-Infinity" text="Numero Determina">
                            <HBox.margin>
                               <Insets right="10.0" />
                            </HBox.margin>
@@ -189,11 +190,11 @@
                               <Insets right="12.0" />
                            </HBox.margin>
                         </TextField>
-                        <Label text="Data Determina">
+                        <Label minWidth="-Infinity" text="Data Determina">
                            <HBox.margin>
                               <Insets left="15.0" right="10.0" />
                            </HBox.margin></Label>
-                        <DatePicker fx:id="decreeDateField" />
+                        <DatePicker fx:id="decreeDateField" HBox.hgrow="ALWAYS" />
                      </children>
                      <padding>
                         <Insets bottom="15.0" />
@@ -220,7 +221,7 @@
             <Insets />
          </VBox.margin>
       </Separator>
-      <VBox prefHeight="200.0" prefWidth="550.0">
+      <VBox prefHeight="200.0" prefWidth="550.0" VBox.vgrow="ALWAYS">
          <children>
             <Label text="Incarico">
                <font>
@@ -239,7 +240,7 @@
                      <padding>
                         <Insets left="15.0" right="7.0" />
                      </padding></Label>
-                  <DatePicker fx:id="jobEndField" layoutX="77.0" layoutY="10.0" />
+                  <DatePicker fx:id="jobEndField" layoutX="77.0" layoutY="10.0" HBox.hgrow="ALWAYS" />
                </children>
             </HBox>
          </children>
@@ -269,7 +270,7 @@
                         <Insets right="10.0" />
                      </HBox.margin>
                   </Label>
-                  <TextField fx:id="invoiceNumberField" editable="false" />
+                  <TextField fx:id="invoiceNumberField" editable="false" HBox.hgrow="ALWAYS" />
                   <Label text="Data fattura">
                      <padding>
                         <Insets left="15.0" right="7.0" />
@@ -291,7 +292,7 @@
                      </HBox.margin>
                   </Label>
                   <TextField fx:id="invoiceTypeField" editable="false" />
-                  <CheckBox fx:id="payedCheck" mnemonicParsing="false" text="Pagato">
+                  <CheckBox fx:id="payedCheck" mnemonicParsing="false" text="Pagato" HBox.hgrow="ALWAYS">
                      <padding>
                         <Insets left="15.0" right="7.0" />
                      </padding></CheckBox>
@@ -301,7 +302,7 @@
       </VBox>
       <ButtonBar prefHeight="40.0" prefWidth="200.0">
         <buttons>
-          <Button mnemonicParsing="false" text="Salva ed Esci" />
+          <Button disable="true" mnemonicParsing="false" text="Salva ed Esci" />
             <Button fx:id="closeButton" layoutX="565.0" layoutY="10.0" mnemonicParsing="false" onAction="#closeButtonAction" text="Esci senza salvare" />
         </buttons>
       </ButtonBar>

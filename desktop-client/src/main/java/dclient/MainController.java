@@ -67,8 +67,11 @@ public class MainController {
 	@FXML
 	private CheckBox checkBoxDeadline;
 
-	@FXML
-	private Button viewEditButton;
+    @FXML
+    private Button createNewButton;
+
+    @FXML
+    private Button viewEditButton;
 
 	private ObservableList<RSPPtableElement> rsppElements;
 	private FilteredList<RSPPtableElement> filteredrsppElements;

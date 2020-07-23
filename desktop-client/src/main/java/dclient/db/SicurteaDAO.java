@@ -32,7 +32,7 @@ public class SicurteaDAO {
 	}
 
 	public List<Map<String, String>> getDataForTable() {
-		String sql = Queries.getRSPPtable();
+		String sql = "select r.rspp_jobid as jobid, r.jobstart as jobstart, r.jobstart as jobend, a.\"name\" as \"name\", a.customer_category as category, r.invoiceid as invoiceid, i.payed from accounts.accounts a, deadlines.rspp r, invoices.invoices i, jobs.jobs j where r.rspp_jobid = j.jobs_id and j.customer = a.fiscalcode and i.invoiceid = r.invoiceid order by \"name\", jobstart ";
 		List<Map<String, String>> tableElements;
 
 		try {

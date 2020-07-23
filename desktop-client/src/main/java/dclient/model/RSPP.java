@@ -5,9 +5,9 @@ import java.time.LocalDate;
 public class RSPP {
 	Job job;
 
-    LocalDate start;
-    LocalDate end;
-    
+	LocalDate start;
+	LocalDate end;
+
 	public RSPP(Job job, LocalDate start, LocalDate end) {
 		this.job = job;
 		this.start = start;
@@ -25,6 +25,5 @@ public class RSPP {
 	public LocalDate getEnd() {
 		return end;
 	}
-	
-	
+
 }

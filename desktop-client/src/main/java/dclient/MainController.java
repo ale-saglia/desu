@@ -129,7 +129,8 @@ public class MainController {
 
 		String jobID;
 		LocalDate jobStart;
-
+		
+		//TODO change this to use Localdate instead of string to sort in tableview
 		LocalDate jobEnd;
 		StringProperty accountName;
 		StringProperty category;
@@ -162,6 +163,8 @@ public class MainController {
 
 			this.invoiceID = new SimpleStringProperty(rsspElement.get("invoiceid"));
 
+			
+			//TODO change this to use checkbox instead of ascii char
 			if (rsspElement.get("payed") == "true")
 				payed = new SimpleStringProperty("✔");
 			else

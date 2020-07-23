@@ -29,9 +29,10 @@ public class ConnectDB {
 
 			System.out.println(session.getPortForwardingL());
 
-			System.out.println("localhost:" + session.setPortForwardingL(0, dbc.getDbHost(), dbc.getDbPort()) + " -> " + dbc.getDbPort());
+			System.out.println("localhost:" + session.setPortForwardingL(0, dbc.getDbHost(), dbc.getDbPort()) + " -> "
+					+ dbc.getDbPort());
 			System.out.println("Port Forwarded");
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -46,7 +47,8 @@ public class ConnectDB {
 		try {
 			// DB connection
 			Class.forName("org.postgresql.Driver");
-			String dbString = "jdbc:postgresql://" + dbc.getDbHost() + ":" + session.setPortForwardingL(0, dbc.getDbHost(), dbc.getDbPort()) + "/" + dbc.getDbName();
+			String dbString = "jdbc:postgresql://" + dbc.getDbHost() + ":"
+					+ session.setPortForwardingL(0, dbc.getDbHost(), dbc.getDbPort()) + "/" + dbc.getDbName();
 
 			conn = DriverManager.getConnection(dbString, (dbc.getDbUser()), (dbc.getDbPassword()));
 

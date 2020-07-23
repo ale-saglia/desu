@@ -235,7 +235,7 @@ public class SicurteaDAO {
 	public void getNewSession() {
 		this.session = ConnectDB.getSession();
 	}
-	
+
 	public String closeSession() {
 		String message = null;
 		try {
@@ -246,5 +246,5 @@ public class SicurteaDAO {
 		this.session.disconnect();
 		return message;
 	}
-	
+
 }

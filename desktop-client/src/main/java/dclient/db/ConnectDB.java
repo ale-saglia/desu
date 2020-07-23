@@ -12,17 +12,20 @@ public class ConnectDB {
 	static String CONFIG_FILE_NAME = "config.properties";
 
 	public static Session getSession() {
+		JSch jsch = new JSch();
 		Session session = null;
+		String privateKeyPath = System.getProperty("user.home") + "/.ssh/id_rsa";
 		LoaderDBConf dbc = (new ConnectDB()).new LoaderDBConf(CONFIG_FILE_NAME);
 
 		try {
 			// SSH connection setup && port forwarding
-			java.util.Properties config = new java.util.Properties();
-			config.put("StrictHostKeyChecking", "no"); // Set StrictHostKeyChecking property to no to avoid
-														// UnknownHostKey issue
-			JSch jsch = new JSch();
+			jsch.addIdentity(privateKeyPath, dbc.getSshKeyPassword());
 			session = jsch.getSession(dbc.getSshUser(), dbc.getSshHost(), dbc.getSshPort());
-			session.setPassword(dbc.getSshPassword());
+			session.setConfig("PreferredAuthentications", "publickey,keyboard-interactive,password");
+
+			java.util.Properties config = new java.util.Properties();
+			config.put("StrictHostKeyChecking", "no");
+
 			session.setConfig(config);
 			session.connect();
 			System.out.println("Connected");
@@ -72,7 +75,7 @@ public class ConnectDB {
 		String sshUser;
 		String sshHost;
 		int sshPort;
-		String sshPassword;
+		String sshKeyPassword;
 
 		public LoaderDBConf(String fileName) {
 			// TODO Find a way to encrypt properties file for realease.
@@ -89,7 +92,7 @@ public class ConnectDB {
 				sshUser = dbConfig.getProperty("sshUser");
 				sshHost = dbConfig.getProperty("sshHost");
 				sshPort = Integer.parseInt(dbConfig.getProperty("sshPort"));
-				sshPassword = dbConfig.getProperty("sshPassword");
+				sshKeyPassword = dbConfig.getProperty("sshKeyPassword");
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (NumberFormatException nfm) {
@@ -130,8 +133,8 @@ public class ConnectDB {
 			return this.sshPort;
 		}
 
-		public String getSshPassword() {
-			return this.sshPassword;
+		public String getSshKeyPassword() {
+			return this.sshKeyPassword;
 		}
 	}
 }

@@ -28,4 +28,26 @@ public class Invoice {
 	public void createID() {
 		this.id = (number + "/" + type + " " + emission);
 	}
+
+	public String getId() {
+		return id;
+	}
+
+	public int getNumber() {
+		return number;
+	}
+
+	public LocalDate getEmission() {
+		return emission;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public Boolean getPayed() {
+		return payed;
+	}
+	
+	
 }

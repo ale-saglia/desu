@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import org.jasypt.properties.EncryptableProperties;
 
-import dclient.App;
 import dclient.Key;
 import dclient.db.SicurteaDAO;
 

@@ -6,7 +6,7 @@ module dclient {
     requires jsch;
     requires transitive jasypt;
     
-    opens dclient to javafx.fxml;
+    opens dclient.controllers;
     exports dclient;
     exports dclient.model;
 }

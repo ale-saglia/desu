@@ -1,5 +1,6 @@
 package dclient;
 
+import dclient.controllers.MainController;
 import dclient.model.Model;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -19,7 +20,7 @@ public class App extends Application {
 		Model model;
 
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("main.fxml"));
+			FXMLLoader loader = new FXMLLoader(MainController.class.getResource("main.fxml"));
 			VBox root = (VBox) loader.load();
 			MainController controller = loader.getController();
 			model = new Model("");
@@ -30,7 +31,7 @@ public class App extends Application {
 			stage.setMinHeight(560);
 
 			Scene scene = new Scene(root, 960, 720);
-			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			scene.getStylesheets().add(MainController.class.getResource("application.css").toExternalForm());
 			stage.setScene(scene);
 			stage.setTitle("Scadenziario RSPP");
 			stage.show();

@@ -4,6 +4,7 @@ module dclient {
     requires org.postgresql.jdbc;
     requires java.sql;
     requires jsch;
+    requires jasypt;
     
     opens dclient to javafx.fxml;
     exports dclient;

@@ -1,0 +1,7 @@
+package dclient.db;
+
+public class SessionData {
+    public static String getKey(){
+        return "";
+    }
+}

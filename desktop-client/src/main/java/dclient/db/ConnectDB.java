@@ -8,6 +8,10 @@ import java.util.Properties;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.jasypt.iv.RandomIvGenerator;
+import org.jasypt.properties.EncryptableProperties;
+
 public class ConnectDB {
 	static String CONFIG_FILE_NAME = "config.properties";
 
@@ -65,6 +69,7 @@ public class ConnectDB {
 
 	private class LoaderDBConf {
 		Properties dbConfig;
+		StandardPBEStringEncryptor encryptor;
 
 		String dbHost;
 		int dbPort;
@@ -79,8 +84,14 @@ public class ConnectDB {
 		String sshKeyPassword;
 
 		public LoaderDBConf(String fileName) {
-			// TODO Find a way to encrypt properties file for realease.
-			dbConfig = new Properties();
+			encryptor = new StandardPBEStringEncryptor();
+			encryptor.setPassword(System.getenv("DCLIENT_KEY"));
+			
+			encryptor.setAlgorithm("PBEWithHMACSHA512AndAES_256");
+			encryptor.setIvGenerator(new RandomIvGenerator());
+
+			dbConfig = new EncryptableProperties(encryptor);
+
 			try {
 				dbConfig.load(ConnectDB.class.getResourceAsStream(fileName));
 

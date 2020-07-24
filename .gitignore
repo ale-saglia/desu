@@ -1,7 +1,35 @@
-server-Side-Scripts/conf.yaml
+#########################################################
+#
+#   IDEs .gitignore
+#
+#########################################################
+
+# Visual studio code
 .vscode
+
+#########################################################
+#
+#   Server scripts .gitignore
+#
+#########################################################
+
+#RSPP mail
+server-Side-Scripts/conf.yaml
+
+
+#########################################################
+#
+#   DClient .gitignore
+#
+#########################################################
+
+# Ignore config files
+*.properties
+*.prefs
+
+# Ignore masterkey generator class
+desktop-client/src/main/java/dclient/db/SessionData.java
+
+# Java BUILD files
 desktop-client/bin
 desktop-client/target
-desktop-client/src/main/resources/dclient/db/config.properties
-desktop-client/.classpath
-*.prefs

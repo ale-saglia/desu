@@ -36,13 +36,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class MainController {
-	// Change this to change deadlines checkbox behavior (set interval between today
-	// and DAYS_ADVANCE days from now
-	public final long DAYS_ADVANCE = 14;
-
-	//Change this to change date format in tableview
-	public final String DATE_FORMAT = "dd/MM/yyyy";
-
 	@FXML
 	private TextField searchField;
 
@@ -67,11 +60,11 @@ public class MainController {
 	@FXML
 	private CheckBox checkBoxDeadline;
 
-    @FXML
-    private Button createNewButton;
+	@FXML
+	private Button createNewButton;
 
-    @FXML
-    private Button viewEditButton;
+	@FXML
+	private Button viewEditButton;
 
 	private ObservableList<RSPPtableElement> rsppElements;
 	private FilteredList<RSPPtableElement> filteredrsppElements;
@@ -101,7 +94,8 @@ public class MainController {
 						setStyle("");
 					} else {
 						// Format date.
-						setText(DateTimeFormatter.ofPattern(DATE_FORMAT).format(item));
+						setText(DateTimeFormatter.ofPattern(model.getConfig().getProperty("rsppTable.dateFormat"))
+								.format(item));
 					}
 				}
 			};
@@ -109,7 +103,7 @@ public class MainController {
 		invoiceColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("invoiceID"));
 
 		payedColumn.setCellValueFactory(f -> f.getValue().payedProperty());
-		payedColumn.setCellFactory( tc -> new CheckBoxTableCell<>());
+		payedColumn.setCellFactory(tc -> new CheckBoxTableCell<>());
 
 		noteColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("note"));
 
@@ -145,8 +139,8 @@ public class MainController {
 
 	private boolean dateFilter(final RSPPtableElement rspp) {
 		if (checkBoxDeadline.isSelected()) {
-			if (rspp.jobEndDate().isAfter(LocalDate.now())
-					&& rspp.jobEndDate().isBefore(LocalDate.now().plusDays(DAYS_ADVANCE)))
+			if (rspp.jobEndDate().isAfter(LocalDate.now()) && rspp.jobEndDate().isBefore(
+					LocalDate.now().plusDays(Integer.parseInt(model.getConfig().getProperty("rsppTable.daysAdvance")))))
 				return true;
 			else
 				return false;

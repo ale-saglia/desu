@@ -22,7 +22,7 @@ public class App extends Application {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("main.fxml"));
 			VBox root = (VBox) loader.load();
 			MainController controller = loader.getController();
-			model = new Model();
+			model = new Model("");
 			controller.setModel(model);
 			controller.createTable();
 

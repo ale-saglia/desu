@@ -19,9 +19,9 @@ public class Model {
 	List<String> jobCategories;
 	List<String> jobTypes;
 
-	public Model() throws IOException {
+	public Model(String userPassword) throws IOException {
 		config = new EncryptableProperties((new Key("")).getEnc());
-		config.load(App.class.getResourceAsStream("config.properties"));
+		config.load(Key.class.getResourceAsStream("config.properties"));
 
 		this.dao = new SicurteaDAO(config);
 

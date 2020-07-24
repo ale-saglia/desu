@@ -1,0 +1,16 @@
+# Database configuration
+db.host = 
+db.port = 
+db.user = 
+db.password = 
+db.database =
+
+# SSH configuration
+ssh.host = 
+ssh.user = 
+ssh.keyName = 
+ssh.keyPassword = 
+ssh.port = 
+
+# APIs key
+gMapsAPI = 

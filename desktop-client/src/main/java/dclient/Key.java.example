@@ -1,0 +1,14 @@
+package dclient;
+
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+
+public class Key {
+    StandardPBEStringEncryptor enc;
+    public Key(String password) {
+        enc = null;
+    }
+
+    public StandardPBEStringEncryptor getEnc(){
+        return enc;
+    }
+}

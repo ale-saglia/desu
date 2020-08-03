@@ -37,6 +37,8 @@ public class PasswordController {
 	public void setPassword() {
 		password = passwordField.getText();
 		launchMainView();
+		Stage stage = (Stage) passwordField.getScene().getWindow();
+	    stage.close();
 	}
 
 	private void launchMainView() {

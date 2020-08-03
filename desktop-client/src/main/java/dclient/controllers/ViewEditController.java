@@ -1,6 +1,8 @@
 package dclient.controllers;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 import dclient.model.JobPA;
 import dclient.model.Model;
@@ -18,6 +20,9 @@ import javafx.stage.Stage;
 public class ViewEditController {
 	private Model model;
 	private RSPP rspp;
+	private String rsppNote;
+
+	boolean isChanged;
 
 	@FXML
 	private TextField nameField;
@@ -108,6 +113,8 @@ public class ViewEditController {
 		setJobs();
 		setRSPP();
 		setInvoice();
+
+		isChanged = false;
 	}
 
 	private void setAnagrafica() {
@@ -124,7 +131,7 @@ public class ViewEditController {
 		categoryJobCombo.setValue(rspp.getJob().getJobCategory());
 		categoryTypeCombo.setValue(rspp.getJob().getJobType());
 		jobdDescriptionField.setText(rspp.getJob().getDescription());
-		noteField.setText(model.getRSPPnote(rspp.getJob().getCustomer().getFiscalCode()));
+		noteField.setText(rsppNote = model.getRSPPnote(rspp.getJob().getCustomer().getFiscalCode()));
 
 		if (rspp.getJob() instanceof JobPA) {
 			JobPA jobPA = (JobPA) rspp.getJob();
@@ -145,5 +152,108 @@ public class ViewEditController {
 		invoiceEmissionDateField.setValue(rspp.getInvoice().getEmission());
 		invoiceTypeField.setText(model.getAccountCategories().get(rspp.getInvoice().getType()));
 		payedCheck.setSelected(rspp.getInvoice().getPayed());
+	}
+
+	public void updateCheck() {
+		if (!nameField.getText().equals(rspp.getJob().getCustomer().getName())
+				|| !fiscalCodeText.getText().equals(rspp.getJob().getCustomer().getFiscalCode())
+				|| !numberVATField.getText().equals(rspp.getJob().getCustomer().getNumberVAT())
+				|| !categoryAccountCombo.getValue()
+						.equals(model.getAccountCategories().get(rspp.getJob().getCustomer().getCategory()))
+				|| !atecoCodeField.getText().equals(rspp.getJob().getCustomer().getAtecoCode())
+				|| !addressField.getText().equals(rspp.getJob().getCustomer().getLegalAddress())) {
+			updateAccounts();
+			isChanged = true;
+		}
+
+		if (!jobCodeField.getText().equals(rspp.getJob().getId())
+				|| !categoryJobCombo.getValue().equals(rspp.getJob().getJobCategory())
+				|| !categoryTypeCombo.getValue().equals(rspp.getJob().getJobType())
+				|| !jobdDescriptionField.getText().equals(rspp.getJob().getDescription())) {
+			updateJob();
+			isChanged = true;
+		}
+
+		if (rspp.getJob() instanceof JobPA) {
+			JobPA jobPA = (JobPA) rspp.getJob();
+			if (!cigField.getText().equals(jobPA.getCig())
+					|| !decreeNumberField.getText().equals(Integer.toString(jobPA.getDecreeNumber()))
+					|| !decreeDateField.getValue().equals(jobPA.getDecreeDate())) {
+				updateJob();
+				isChanged = true;
+			}
+		}
+
+		if (!noteField.getText().equals(rsppNote)) {
+			updateNote();
+			isChanged = true;
+		}
+
+		if (!jobStartField.getValue().equals(rspp.getStart()) || !jobEndField.getValue().equals(rspp.getEnd())) {
+			updateRSPP();
+			isChanged = true;
+		}
+
+		if (!invoiceNumberField.getText().equals(Integer.toString(rspp.getInvoice().getNumber()))
+				|| !invoiceEmissionDateField.getValue().equals(rspp.getInvoice().getEmission())
+				|| payedCheck.isSelected() != rspp.getInvoice().getPayed()) {
+			updateInvoice();
+			isChanged = true;
+		}
+		closeButtonAction();
+	}
+
+	private void updateAccounts() {
+		String oldFiscalCode = rspp.getJob().getCustomer().getName();
+		Map<String, Object> data = new HashMap<String, Object>();
+
+		data.put("fiscalCode", fiscalCodeText.getText());
+		data.put("name", nameField.getText());
+		data.put("numberVAT", numberVATField.getText());
+		data.put("atecoCode", atecoCodeField.getText());
+		data.put("legaAddress", addressField.getText());
+		data.put("customerCategory", categoryAccountCombo.getValue());
+
+		model.updateAccount(oldFiscalCode, data);
+	}
+
+	private void updateJob() {
+		String oldJobCode = rspp.getJob().getId();
+		Map<String, Object> data = new HashMap<String, Object>();
+		
+		data.put("jobCode", jobCodeField.getText());
+		data.put("category", categoryJobCombo.getValue());
+		data.put("type", categoryTypeCombo.getValue());
+		data.put("description", jobdDescriptionField.getText());
+		
+		if(rspp.getJob() instanceof JobPA) {		
+			data.put("cig", cigField.getText());
+			data.put("decreeNumber", decreeNumberField.getText());
+			data.put("decreeData", decreeDateField.getValue());
+		}
+		
+		model.updateJob(oldJobCode, data);
+	}
+
+	private void updateNote() {
+		String accountID = fiscalCodeText.getText();
+		String note = noteField.getText();
+		
+		model.updateNote(accountID, note);
+	}
+
+	private void updateRSPP() {
+		String jobCode = jobCodeField.getText();
+		LocalDate oldJobStart = rspp.getStart();
+		Map<String, Object> data = new HashMap<String, Object>();
+		
+		data.put("jobStart", rspp.getStart());
+		data.put("jobEnd", rspp.getEnd());
+		
+		model.updateRSPP(jobCode, oldJobStart, data);
+	}
+
+	private void updateInvoice() {
+
 	}
 }

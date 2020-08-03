@@ -14,7 +14,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.text.Font?>
 
 <VBox alignment="CENTER" prefHeight="263.0" prefWidth="680.0" spacing="20.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dclient.controllers.ViewEditController">
     <children>
@@ -302,7 +302,7 @@
       </VBox>
       <ButtonBar prefHeight="40.0" prefWidth="200.0">
         <buttons>
-          <Button disable="true" mnemonicParsing="false" text="Salva ed Esci" />
+          <Button disable="true" mnemonicParsing="false" onAction="#updateCheck" text="Salva ed Esci" />
             <Button fx:id="closeButton" layoutX="565.0" layoutY="10.0" mnemonicParsing="false" onAction="#closeButtonAction" text="Esci senza salvare" />
         </buttons>
       </ButtonBar>

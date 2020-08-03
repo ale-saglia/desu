@@ -35,41 +35,23 @@ public class SicurteaDAO {
 	}
 
 	public List<Map<String, String>> getDataForTable() {
-		String sql = (
-					"SELECT jobid,\n" + 
-					"       jobstart,\n" + 
-					"       jobend,\n" + 
-					"       \"name\",\n" + 
-					"       category,\n" + 
-					"       n2.invoiceid,\n" + 
-					"       payed,\n" + 
-					"       notes\n" + 
-					"FROM   (SELECT jobid,\n" + 
-					"               jobstart,\n" + 
-					"               jobend,\n" + 
-					"               \"name\",\n" + 
-					"               category,\n" + 
-					"               invoiceid,\n" + 
-					"               notes\n" + 
-					"        FROM   (SELECT r.rspp_jobid        AS jobid,\n" + 
-					"                       r.jobstart          AS jobstart,\n" + 
-					"                       r.jobstart          AS jobend,\n" + 
-					"                       j.customer          AS fiscalcode,\n" + 
-					"                       a.\"name\"            AS \"name\",\n" + 
-					"                       a.customer_category AS category,\n" + 
-					"                       r.invoiceid         AS invoiceid\n" + 
-					"                FROM   accounts.accounts a,\n" + 
-					"                       deadlines.rspp r,\n" + 
-					"                       jobs.jobs j\n" + 
-					"                WHERE  r.rspp_jobid = j.jobs_id\n" + 
-					"                       AND j.customer = a.fiscalcode\n" + 
-					"                ORDER  BY \"name\",\n" + 
-					"                          jobstart) AS n1\n" + 
-					"               LEFT JOIN deadlines.rspp_notes rn\n" + 
-					"                      ON n1.fiscalcode = rn.fiscalcode) AS n2\n" + 
-					"       LEFT JOIN invoices.invoices i\n" + 
-					"              ON i.invoiceid = n2.invoiceid "
-				);
+		String sql = ("SELECT jobid,\n" + "       jobstart,\n" + "       jobend,\n" + "       \"name\",\n"
+				+ "       category,\n" + "       n2.invoiceid,\n" + "       payed,\n" + "       notes\n"
+				+ "FROM   (SELECT jobid,\n" + "               jobstart,\n" + "               jobend,\n"
+				+ "               \"name\",\n" + "               category,\n" + "               invoiceid,\n"
+				+ "               notes\n" + "        FROM   (SELECT r.rspp_jobid        AS jobid,\n"
+				+ "                       r.jobstart          AS jobstart,\n"
+				+ "                       r.jobstart          AS jobend,\n"
+				+ "                       j.customer          AS fiscalcode,\n"
+				+ "                       a.\"name\"            AS \"name\",\n"
+				+ "                       a.customer_category AS category,\n"
+				+ "                       r.invoiceid         AS invoiceid\n"
+				+ "                FROM   accounts.accounts a,\n" + "                       deadlines.rspp r,\n"
+				+ "                       jobs.jobs j\n" + "                WHERE  r.rspp_jobid = j.jobs_id\n"
+				+ "                       AND j.customer = a.fiscalcode\n" + "                ORDER  BY \"name\",\n"
+				+ "                          jobstart) AS n1\n" + "               LEFT JOIN deadlines.rspp_notes rn\n"
+				+ "                      ON n1.fiscalcode = rn.fiscalcode) AS n2\n"
+				+ "       LEFT JOIN invoices.invoices i\n" + "              ON i.invoiceid = n2.invoiceid ");
 		List<Map<String, String>> tableElements;
 
 		try {
@@ -314,5 +296,95 @@ public class SicurteaDAO {
 		}
 		this.session.disconnect();
 		return message;
+	}
+
+	public void updateAccount(String oldFiscalCode, Map<String, Object> data) {
+		String query = "update accounts.accounts \r\n"
+				+ "set fiscalcode = ? , name = ? , numbervat = ? , atecocode = ? , legal_address = ? , customer_category = ?\r\n"
+				+ "where fiscalcode = ? ";
+
+		try {
+			Connection conn = ConnectDB.getConnection(session, config);
+			PreparedStatement st = conn.prepareStatement(query);
+			
+			st.setString(1, (String) data.get("fiscalCode"));
+			st.setString(2, (String) data.get("name"));
+			st.setString(3, (String) data.get("numberVAT"));
+			st.setString(4, (String) data.get("atecoCode"));
+			st.setString(5, (String) data.get("legaAddress"));
+			st.setString(6, (String) data.get("customerCategory"));
+			st.setString(7, oldFiscalCode);
+			
+			st.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+	}
+	
+	public void updateJob(String oldJobCode, Map<String, Object> data) {
+		String query = "update accounts.accounts \r\n"
+				+ "set fiscalcode = ? , name = ? , numbervat = ? , atecocode = ? , legal_address = ? , customer_category = ?\r\n"
+				+ "where fiscalcode = ? ";
+
+		try {
+			Connection conn = ConnectDB.getConnection(session, config);
+			PreparedStatement st = conn.prepareStatement(query);
+			
+			st.setString(1, (String) data.get("fiscalCode"));
+			st.setString(2, (String) data.get("name"));
+			st.setString(3, (String) data.get("numberVAT"));
+			st.setString(4, (String) data.get("atecoCode"));
+			st.setString(5, (String) data.get("legaAddress"));
+			st.setString(6, (String) data.get("customerCategory"));
+			st.setString(7, oldJobCode);
+			
+			st.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+	}
+	
+	public void updateNote(String accountID, String note) {
+		String query = "update accounts.accounts \r\n"
+				+ "set notes = ? \r\n"
+				+ "where fiscalcode = ? ";
+
+		try {
+			Connection conn = ConnectDB.getConnection(session, config);
+			PreparedStatement st = conn.prepareStatement(query);
+			
+			st.setString(1, note);
+			st.setString(2, accountID);
+			st.executeQuery();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+	}
+	
+	public void updateRSPP(String jobCode, LocalDate oldJobStart, Map<String, Object> data) {
+		String query = "update accounts.accounts \r\n"
+				+ "set fiscalcode = ? , name = ? , numbervat = ? , atecocode = ? , legal_address = ? , customer_category = ?\r\n"
+				+ "where fiscalcode = ? ";
+
+		try {
+			Connection conn = ConnectDB.getConnection(session, config);
+			PreparedStatement st = conn.prepareStatement(query);
+			
+			st.setString(1, (String) data.get("fiscalCode"));
+			st.setString(2, (String) data.get("name"));
+			
+			st.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
 	}
 }

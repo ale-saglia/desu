@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 import dclient.model.Model;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -18,6 +19,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -34,6 +36,7 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class MainController {
 	@FXML
@@ -83,7 +86,7 @@ public class MainController {
 
 		nameColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("accountName"));
 		deadlineColumn.setCellValueFactory(cellData -> cellData.getValue().jobEndProperty());
-		
+
 		deadlineColumn.setCellFactory(column -> {
 			return new TableCell<RSPPtableElement, LocalDate>() {
 				@Override
@@ -262,6 +265,17 @@ public class MainController {
 				scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 				stage.setScene(scene);
 				stage.show();
+				stage.setOnCloseRequest((EventHandler<WindowEvent>) new EventHandler<WindowEvent>() {
+					public void handle(WindowEvent we) {
+						if (controller.isChanged) {
+							System.out.println("Some elements were modified");
+							refresh();
+						}
+
+						Platform.exit();
+						System.exit(0);
+					}
+				});
 
 			} catch (final Exception e) {
 				e.printStackTrace();

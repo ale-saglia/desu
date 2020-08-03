@@ -65,4 +65,20 @@ public class Model {
 	public EncryptableProperties getConfig() {
 		return config;
 	}
+
+	public void updateAccount(String oldFiscalCode, Map<String, Object> data) {
+		dao.updateAccount(oldFiscalCode, data);
+	}
+
+	public void updateJob(String oldJobCode, Map<String, Object> data) {
+		dao.updateJob(oldJobCode, data);
+	}
+
+	public void updateNote(String accountID, String note) {
+		dao.updateNote(accountID, note);
+	}
+
+	public void updateRSPP(String jobCode, LocalDate oldJobStart, Map<String, Object> data) {
+		dao.updateRSPP(jobCode, oldJobStart, data);
+	}
 }

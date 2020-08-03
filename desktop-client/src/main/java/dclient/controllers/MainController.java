@@ -83,6 +83,7 @@ public class MainController {
 
 		nameColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("accountName"));
 		deadlineColumn.setCellValueFactory(cellData -> cellData.getValue().jobEndProperty());
+		
 		deadlineColumn.setCellFactory(column -> {
 			return new TableCell<RSPPtableElement, LocalDate>() {
 				@Override

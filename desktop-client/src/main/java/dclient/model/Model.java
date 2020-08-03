@@ -19,7 +19,7 @@ public class Model {
 	List<String> jobTypes;
 
 	public Model(String userPassword) throws IOException {
-		config = new EncryptableProperties((new Key("")).getEnc());
+		config = new EncryptableProperties((new Key(userPassword)).getEnc());
 		config.load(Key.class.getResourceAsStream("config.properties"));
 
 		this.dao = new SicurteaDAO(config);

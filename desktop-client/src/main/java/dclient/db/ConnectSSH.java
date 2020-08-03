@@ -23,6 +23,8 @@ public class ConnectSSH {
 
             session.setConfig(sshConnConfig);
             session.connect();
+            System.out.println(config.getProperty("db.port"));
+            
             System.out.println("Connected");
 
             System.out.println(session.getPortForwardingL());

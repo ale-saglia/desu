@@ -1,16 +1,20 @@
+# Program variables
+rsppTable.daysAdvance =
+rsppTable.dateFormat =
+
 # Database configuration
-db.host = 
-db.port = 
-db.user = 
-db.password = 
+db.host =
+db.port =
+db.user =
+db.password =
 db.database =
 
 # SSH configuration
-ssh.host = 
-ssh.user = 
-ssh.keyName = 
-ssh.keyPassword = 
-ssh.port = 
+ssh.host =
+ssh.user =
+ssh.keyName =
+ssh.keyPassword =
+ssh.port =
 
 # APIs key
-gMapsAPI = 
+gMapsAPI =

@@ -1,15 +1,11 @@
 package dclient;
 
-import dclient.controllers.MainController;
-import dclient.model.Model;
+import dclient.controllers.PasswordController;
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 /**
  * JavaFX App
@@ -17,37 +13,22 @@ import javafx.stage.WindowEvent;
 public class App extends Application {
 	@Override
 	public void start(Stage stage) {
-		Model model;
 
 		try {
-			FXMLLoader loader = new FXMLLoader(MainController.class.getResource("main.fxml"));
-			VBox root = (VBox) loader.load();
-			MainController controller = loader.getController();
-			model = new Model("");
-			controller.setModel(model);
-			controller.createTable();
-
-			stage.setMinWidth(640);
-			stage.setMinHeight(560);
-
-			Scene scene = new Scene(root, 960, 720);
-			scene.getStylesheets().add(MainController.class.getResource("application.css").toExternalForm());
+			FXMLLoader loader = new FXMLLoader(PasswordController.class.getResource("passwordPrompt.fxml"));
+			HBox root = (HBox) loader.load();
+			PasswordController passwordController = loader.getController();
+			Scene scene = new Scene(root);
+			passwordController.setWindow(stage, scene);
+			
+			scene.getStylesheets().add(PasswordController.class.getResource("application.css").toExternalForm());
 			stage.setScene(scene);
-			stage.setTitle("Scadenziario RSPP");
+			stage.setTitle("Inserisci la password");
 			stage.show();
-			stage.setOnCloseRequest((EventHandler<WindowEvent>) new EventHandler<WindowEvent>() {
-				public void handle(WindowEvent we) {
-					System.out.println("\n" + model.closeSession());
-
-					Platform.exit();
-					System.exit(0);
-				}
-			});
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	public static void main(String[] args) {

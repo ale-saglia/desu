@@ -5,6 +5,7 @@ module dclient {
     requires java.sql;
     requires jsch;
     requires transitive jasypt;
+	requires javafx.graphics;
     
     opens dclient.controllers;
     exports dclient;

@@ -81,4 +81,8 @@ public class Model {
 	public void updateRSPP(String jobCode, LocalDate oldJobStart, Map<String, Object> data) {
 		dao.updateRSPP(jobCode, oldJobStart, data);
 	}
+
+	public void updateInvoice(String oldInvoiceID, String jobID, Map<String, Object> data) {
+		dao.updateInvoice(oldInvoiceID, jobID, data);
+	}
 }

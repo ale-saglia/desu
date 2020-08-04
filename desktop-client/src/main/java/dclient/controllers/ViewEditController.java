@@ -254,6 +254,12 @@ public class ViewEditController {
 	}
 
 	private void updateInvoice() {
-
+		String oldInvoiceID = invoiceNumberField.getText();
+		String jobID = jobCodeField.getText();
+		Map<String, Object> data = new HashMap<String, Object>();
+		
+		data.put("invoiceID", invoiceNumberField.getText());
+		data.put("invoiceEmissionDate", invoiceEmissionDateField.getValue());
+		data.put("payed", payedCheck.isSelected());
 	}
 }

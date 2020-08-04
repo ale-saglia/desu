@@ -323,6 +323,7 @@ public class SicurteaDAO {
 		}
 	}
 	
+	//TODO
 	public void updateJob(String oldJobCode, Map<String, Object> data) {
 		String query = "update accounts.accounts \r\n"
 				+ "set fiscalcode = ? , name = ? , numbervat = ? , atecocode = ? , legal_address = ? , customer_category = ?\r\n"
@@ -349,7 +350,7 @@ public class SicurteaDAO {
 	}
 	
 	public void updateNote(String accountID, String note) {
-		String query = "update accounts.accounts \r\n"
+		String query = "update deadlines.rspp_notes \r\n"
 				+ "set notes = ? \r\n"
 				+ "where fiscalcode = ? ";
 
@@ -368,7 +369,29 @@ public class SicurteaDAO {
 		}
 	}
 	
+	//TODO
 	public void updateRSPP(String jobCode, LocalDate oldJobStart, Map<String, Object> data) {
+		String query = "update accounts.accounts \r\n"
+				+ "set fiscalcode = ? , name = ? , numbervat = ? , atecocode = ? , legal_address = ? , customer_category = ?\r\n"
+				+ "where fiscalcode = ? ";
+
+		try {
+			Connection conn = ConnectDB.getConnection(session, config);
+			PreparedStatement st = conn.prepareStatement(query);
+			
+			st.setString(1, (String) data.get("fiscalCode"));
+			st.setString(2, (String) data.get("name"));
+			
+			st.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+	}
+	
+	//TODO
+	public void updateInvoice(String oldInvoiceID, String jobID, Map<String, Object> data) {
 		String query = "update accounts.accounts \r\n"
 				+ "set fiscalcode = ? , name = ? , numbervat = ? , atecocode = ? , legal_address = ? , customer_category = ?\r\n"
 				+ "where fiscalcode = ? ";

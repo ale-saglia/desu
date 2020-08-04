@@ -306,7 +306,7 @@ public class SicurteaDAO {
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(query);
-			
+
 			st.setString(1, (String) data.get("fiscalCode"));
 			st.setString(2, (String) data.get("name"));
 			st.setString(3, (String) data.get("numberVAT"));
@@ -314,7 +314,7 @@ public class SicurteaDAO {
 			st.setString(5, (String) data.get("legaAddress"));
 			st.setString(6, (String) data.get("customerCategory"));
 			st.setString(7, oldFiscalCode);
-			
+
 			st.executeQuery();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -322,66 +322,78 @@ public class SicurteaDAO {
 			throw new RuntimeException("Error Connection Database");
 		}
 	}
-	
-	//TODO
+
 	public void updateJob(String oldJobCode, Map<String, Object> data) {
-		String query = "update accounts.accounts \r\n"
-				+ "set fiscalcode = ? , name = ? , numbervat = ? , atecocode = ? , legal_address = ? , customer_category = ?\r\n"
-				+ "where fiscalcode = ? ";
+		String query = "update jobs.jobs \r\n"
+				+ "set jobs_id = ? , jobs_category = ? , jobs_type = ? , jobs_description = ? \r\n"
+				+ "where jobs_id = ? ";
 
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(query);
 			
-			st.setString(1, (String) data.get("fiscalCode"));
-			st.setString(2, (String) data.get("name"));
-			st.setString(3, (String) data.get("numberVAT"));
-			st.setString(4, (String) data.get("atecoCode"));
-			st.setString(5, (String) data.get("legaAddress"));
-			st.setString(6, (String) data.get("customerCategory"));
-			st.setString(7, oldJobCode);
+			st.setString(1, (String) data.get("jobCode"));
+			st.setString(2, (String) data.get("category"));
+			st.setString(3, (String) data.get("type"));
+			st.setString(4, (String) data.get("description"));
+			st.setString(5, oldJobCode);
 			
 			st.executeQuery();
+			
+			if(data.containsKey("cig")) {
+				query = "update jobs.jobs_pa \r\n"
+						+ "set cig = ? , jobs_category = ? , decree_number = ? , decree_date = ? \r\n"
+						+ "where job_id = ? ";
+				
+				st = conn.prepareStatement(query);
+				
+				st.setString(1, (String) data.get("cig"));
+				st.setInt(2, Integer.parseInt((String) data.get("decreeNumber")));
+				st.setDate(3, (Date.valueOf((LocalDate) data.get("decreeDate"))));
+				st.setString(4, (String) data.get("jobCode"));
+				
+				st.executeQuery();
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");
 			throw new RuntimeException("Error Connection Database");
 		}
+
 	}
-	
+
 	public void updateNote(String accountID, String note) {
-		String query = "update deadlines.rspp_notes \r\n"
-				+ "set notes = ? \r\n"
-				+ "where fiscalcode = ? ";
+		String query = "update deadlines.rspp_notes \r\n" + "set notes = ? \r\n" + "where fiscalcode = ? ";
 
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(query);
-			
+
 			st.setString(1, note);
 			st.setString(2, accountID);
 			st.executeQuery();
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");
 			throw new RuntimeException("Error Connection Database");
 		}
 	}
-	
-	//TODO
+
 	public void updateRSPP(String jobCode, LocalDate oldJobStart, Map<String, Object> data) {
-		String query = "update accounts.accounts \r\n"
-				+ "set fiscalcode = ? , name = ? , numbervat = ? , atecocode = ? , legal_address = ? , customer_category = ?\r\n"
-				+ "where fiscalcode = ? ";
+		String query = "update deadlines.rspp \r\n"
+				+ "set jobstart = ? , jobend = ? \r\n"
+				+ "where rspp_jobid = ? and jobstart = ? ";
 
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(query);
-			
-			st.setString(1, (String) data.get("fiscalCode"));
-			st.setString(2, (String) data.get("name"));
-			
+
+			st.setDate(1, (Date.valueOf((LocalDate) data.get("jobStart"))));
+			st.setDate(2, (Date.valueOf((LocalDate) data.get("jobEnd"))));
+			st.setString(3, jobCode);
+			st.setDate(4,  (Date.valueOf(oldJobStart)));
+
 			st.executeQuery();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -389,8 +401,8 @@ public class SicurteaDAO {
 			throw new RuntimeException("Error Connection Database");
 		}
 	}
-	
-	//TODO
+
+	// TODO
 	public void updateInvoice(String oldInvoiceID, String jobID, Map<String, Object> data) {
 		String query = "update accounts.accounts \r\n"
 				+ "set fiscalcode = ? , name = ? , numbervat = ? , atecocode = ? , legal_address = ? , customer_category = ?\r\n"
@@ -399,10 +411,10 @@ public class SicurteaDAO {
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(query);
-			
+
 			st.setString(1, (String) data.get("fiscalCode"));
 			st.setString(2, (String) data.get("name"));
-			
+
 			st.executeQuery();
 		} catch (SQLException e) {
 			e.printStackTrace();

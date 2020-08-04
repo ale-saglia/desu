@@ -229,7 +229,7 @@ public class ViewEditController {
 		if(rspp.getJob() instanceof JobPA) {		
 			data.put("cig", cigField.getText());
 			data.put("decreeNumber", decreeNumberField.getText());
-			data.put("decreeData", decreeDateField.getValue());
+			data.put("decreeDate", decreeDateField.getValue());
 		}
 		
 		model.updateJob(oldJobCode, data);
@@ -261,5 +261,7 @@ public class ViewEditController {
 		data.put("invoiceID", invoiceNumberField.getText());
 		data.put("invoiceEmissionDate", invoiceEmissionDateField.getValue());
 		data.put("payed", payedCheck.isSelected());
+		
+		model.updateInvoice(oldInvoiceID, jobID, data);
 	}
 }

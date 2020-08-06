@@ -18,8 +18,11 @@ public class KeyEncrypt {
 
 		try {
 			System.out.print("Inserisci la password => ");
-			key = new Key(input = br.readLine());
-
+			input = br.readLine();
+			
+			System.out.print("Inserisci il valore della variabile d'ambiente => ");
+			key = new Key(input, br.readLine());
+			
 			System.out.println("\nInserisci le righe da criptare");
 
 			while (!(input = br.readLine()).trim().equals("")) {

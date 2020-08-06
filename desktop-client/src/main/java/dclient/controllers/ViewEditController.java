@@ -148,10 +148,13 @@ public class ViewEditController {
 	}
 
 	private void setInvoice() {
-		invoiceNumberField.setText(Integer.toString(rspp.getInvoice().getNumber()));
-		invoiceEmissionDateField.setValue(rspp.getInvoice().getEmission());
-		invoiceTypeField.setText(model.getAccountCategories().get(rspp.getInvoice().getType()));
-		payedCheck.setSelected(rspp.getInvoice().getPayed());
+		if (rspp.getInvoice() != null) {
+			invoiceNumberField.setText(Integer.toString(rspp.getInvoice().getNumber()));
+			invoiceEmissionDateField.setValue(rspp.getInvoice().getEmission());
+			invoiceTypeField.setText(model.getAccountCategories().get(rspp.getInvoice().getType()));
+			payedCheck.setSelected(rspp.getInvoice().getPayed());
+		}
+
 	}
 
 	public void updateCheck() {
@@ -220,25 +223,25 @@ public class ViewEditController {
 	private void updateJob() {
 		String oldJobCode = rspp.getJob().getId();
 		Map<String, Object> data = new HashMap<String, Object>();
-		
+
 		data.put("jobCode", jobCodeField.getText());
 		data.put("category", categoryJobCombo.getValue());
 		data.put("type", categoryTypeCombo.getValue());
 		data.put("description", jobdDescriptionField.getText());
-		
-		if(rspp.getJob() instanceof JobPA) {		
+
+		if (rspp.getJob() instanceof JobPA) {
 			data.put("cig", cigField.getText());
 			data.put("decreeNumber", decreeNumberField.getText());
 			data.put("decreeDate", decreeDateField.getValue());
 		}
-		
+
 		model.updateJob(oldJobCode, data);
 	}
 
 	private void updateNote() {
 		String accountID = fiscalCodeText.getText();
 		String note = noteField.getText();
-		
+
 		model.updateNote(accountID, note);
 	}
 
@@ -246,10 +249,10 @@ public class ViewEditController {
 		String jobCode = jobCodeField.getText();
 		LocalDate oldJobStart = rspp.getStart();
 		Map<String, Object> data = new HashMap<String, Object>();
-		
+
 		data.put("jobStart", rspp.getStart());
 		data.put("jobEnd", rspp.getEnd());
-		
+
 		model.updateRSPP(jobCode, oldJobStart, data);
 	}
 
@@ -257,11 +260,11 @@ public class ViewEditController {
 		String oldInvoiceID = invoiceNumberField.getText();
 		String jobID = jobCodeField.getText();
 		Map<String, Object> data = new HashMap<String, Object>();
-		
+
 		data.put("invoiceID", invoiceNumberField.getText());
 		data.put("invoiceEmissionDate", invoiceEmissionDateField.getValue());
 		data.put("payed", payedCheck.isSelected());
-		
+
 		model.updateInvoice(oldInvoiceID, jobID, data);
 	}
 }

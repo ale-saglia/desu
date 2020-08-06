@@ -210,7 +210,7 @@
                   <Insets bottom="5.0" />
                </VBox.margin>
             </Label>
-            <TextArea fx:id="noteField" prefHeight="200.0" prefWidth="200.0" />
+            <TextArea fx:id="noteField" editable="false" prefHeight="200.0" prefWidth="200.0" />
          </children>
       </VBox>
       <Separator prefWidth="200.0">

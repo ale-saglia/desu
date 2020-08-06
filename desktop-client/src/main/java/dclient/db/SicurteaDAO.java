@@ -221,10 +221,15 @@ public class SicurteaDAO {
 			st.setString(1, invoiceID);
 
 			ResultSet res = st.executeQuery();
-			res.next();
-			invoice = new Invoice(res.getString("invoiceid"), res.getInt("number"),
-					res.getDate("emission").toLocalDate(), res.getString("type"), res.getBoolean("payed"));
-			return invoice;
+			
+			if (res.next() != false) {
+				res.next();
+				invoice = new Invoice(res.getString("invoiceid"), res.getInt("number"),
+						res.getDate("emission").toLocalDate(), res.getString("type"), res.getBoolean("payed"));
+				return invoice;
+			    }
+			
+			return null;
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -331,27 +336,27 @@ public class SicurteaDAO {
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(query);
-			
+
 			st.setString(1, (String) data.get("jobCode"));
 			st.setString(2, (String) data.get("category"));
 			st.setString(3, (String) data.get("type"));
 			st.setString(4, (String) data.get("description"));
 			st.setString(5, oldJobCode);
-			
+
 			st.executeQuery();
-			
-			if(data.containsKey("cig")) {
+
+			if (data.containsKey("cig")) {
 				query = "update jobs.jobs_pa \r\n"
 						+ "set cig = ? , jobs_category = ? , decree_number = ? , decree_date = ? \r\n"
 						+ "where job_id = ? ";
-				
+
 				st = conn.prepareStatement(query);
-				
+
 				st.setString(1, (String) data.get("cig"));
 				st.setInt(2, Integer.parseInt((String) data.get("decreeNumber")));
 				st.setDate(3, (Date.valueOf((LocalDate) data.get("decreeDate"))));
 				st.setString(4, (String) data.get("jobCode"));
-				
+
 				st.executeQuery();
 			}
 		} catch (SQLException e) {
@@ -363,14 +368,17 @@ public class SicurteaDAO {
 	}
 
 	public void updateNote(String accountID, String note) {
-		String query = "update deadlines.rspp_notes \r\n" + "set notes = ? \r\n" + "where fiscalcode = ? ";
+		String query = "INSERT INTO deadlines.rspp_notes (fiscalcode, notes) " + "VALUES ( ? , ? ) "
+				+ "ON CONFLICT (fiscalcode) DO UPDATE SET notes = ? where fiscalcode = ? ";
 
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(query);
 
-			st.setString(1, note);
-			st.setString(2, accountID);
+			st.setString(1, accountID);
+			st.setString(2, note);
+			st.setString(3, note);
+			st.setString(4, accountID);
 			st.executeQuery();
 
 		} catch (SQLException e) {
@@ -381,8 +389,7 @@ public class SicurteaDAO {
 	}
 
 	public void updateRSPP(String jobCode, LocalDate oldJobStart, Map<String, Object> data) {
-		String query = "update deadlines.rspp \r\n"
-				+ "set jobstart = ? , jobend = ? \r\n"
+		String query = "update deadlines.rspp \r\n" + "set jobstart = ? , jobend = ? \r\n"
 				+ "where rspp_jobid = ? and jobstart = ? ";
 
 		try {
@@ -392,7 +399,7 @@ public class SicurteaDAO {
 			st.setDate(1, (Date.valueOf((LocalDate) data.get("jobStart"))));
 			st.setDate(2, (Date.valueOf((LocalDate) data.get("jobEnd"))));
 			st.setString(3, jobCode);
-			st.setDate(4,  (Date.valueOf(oldJobStart)));
+			st.setDate(4, (Date.valueOf(oldJobStart)));
 
 			st.executeQuery();
 		} catch (SQLException e) {
@@ -404,9 +411,8 @@ public class SicurteaDAO {
 
 	// TODO
 	public void updateInvoice(String oldInvoiceID, String jobID, Map<String, Object> data) {
-		String query = "update accounts.accounts \r\n"
-				+ "set fiscalcode = ? , name = ? , numbervat = ? , atecocode = ? , legal_address = ? , customer_category = ?\r\n"
-				+ "where fiscalcode = ? ";
+		String query = "update invoices.invoices \r\n"
+				+ "set invoiceid = ? , number = ? , emission = ? , type = ? , payed = ? \r\n" + "where invoiceid = ? ";
 
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
@@ -414,6 +420,10 @@ public class SicurteaDAO {
 
 			st.setString(1, (String) data.get("fiscalCode"));
 			st.setString(2, (String) data.get("name"));
+			st.setString(3, (String) data.get("fiscalCode"));
+			st.setString(4, (String) data.get("name"));
+			st.setString(5, (String) data.get("fiscalCode"));
+			st.setString(6, oldInvoiceID);
 
 			st.executeQuery();
 		} catch (SQLException e) {

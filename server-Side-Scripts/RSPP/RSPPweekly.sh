@@ -1,5 +1,4 @@
 ##!/bin/bash
-cd /root/gest-Sicurtea
+cd ~/gest-Sicurtea/server-Side-Scripts/RSPP
 git pull
-cd server-Side-Scripts/RSPP
 python3 emailRSPP.py

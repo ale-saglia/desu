@@ -96,7 +96,6 @@ def mailComposer():
     msg = msg.strip()
 
     resultSet = getJobExpiredWithoutInvoice(conn)
-    print(resultSet)
     if resultSet:
         if (msg != ""):
             msg += "\n\n"
@@ -124,8 +123,6 @@ def mailComposer():
         " e il " + \
         (date.today() + timedelta(cfg["General"]
                                   ["daysAdvance"])).strftime('%d/%m/%Y')
-
-    print(msg)
     return message
 
 
@@ -139,6 +136,7 @@ def mailSender(message):
         message['To'] = cfg["Email"]["mailTo"]
 
         server.send_message(message)
+        print("Mail sent to " + cfg["Email"]["mailTo"])
     except:
         print('Something went wrong...')
         return

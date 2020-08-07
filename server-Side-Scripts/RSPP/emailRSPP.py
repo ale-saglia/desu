@@ -10,21 +10,14 @@ from pathlib import Path
 
 global cfg
 
+
 def main():
-    queryResult = getJobInDealine(connect())
-    if queryResult is None:
-        exit()
+    mailText = mailComposer()
+    mailSender(mailText)
 
-    for row in queryResult:
-        print("Name", row[0])
-        print("Deadline", row[1])
-        print("\n")
-
-    msg = mailComposer(queryResult)
-    mailSender(msg)
 
 def connect():
-    #Connect to the PostgreSQL database server
+    # Connect to the PostgreSQL database server
     conn = None
     try:
         print('Connecting to the PostgreSQL database...')
@@ -46,41 +39,100 @@ def getJobInDealine(conn):
             return
         cursor = conn.cursor()
 
-        query = "SELECT a.\"name\", r.jobend FROM deadlines.rspp r, accounts.accounts a where r.fiscalcode = a.fiscalcode and r.jobend between current_date and CURRENT_DATE + INTERVAL '" + str(cfg["General"]["daysAdvance"]) + " day' ORDER by r.jobend asc "
+        query = ("select tab.\"name\", tab.jobend, tab.invoiceid, tab.notes from (select a.\"name\" as name, a.fiscalcode as fiscalcode , r.jobend as jobend, rn.notes as notes, r.invoiceid from accounts.accounts a, jobs.jobs j, deadlines.rspp r, deadlines.rspp_notes rn where r.rspp_jobid = j.jobs_id and j.customer = a.fiscalcode and r.jobend between current_date and current_date + interval '" +
+                 str(cfg["General"]["daysAdvance"]) + "' and r.invoiceid is null ) as tab left join deadlines.rspp_notes rn on rn.fiscalcode = tab.fiscalcode")
         cursor.execute(query)
 
         # Row 0 should contain account name and row 1 should contains the deadline
         results = list(cursor.fetchall())
-        
+
         if results is not None:
             return results
         else:
             return
 
     except psycopg2.Error as error:
-            print("Failed to read data from table", error)
-    finally:
-        if (conn):
-            conn.close()
-            print("The database connection is closed")
+        print("Failed to read data from table", error)
 
-def mailComposer(queryResult):
+
+def getJobExpiredWithoutInvoice(conn):
+    try:
+        if conn is None:
+            return
+        cursor = conn.cursor()
+
+        query = ("select tab.\"name\", tab.jobend, tab.notes from (select a.\"name\" as name, a.fiscalcode as fiscalcode , r.jobend as jobend, rn.notes as notes from accounts.accounts a, jobs.jobs j, deadlines.rspp r, deadlines.rspp_notes rn where r.rspp_jobid = j.jobs_id and j.customer = a.fiscalcode and r.jobend < current_date and r.invoiceid is null ) as tab left join deadlines.rspp_notes rn on rn.fiscalcode = tab.fiscalcode ")
+        cursor.execute(query)
+
+        # Row 0 should contain account name and row 1 should contains the deadline
+        results = list(cursor.fetchall())
+
+        if results is not None:
+            return results
+        else:
+            return
+
+    except psycopg2.Error as error:
+        print("Failed to read data from table", error)
+
+
+def mailComposer():
     msg = ""
-    for row in queryResult:
-        msg += "Ragione sociale: " + row[0]
-        msg += "\n"
-        msg += "Scadenza" + row[1].strftime('%d/%m/%Y')
-        msg += "\n\n"
+    conn = connect()
+
+    resultSet = getJobInDealine(conn)
+    if resultSet:
+        msg += "Ecco gli incarichi in scadenza nei prossimi " + \
+            str(cfg["General"]["daysAdvance"]) + " giorni"
+        for row in resultSet:
+            msg += "Ragione sociale: " + row[0]
+            msg += "\n"
+            msg += "Scadenza" + row[1].strftime('%d/%m/%Y')
+            msg += "\n"
+            msg += "Codice fattura: " + row[2]
+            msg += "\n"
+            msg += "Note: " + row[3]
+            msg += "\n\n"
     msg = msg.strip()
+
+    resultSet = getJobExpiredWithoutInvoice(conn)
+    print(resultSet)
+    if resultSet:
+        if (msg != ""):
+            msg += "\n\n"
+
+        msg += "Sono stati trovati i seguenti incarichi scaduti e privi di indicazioni sulla fattura\n\n"
+        for row in resultSet:
+            msg += "Ragione sociale: " + row[0]
+            msg += "\n"
+            msg += "Scaduto il " + row[1].strftime('%d/%m/%Y')
+            msg += "\n"
+            msg += "Note: " + row[2]
+            msg += "\n\n"
+    msg = msg.strip()
+
+    if (msg == ""):
+        exit()
+
+    if (conn):
+        conn.close()
+        print("The database connection is closed")
 
     message = EmailMessage()
     message.set_content(msg)
-    message['Subject'] = "RSPP in scadenza tra il " + date.today().strftime('%d/%m/%Y') + " e il " + (date.today() + timedelta(cfg["General"]["daysAdvance"])).strftime('%d/%m/%Y')
+    message['Subject'] = "RSPP in scadenza tra il " + date.today().strftime('%d/%m/%Y') + \
+        " e il " + \
+        (date.today() + timedelta(cfg["General"]
+                                  ["daysAdvance"])).strftime('%d/%m/%Y')
+
+    print(msg)
     return message
+
 
 def mailSender(message):
     try:
-        server = smtplib.SMTP_SSL(cfg["Email"]["smtpServer"], cfg["Email"]["smtpPort"])
+        server = smtplib.SMTP_SSL(
+            cfg["Email"]["smtpServer"], cfg["Email"]["smtpPort"])
         server.login(cfg["Email"]["user"], cfg["Email"]["password"])
 
         message['From'] = cfg["Email"]["mailFrom"]
@@ -88,9 +140,11 @@ def mailSender(message):
 
         server.send_message(message)
     except:
-        print ('Something went wrong...')
+        print('Something went wrong...')
+        return
     finally:
         server.quit()
+
 
 if __name__ == "__main__":
     confPath = Path(__file__).resolve().parents[1] / 'conf.yaml'

@@ -6,6 +6,7 @@ module dclient {
     requires jsch;
     requires transitive jasypt;
 	requires javafx.graphics;
+	requires org.apache.commons.lang3;
     
     opens dclient.controllers;
     exports dclient;

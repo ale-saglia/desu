@@ -6,38 +6,70 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.RandomStringUtils;
+
+import dclient.model.Model;
+
 public class KeyEncrypt {
+	private final int PASSWORD_LENGHT = 64;
+	
+	Key key;
+	
+	private String userPassword;
+	private String sshPassword;
+	private String envPassword;
 
 	public static void main(String[] args) {
-		Map<String, String> passwordMap = new HashMap<String, String>();
-		String input;
-		Key key;
-
+		KeyEncrypt keyEncrypt = new KeyEncrypt();
+		keyEncrypt.userInput();
+		keyEncrypt.setEnvVar("");
+		keyEncrypt.initKey();
+	}
+	
+	private void userInput(){
 		InputStreamReader isr = new InputStreamReader(System.in);
 		BufferedReader br = new BufferedReader(isr);
 
 		try {
 			System.out.print("Inserisci la password => ");
-			input = br.readLine();
-			
-			System.out.print("Inserisci il valore della variabile d'ambiente => ");
-			key = new Key(input, br.readLine());
-			
-			System.out.println("\nInserisci le righe da criptare");
+			userPassword = br.readLine();
 
-			while (!(input = br.readLine()).trim().equals("")) {
-				passwordMap.put(new String(input), key.getEnc().encrypt(input));
-				System.out.println(input);
-			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	private void initKey() {
+		key = new Key(userPassword, "");
+	}
 
-		System.out.println("\n\n");
-
-		for (String password : passwordMap.keySet()) {
-			System.out.println(password + " => " + passwordMap.get(password));
+	private void setEnvVar(String varName) {
+		envPassword = passwordGenerator();
+		try {
+			Runtime.getRuntime().exec("setx " + varName + " " + envPassword);
+		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
+	}
+
+	private void setSSH() {
+		sshPassword = passwordGenerator();
+		try {
+			Runtime.getRuntime().exec(
+					"ssh-keygen -f " + Model.getConfigPath() + "/" + "id_dclient.rsa" + " -t rsa  -b 4096 -C " + System.getProperty("user.name" + " -N " + sshPassword)
+
+			);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+	}
+	
+	private void movePublicKey() {
+		
+	}
+
+	private String passwordGenerator() {
+		return RandomStringUtils.randomAlphanumeric(PASSWORD_LENGHT);
 	}
 }

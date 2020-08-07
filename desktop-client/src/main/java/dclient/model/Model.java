@@ -13,7 +13,7 @@ import dclient.db.SicurteaDAO;
 
 public class Model {
 	InputStream cfg;
-	final String CONFIG_PATH = System.getProperty("user.home") + "/.dclient/config.properties";
+	public final static String CONFIG_PATH = System.getProperty("user.home") + "/.dclient/";
 	EncryptableProperties config;
 	
 	SicurteaDAO dao;
@@ -25,7 +25,7 @@ public class Model {
 
 	public Model(String userPassword) throws IOException {
 		config = new EncryptableProperties((new Key(userPassword)).getEnc());
-		config.load(new FileInputStream(CONFIG_PATH));
+		config.load(new FileInputStream(CONFIG_PATH + "config.properties"));
 
 		this.dao = new SicurteaDAO(config);
 
@@ -89,5 +89,9 @@ public class Model {
 
 	public void updateInvoice(String oldInvoiceID, String jobID, Map<String, Object> data) {
 		dao.updateInvoice(oldInvoiceID, jobID, data);
+	}
+	
+	public static String getConfigPath() {
+		return CONFIG_PATH;
 	}
 }

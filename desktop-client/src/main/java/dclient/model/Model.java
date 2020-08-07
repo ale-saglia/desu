@@ -1,6 +1,8 @@
 package dclient.model;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +12,10 @@ import dclient.Key;
 import dclient.db.SicurteaDAO;
 
 public class Model {
+	InputStream cfg;
+	final String CONFIG_PATH = System.getProperty("user.home") + "/.dclient/config.properties";
 	EncryptableProperties config;
+	
 	SicurteaDAO dao;
 
 	Map<String, String> accountCategories;
@@ -20,7 +25,7 @@ public class Model {
 
 	public Model(String userPassword) throws IOException {
 		config = new EncryptableProperties((new Key(userPassword)).getEnc());
-		config.load(Key.class.getResourceAsStream("config.properties"));
+		config.load(new FileInputStream(CONFIG_PATH));
 
 		this.dao = new SicurteaDAO(config);
 

@@ -7,6 +7,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -92,7 +94,12 @@ public class KeyEncrypt {
 	}
 
 	private void movePublicKey() {
-
+		try {
+			Files.move(Paths.get(installationFolder + "\\" + sshFileName + ".pub"),
+					Paths.get(".\\" + sshFileName + ".pub"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private String passwordGenerator() {
@@ -102,16 +109,20 @@ public class KeyEncrypt {
 	private void createPropertiesFile() {
 		Properties installProperties = new Properties();
 
-		String[] openProperties = { "rsppTable.daysAdvance" };
-		for (int i = 0; i < openProperties.length; i++) {
-			installProperties.setProperty(openProperties[i], config.getProperty(openProperties[i]));
-		}
+		installProperties.setProperty("rsppTable.daysAdvance", config.getProperty("rsppTable.daysAdvance"));
+		installProperties.setProperty("rsppTable.dateFormat", config.getProperty("rsppTable.dateFormat"));
 
-		String[] encryptableProperties = { "ciao" };
-		for (int i = 0; i < encryptableProperties.length; i++) {
-			installProperties.setProperty(encryptableProperties[i],
-					"ENC(" + key.getEnc().encrypt(config.getProperty(encryptableProperties[i])) + ")");
-		}
+		installProperties.setProperty("db.host", "localhost");
+		installProperties.setProperty("db.port", config.getProperty("db.port", "5443"));
+		installProperties.setProperty("db.user", "ENC(" + key.getEnc().encrypt(config.getProperty("db.user")) + ")");
+		installProperties.setProperty("db.password",
+				"ENC(" + key.getEnc().encrypt(config.getProperty("db.password")) + ")");
+		installProperties.setProperty("db.database", config.getProperty("db.database"));
+
+		installProperties.setProperty("ssh.host", config.getProperty("ssh.host"));
+		installProperties.setProperty("ssh.user", "ENC(" + key.getEnc().encrypt(config.getProperty("ssh.user")) + ")");
+		installProperties.setProperty("ssh.user", "ENC(" + key.getEnc().encrypt(sshPassword) + ")");
+		installProperties.setProperty("ssh.port", config.getProperty("ssh.port", "22"));
 
 		File file = new File(installationFolder + "/config.properties");
 		FileOutputStream fileOut;

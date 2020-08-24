@@ -37,6 +37,9 @@ public class KeyEncrypt {
 		keyEncrypt.userInput();
 		keyEncrypt.setEnvVar();
 		keyEncrypt.initKey();
+		keyEncrypt.setSSH();
+		keyEncrypt.movePublicKey();
+		keyEncrypt.createPropertiesFile();
 	}
 
 	private void loadInitProperties() {

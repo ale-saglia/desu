@@ -98,6 +98,7 @@ public class KeyEncrypt {
 	}
 
 	private void movePublicKey() {
+		//TODO - Add wait for public key generation
 		try {
 			Files.move(Paths.get(installationFolder + "\\" + sshFileName + ".pub"),
 					Paths.get(".\\" + System.getProperty("user.name")  + "-" + InetAddress.getLocalHost().getHostName() + ".pub"));

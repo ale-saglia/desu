@@ -304,8 +304,8 @@ public class SicurteaDAO {
 	}
 
 	public void updateAccount(String oldFiscalCode, Map<String, Object> data) {
-		String query = "update accounts.accounts \r\n"
-				+ "set fiscalcode = ? , name = ? , numbervat = ? , atecocode = ? , legal_address = ? , customer_category = ?\r\n"
+		String query = "update accounts.accounts "
+				+ "set fiscalcode = ? , name = ? , numbervat = ? , atecocode = ? , legal_address = ? , customer_category = ? "
 				+ "where fiscalcode = ? ";
 
 		try {
@@ -329,8 +329,8 @@ public class SicurteaDAO {
 	}
 
 	public void updateJob(String oldJobCode, Map<String, Object> data) {
-		String query = "update jobs.jobs \r\n"
-				+ "set jobs_id = ? , jobs_category = ? , jobs_type = ? , jobs_description = ? \r\n"
+		String query = "update jobs.jobs "
+				+ "set jobs_id = ? , jobs_category = ? , jobs_type = ? , jobs_description = ? "
 				+ "where jobs_id = ? ";
 
 		try {

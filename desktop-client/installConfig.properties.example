@@ -1,0 +1,19 @@
+##Installer override settings
+#password.lenght = 
+#env.variable = 
+#installation.folder =
+#ssh.keyname = 
+#ssh.identifier = 
+#db.host =
+
+##Clear login
+ssh.host = 
+ssh.user = 
+ssh.port = 
+
+db.user = 
+db.password = 
+db.database = 
+
+rsppTable.daysAdvance = 
+rsppTable.dateFormat =

@@ -5,6 +5,7 @@ import java.util.Properties;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 
+import dclient.model.Model;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
@@ -12,7 +13,7 @@ public class ConnectSSH {
 	public static Session getSession(Properties config) {
 		JSch jsch = new JSch();
 		Session session = null;
-		String privateKeyPath = System.getProperty("user.home") + "/.ssh/" + config.getProperty("ssh.keyName");
+		String privateKeyPath = Model.getConfigPath() + config.getProperty("ssh.keyName");
 
 		try {
 			// SSH connection setup && port forwarding

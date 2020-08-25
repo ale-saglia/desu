@@ -14,7 +14,6 @@ import java.nio.file.Paths;
 import java.util.Properties;
 
 import org.apache.commons.text.RandomStringGenerator;
-import org.jasypt.properties.EncryptableProperties;
 
 public class KeyEncrypt {
 	private final int DEFAULT_PASSWORD_LENGHT = 64;
@@ -32,6 +31,8 @@ public class KeyEncrypt {
 	private String sshPassword;
 	private String envName;
 	private String envPassword;
+
+	private String envAlgorithm;
 
 	Process sshCreation;
 
@@ -65,6 +66,7 @@ public class KeyEncrypt {
 		sshFileName = config.getProperty("ssh.keyName", "id_dclient.rsa");
 		sshNameIdentifier = config.getProperty("ssh.identifier", System.getProperty("user.name"));
 		envName = config.getProperty("env.variable", DEFAULT_ENV_VARIABLE);
+		envAlgorithm = config.getProperty("enc.algorithm", DEFAULT_ENCRYPTION_ALGORITHM);
 	}
 
 	private void userInput() {
@@ -81,7 +83,7 @@ public class KeyEncrypt {
 	}
 
 	private void initKey() {
-		key = new Key(null, (EncryptableProperties) config).installationKey(userPassword, envPassword);
+		key = new Key(userPassword, envPassword, envAlgorithm);
 	}
 
 	private void setEnvVar() {
@@ -144,9 +146,10 @@ public class KeyEncrypt {
 		installProperties.setProperty("ssh.keyName", sshFileName);
 		installProperties.setProperty("ssh.keyPassword", "ENC(" + key.getEnc().encrypt(sshPassword) + ")");
 		installProperties.setProperty("ssh.port", config.getProperty("ssh.port", "22"));
-		
+
 		installProperties.setProperty("env.varName", config.getProperty("env.varName", DEFAULT_ENV_VARIABLE));
-		installProperties.setProperty("enc.algorithm", config.getProperty("enc.algorithm", DEFAULT_ENCRYPTION_ALGORITHM));
+		installProperties.setProperty("enc.algorithm",
+				config.getProperty("enc.algorithm", DEFAULT_ENCRYPTION_ALGORITHM));
 
 		File file = new File(installationFolder + "/config.properties");
 		FileOutputStream fileOut;

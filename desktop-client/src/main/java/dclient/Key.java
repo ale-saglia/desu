@@ -20,12 +20,13 @@ public class Key {
 		enc.setIvGenerator(new RandomIvGenerator());
 	}
 	
-	public Key installationKey(String password, String envPassword) {
-		Key key = new Key(null, config);
-		key.enc.setPassword(mergeHashPass(password, envPassword));
-		return key;
+	public Key(String password, String envVariablePassword, String encAlgorithm) {
+		enc = new StandardPBEStringEncryptor();
+		enc.setAlgorithm(encAlgorithm);
+		enc.setPassword(Hashing.sha512().hashString((password.concat(envVariablePassword)), StandardCharsets.UTF_8).toString());
+		enc.setIvGenerator(new RandomIvGenerator());
 	}
-
+	
 	public StandardPBEStringEncryptor getEnc() {
 		return enc;
 	}
@@ -33,10 +34,6 @@ public class Key {
 	private String mergeHashPass(String password) {
 		password = password + getEnvPass();
 		return System.getenv(password);
-	}
-	
-	private String mergeHashPass(String password, String envPassword) {
-		return Hashing.sha512().hashString((password.concat(envPassword)), StandardCharsets.UTF_8).toString();
 	}
 	
 	private String getEnvPass() {

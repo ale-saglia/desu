@@ -13,7 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;
 
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.text.RandomStringGenerator;
 import org.jasypt.properties.EncryptableProperties;
 
 public class KeyEncrypt {
@@ -123,7 +123,7 @@ public class KeyEncrypt {
 	}
 
 	private String passwordGenerator() {
-		return RandomStringUtils.randomAlphanumeric(passwordLenght);
+		return new RandomStringGenerator.Builder().build().generate(passwordLenght);
 	}
 
 	private void createPropertiesFile() {

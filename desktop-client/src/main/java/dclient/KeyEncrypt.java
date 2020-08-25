@@ -60,7 +60,7 @@ public class KeyEncrypt {
 				.parseInt(config.getProperty("password.lenght", Integer.toString(DEFAULT_PASSWORD_LENGHT)));
 		installationFolder = config.getProperty("installation.folder",
 				System.getProperty("user.home") + "\\.dclient\\");
-		sshFileName = config.getProperty("ssh.keyname", "id_dclient.rsa");
+		sshFileName = config.getProperty("ssh.keyName", "id_dclient.rsa");
 		sshNameIdentifier = config.getProperty("ssh.identifier", System.getProperty("user.name"));
 		envName = config.getProperty("env.variable", DEFAULT_ENV_VARIABLE);
 	}
@@ -139,7 +139,8 @@ public class KeyEncrypt {
 
 		installProperties.setProperty("ssh.host", config.getProperty("ssh.host"));
 		installProperties.setProperty("ssh.user", "ENC(" + key.getEnc().encrypt(config.getProperty("ssh.user")) + ")");
-		installProperties.setProperty("ssh.user", "ENC(" + key.getEnc().encrypt(sshPassword) + ")");
+		installProperties.setProperty("ssh.keyName", sshFileName);
+		installProperties.setProperty("ssh.keyPassword", "ENC(" + key.getEnc().encrypt(sshPassword) + ")");
 		installProperties.setProperty("ssh.port", config.getProperty("ssh.port", "22"));
 
 		File file = new File(installationFolder + "/config.properties");

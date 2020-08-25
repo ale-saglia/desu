@@ -27,9 +27,6 @@ server-Side-Scripts/conf.yaml
 *.properties
 *.prefs
 
-# Ignore masterkey generator class
-desktop-client/src/main/java/dclient/Key.java
-
 # Java BUILD files
 desktop-client/bin
 desktop-client/target

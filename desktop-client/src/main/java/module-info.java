@@ -7,7 +7,7 @@ module dclient {
     requires transitive jasypt;
 	requires javafx.graphics;
 	requires org.apache.commons.lang3;
-	requires guava;
+	requires com.google.common;
 	requires org.apache.commons.text;
     
     opens dclient.controllers;

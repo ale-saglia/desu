@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.ProcessBuilder.Redirect;
 import java.net.InetAddress;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -29,6 +30,8 @@ public class KeyEncrypt {
 	private String sshPassword;
 	private String envName;
 	private String envPassword;
+
+	Process sshCreation;
 
 	Properties config;
 
@@ -55,7 +58,8 @@ public class KeyEncrypt {
 
 		passwordLenght = Integer
 				.parseInt(config.getProperty("password.lenght", Integer.toString(DEFAULT_PASSWORD_LENGHT)));
-		installationFolder = config.getProperty("installation.folder", System.getProperty("user.home") + "/.dclient/");
+		installationFolder = config.getProperty("installation.folder",
+				System.getProperty("user.home") + "\\.dclient\\");
 		sshFileName = config.getProperty("ssh.keyname", "id_dclient.rsa");
 		sshNameIdentifier = config.getProperty("ssh.identifier", System.getProperty("user.name"));
 		envName = config.getProperty("env.variable", DEFAULT_ENV_VARIABLE);
@@ -89,19 +93,28 @@ public class KeyEncrypt {
 
 	private void setSSH() {
 		sshPassword = passwordGenerator();
+		String command = ("ssh-keygen -f " + installationFolder + sshFileName + " -t rsa  -b 4096 -C "
+				+ sshNameIdentifier + " -N " + sshPassword);
+
+		ProcessBuilder sshCreationBuilder = new ProcessBuilder("cmd.exe", "/c", command);
+		sshCreationBuilder.redirectOutput(Redirect.INHERIT);
+		sshCreationBuilder.redirectError(Redirect.INHERIT);
 		try {
-			Runtime.getRuntime().exec("ssh-keygen -f " + installationFolder + "/" + sshFileName + " -t rsa  -b 4096 -C "
-					+ sshNameIdentifier + " -N " + sshPassword);
-		} catch (IOException e1) {
-			e1.printStackTrace();
+			sshCreation = sshCreationBuilder.start();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
 	private void movePublicKey() {
-		//TODO - Add wait for public key generation
 		try {
-			Files.move(Paths.get(installationFolder + "\\" + sshFileName + ".pub"),
-					Paths.get(".\\" + System.getProperty("user.name")  + "-" + InetAddress.getLocalHost().getHostName() + ".pub"));
+			sshCreation.waitFor();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
+		try {
+			Files.move(Paths.get(installationFolder + "\\" + sshFileName + ".pub"), Paths.get(
+					".\\" + System.getProperty("user.name") + "-" + InetAddress.getLocalHost().getHostName() + ".pub"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

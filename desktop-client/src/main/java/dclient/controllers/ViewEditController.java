@@ -261,8 +261,9 @@ public class ViewEditController {
 		String jobID = jobCodeField.getText();
 		Map<String, Object> data = new HashMap<String, Object>();
 
-		data.put("invoiceID", invoiceNumberField.getText());
+		data.put("invoiceNumber", invoiceNumberField.getText());
 		data.put("invoiceEmissionDate", invoiceEmissionDateField.getValue());
+		data.put("type", categoryAccountCombo.getValue());
 		data.put("payed", payedCheck.isSelected());
 
 		model.updateInvoice(oldInvoiceID, jobID, data);

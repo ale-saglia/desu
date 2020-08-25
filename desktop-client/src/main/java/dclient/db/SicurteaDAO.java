@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -221,14 +222,14 @@ public class SicurteaDAO {
 			st.setString(1, invoiceID);
 
 			ResultSet res = st.executeQuery();
-			
+
 			if (res.next() != false) {
 				res.next();
 				invoice = new Invoice(res.getString("invoiceid"), res.getInt("number"),
 						res.getDate("emission").toLocalDate(), res.getString("type"), res.getBoolean("payed"));
 				return invoice;
-			    }
-			
+			}
+
 			return null;
 
 		} catch (SQLException e) {
@@ -330,8 +331,7 @@ public class SicurteaDAO {
 
 	public void updateJob(String oldJobCode, Map<String, Object> data) {
 		String query = "update jobs.jobs "
-				+ "set jobs_id = ? , jobs_category = ? , jobs_type = ? , jobs_description = ? "
-				+ "where jobs_id = ? ";
+				+ "set jobs_id = ? , jobs_category = ? , jobs_type = ? , jobs_description = ? " + "where jobs_id = ? ";
 
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
@@ -409,22 +409,31 @@ public class SicurteaDAO {
 		}
 	}
 
-	// TODO
 	public void updateInvoice(String oldInvoiceID, String jobID, Map<String, Object> data) {
-		String query = "update invoices.invoices \r\n"
-				+ "set invoiceid = ? , number = ? , emission = ? , type = ? , payed = ? \r\n" + "where invoiceid = ? ";
+		String query = "INSERT INTO invoices.invoices (invoiceid, number, emission, type, payed) "
+				+ "VALUES ( ? , ? , ? , ? , ? ) ON CONFLICT (invoiceid) DO UPDATE SET "
+				+ "invoiceid = ? , number = ? , emission = ? , type = ? , payed = ? where invoiceid = ? ";
 
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(query);
 
-			st.setString(1, (String) data.get("fiscalCode"));
-			st.setString(2, (String) data.get("name"));
-			st.setString(3, (String) data.get("fiscalCode"));
-			st.setString(4, (String) data.get("name"));
-			st.setString(5, (String) data.get("fiscalCode"));
-			st.setString(6, oldInvoiceID);
-
+			if (oldInvoiceID.equals(null) || oldInvoiceID.isBlank())
+				st.setString(1, (String) data.get("invoiceID"));
+			else
+				st.setString(1, oldInvoiceID);
+			st.setString(2, ((String) data.get("invoiceNumber")) + "/" + ((String) data.get("type")).toUpperCase() + " " + (LocalDate) data.get("invoiceEmissionDate"));
+			st.setDate(3, (Date.valueOf((LocalDate) data.get("invoiceEmissionDate"))));
+			st.setString(4, (String) data.get("type"));
+			st.setBoolean(5, (Boolean) data.get("payed"));
+			
+			st.setString(7, (String) data.get("invoiceNumber"));
+			st.setString(8, (String) data.get("invoiceNumber"));
+			st.setDate(9, (Date.valueOf((LocalDate) data.get("invoiceEmissionDate"))));
+			st.setString(10, (String) data.get("type"));
+			st.setBoolean(11, (Boolean) data.get("payed"));
+			st.setString(12, oldInvoiceID);
+			
 			st.executeQuery();
 		} catch (SQLException e) {
 			e.printStackTrace();

@@ -30,3 +30,4 @@ server-Side-Scripts/conf.yaml
 # Java BUILD files
 desktop-client/bin
 desktop-client/target
+*.classpath

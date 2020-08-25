@@ -14,10 +14,12 @@ import java.nio.file.Paths;
 import java.util.Properties;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.jasypt.properties.EncryptableProperties;
 
 public class KeyEncrypt {
 	private final int DEFAULT_PASSWORD_LENGHT = 64;
 	private final String DEFAULT_ENV_VARIABLE = "DCLIENT";
+	private final String DEFAULT_ENCRYPTION_ALGORITHM = "PBEWithHMACSHA512AndAES_256";
 
 	private int passwordLenght;
 	private String installationFolder;
@@ -79,7 +81,7 @@ public class KeyEncrypt {
 	}
 
 	private void initKey() {
-		key = new Key(userPassword, envPassword);
+		key = new Key(null, (EncryptableProperties) config).installationKey(userPassword, envPassword);
 	}
 
 	private void setEnvVar() {
@@ -142,6 +144,9 @@ public class KeyEncrypt {
 		installProperties.setProperty("ssh.keyName", sshFileName);
 		installProperties.setProperty("ssh.keyPassword", "ENC(" + key.getEnc().encrypt(sshPassword) + ")");
 		installProperties.setProperty("ssh.port", config.getProperty("ssh.port", "22"));
+		
+		installProperties.setProperty("env.varName", config.getProperty("env.varName", DEFAULT_ENV_VARIABLE));
+		installProperties.setProperty("enc.algorithm", config.getProperty("enc.algorithm", DEFAULT_ENCRYPTION_ALGORITHM));
 
 		File file = new File(installationFolder + "/config.properties");
 		FileOutputStream fileOut;

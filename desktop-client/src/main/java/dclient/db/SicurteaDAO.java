@@ -11,12 +11,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TreeMap;
 
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-
-import org.jasypt.properties.EncryptableProperties;
 
 import dclient.model.Account;
 import dclient.model.Invoice;
@@ -27,13 +26,13 @@ import dclient.model.RSPP;
 public class SicurteaDAO {
 	int daysAdvance;
 	
-	EncryptableProperties config;
+	Properties config;
 	Session session;
 
-	public SicurteaDAO(EncryptableProperties config) {
-		this.config = config;
-		daysAdvance = Integer.parseInt(config.getProperty("rsppTable.daysAdvance", "14"));
-		this.session = ConnectSSH.getSession(config);
+	public SicurteaDAO(Properties config2) {
+		this.config = config2;
+		daysAdvance = Integer.parseInt(config2.getProperty("rsppTable.daysAdvance", "14"));
+		this.session = ConnectSSH.getSession(config2);
 	}
 
 	public List<Map<String, String>> getDataForTable() {

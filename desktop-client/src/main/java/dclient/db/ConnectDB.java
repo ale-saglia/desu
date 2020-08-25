@@ -2,12 +2,12 @@ package dclient.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.Properties;
+
 import com.jcraft.jsch.Session;
 
-import org.jasypt.properties.EncryptableProperties;
-
 public class ConnectDB {
-	public static Connection getConnection(Session session, EncryptableProperties config) {
+	public static Connection getConnection(Session session, Properties config) {
 		Connection conn = null;
 
 		try {

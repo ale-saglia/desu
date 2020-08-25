@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+
 import org.jasypt.properties.EncryptableProperties;
 
 import dclient.Key;
@@ -14,7 +16,7 @@ import dclient.db.SicurteaDAO;
 public class Model {
 	InputStream cfg;
 	public final static String CONFIG_PATH = System.getProperty("user.home") + "/.dclient/";
-	EncryptableProperties config;
+	Properties config;
 	
 	SicurteaDAO dao;
 
@@ -24,6 +26,8 @@ public class Model {
 	List<String> jobTypes;
 
 	public Model(String userPassword) throws IOException {
+		config = new Properties();
+		config.load(new FileInputStream(CONFIG_PATH + "config.properties"));	
 		config = new EncryptableProperties((new Key(userPassword, config)).getEnc());
 		config.load(new FileInputStream(CONFIG_PATH + "config.properties"));
 
@@ -67,7 +71,7 @@ public class Model {
 		return dao.closeSession();
 	}
 
-	public EncryptableProperties getConfig() {
+	public Properties getConfig() {
 		return config;
 	}
 

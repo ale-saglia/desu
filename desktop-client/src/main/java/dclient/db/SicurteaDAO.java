@@ -321,7 +321,7 @@ public class SicurteaDAO {
 			st.setString(6, (String) data.get("customerCategory"));
 			st.setString(7, oldFiscalCode);
 
-			st.executeQuery();
+			st.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");
@@ -357,7 +357,7 @@ public class SicurteaDAO {
 				st.setDate(3, (Date.valueOf((LocalDate) data.get("decreeDate"))));
 				st.setString(4, (String) data.get("jobCode"));
 
-				st.executeQuery();
+				st.executeUpdate();
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -379,7 +379,7 @@ public class SicurteaDAO {
 			st.setString(2, note);
 			st.setString(3, note);
 			st.setString(4, accountID);
-			st.executeQuery();
+			st.executeUpdate();
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -401,7 +401,7 @@ public class SicurteaDAO {
 			st.setString(3, jobCode);
 			st.setDate(4, (Date.valueOf(oldJobStart)));
 
-			st.executeQuery();
+			st.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");
@@ -434,7 +434,7 @@ public class SicurteaDAO {
 			st.setBoolean(11, (Boolean) data.get("payed"));
 			st.setString(12, oldInvoiceID);
 			
-			st.executeQuery();
+			st.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");

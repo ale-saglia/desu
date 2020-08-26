@@ -154,9 +154,9 @@ public class ViewEditController {
 			invoiceTypeField.setText(model.getAccountCategories().get(rspp.getInvoice().getType()));
 			payedCheck.setSelected(rspp.getInvoice().getPayed());
 		}
-
 	}
 
+	//TODO fix mess updatting field
 	public void updateCheck() {
 		if (!nameField.getText().equals(rspp.getJob().getCustomer().getName())
 				|| !fiscalCodeText.getText().equals(rspp.getJob().getCustomer().getFiscalCode())
@@ -197,7 +197,9 @@ public class ViewEditController {
 			isChanged = true;
 		}
 
-		if (!invoiceNumberField.getText().equals(Integer.toString(rspp.getInvoice().getNumber()))
+		String invoiceNumber;
+		if(rspp.getInvoice() == null) invoiceNumber = null; else invoiceNumber = Integer.toString(rspp.getInvoice().getNumber());
+		if (!invoiceNumberField.getText().equals(invoiceNumber)
 				|| !invoiceEmissionDateField.getValue().equals(rspp.getInvoice().getEmission())
 				|| payedCheck.isSelected() != rspp.getInvoice().getPayed()) {
 			updateInvoice();

@@ -12,7 +12,10 @@ import java.net.InetAddress;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.text.RandomStringGenerator;
 
 public class KeyEncrypt {
@@ -38,8 +41,11 @@ public class KeyEncrypt {
 
 	Properties config;
 
+	Logger logger;
+
 	public static void main(String[] args) {
 		KeyEncrypt keyEncrypt = new KeyEncrypt();
+		keyEncrypt.initLogFile();
 		keyEncrypt.loadInitProperties();
 		keyEncrypt.userInput();
 		keyEncrypt.setEnvVar();
@@ -49,11 +55,25 @@ public class KeyEncrypt {
 		keyEncrypt.createPropertiesFile();
 	}
 
+	private void initLogFile() {
+		boolean append = true;
+		FileHandler handler = null;
+		try {
+			handler = new FileHandler("installation.log", append);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
+		logger = Logger.getLogger("dclient");
+		logger.addHandler(handler);
+	}
+
 	private void loadInitProperties() {
 		config = new Properties();
 		try {
 			config.load(new FileInputStream("./installConfig.properties"));
 		} catch (FileNotFoundException e) {
+			logger.severe(ExceptionUtils.getStackTrace(e));
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();

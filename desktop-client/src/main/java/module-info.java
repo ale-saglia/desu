@@ -9,6 +9,7 @@ module dclient {
 	requires org.apache.commons.lang3;
 	requires com.google.common;
 	requires org.apache.commons.text;
+	requires java.logging;
     
     opens dclient.controllers;
     exports dclient;

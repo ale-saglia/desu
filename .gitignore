@@ -31,3 +31,6 @@ server-Side-Scripts/conf.yaml
 desktop-client/bin
 desktop-client/target
 *.classpath
+
+# Ignore public key generated during debug
+*.pub

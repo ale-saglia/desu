@@ -5,6 +5,7 @@ import java.util.Properties;
 
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.iv.RandomIvGenerator;
+
 import com.google.common.hash.Hashing;
 
 public class Key {
@@ -15,19 +16,23 @@ public class Key {
 		this.config = config;
 		enc = new StandardPBEStringEncryptor();
 		enc.setAlgorithm(config.getProperty("enc.algorithm"));
-		enc.setPassword(Hashing.sha256().hashString(password.concat(System.getenv().get(config.getProperty("env.varName"))), StandardCharsets.UTF_8).toString());
+		enc.setPassword(hashPassword(password, System.getenv().get(config.getProperty("env.varName").toString())));
 		enc.setIvGenerator(new RandomIvGenerator());
 	}
 
 	public Key(String password, String envVariablePassword, String encAlgorithm) {
 		enc = new StandardPBEStringEncryptor();
 		enc.setAlgorithm(encAlgorithm);
-		enc.setPassword(
-				Hashing.sha512().hashString((password.concat(envVariablePassword)), StandardCharsets.UTF_8).toString());
+		enc.setPassword(hashPassword(password, envVariablePassword));
 		enc.setIvGenerator(new RandomIvGenerator());
 	}
 
 	public StandardPBEStringEncryptor getEnc() {
 		return enc;
+	}
+	
+	private String hashPassword(String userPassword, String envPassword) {
+		String hashed = Hashing.sha512().hashString((userPassword.concat(envPassword)), StandardCharsets.UTF_8).toString();
+		return hashed;
 	}
 }

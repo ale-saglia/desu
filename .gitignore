@@ -34,3 +34,7 @@ desktop-client/target
 
 # Ignore public key generated during debug
 *.pub
+
+# Ignore debug files
+*.log
+*.log.lck

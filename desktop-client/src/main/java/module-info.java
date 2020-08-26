@@ -10,6 +10,7 @@ module dclient {
 	requires com.google.common;
 	requires org.apache.commons.text;
 	requires java.logging;
+	requires org.apache.commons.io;
     
     opens dclient.controllers;
     exports dclient;

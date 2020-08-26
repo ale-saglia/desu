@@ -14,8 +14,6 @@ public class ConnectSSH {
 		JSch jsch = new JSch();
 		Session session = null;
 		String privateKeyPath = Model.getConfigPath() + config.getProperty("ssh.keyName");
-		System.out.println(config.getProperty("ssh.keyName"));
-
 		try {
 			// SSH connection setup && port forwarding
 			jsch.addIdentity(privateKeyPath, config.getProperty("ssh.keyPassword"));

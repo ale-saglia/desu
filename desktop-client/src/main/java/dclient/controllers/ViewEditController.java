@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.common.collect.BiMap;
+
 import dclient.model.JobPA;
 import dclient.model.Model;
 import dclient.model.RSPP;
@@ -21,6 +23,8 @@ public class ViewEditController {
 	private Model model;
 	private RSPP rspp;
 	private String rsppNote;
+
+	private BiMap<String, String> accountCategories;
 
 	boolean isChanged;
 
@@ -101,7 +105,8 @@ public class ViewEditController {
 	}
 
 	public void setCombo() {
-		categoryAccountCombo.getItems().setAll(model.getAccountCategories().values());
+		accountCategories = model.getAccountCategories();
+		categoryAccountCombo.getItems().setAll(accountCategories.values());
 		categoryJobCombo.getItems().setAll(model.getJobCategories());
 		categoryTypeCombo.getItems().setAll(model.getJobTypes());
 	}
@@ -156,12 +161,13 @@ public class ViewEditController {
 		}
 	}
 
+	//TODO fire randomly update even if not needed
 	public void updateCheck() {
 		if (nameField.getText() != rspp.getJob().getCustomer().getName()
 				|| fiscalCodeText.getText() != rspp.getJob().getCustomer().getFiscalCode()
 				|| numberVATField.getText() != rspp.getJob().getCustomer().getNumberVAT()
-				|| categoryAccountCombo.getValue()
-						 != model.getAccountCategories().get(rspp.getJob().getCustomer().getCategory())
+				|| categoryAccountCombo.getValue() != model.getAccountCategories()
+						.get(rspp.getJob().getCustomer().getCategory())
 				|| atecoCodeField.getText() != rspp.getJob().getCustomer().getAtecoCode()
 				|| addressField.getText() != rspp.getJob().getCustomer().getLegalAddress()) {
 			updateAccounts();
@@ -197,7 +203,10 @@ public class ViewEditController {
 		}
 
 		String invoiceNumber;
-		if(rspp.getInvoice() == null) invoiceNumber = null; else invoiceNumber = Integer.toString(rspp.getInvoice().getNumber());
+		if (rspp.getInvoice() == null)
+			invoiceNumber = null;
+		else
+			invoiceNumber = Integer.toString(rspp.getInvoice().getNumber());
 		if (invoiceNumberField.getText() != invoiceNumber
 				|| invoiceEmissionDateField.getValue() != rspp.getInvoice().getEmission()
 				|| payedCheck.isSelected() != rspp.getInvoice().getPayed()) {
@@ -208,7 +217,7 @@ public class ViewEditController {
 	}
 
 	private void updateAccounts() {
-		String oldFiscalCode = rspp.getJob().getCustomer().getName();
+		String oldFiscalCode = rspp.getJob().getCustomer().getFiscalCode();
 		Map<String, Object> data = new HashMap<String, Object>();
 
 		data.put("fiscalCode", fiscalCodeText.getText());
@@ -216,7 +225,7 @@ public class ViewEditController {
 		data.put("numberVAT", numberVATField.getText());
 		data.put("atecoCode", atecoCodeField.getText());
 		data.put("legaAddress", addressField.getText());
-		data.put("customerCategory", categoryAccountCombo.getValue());
+		data.put("customerCategory", accountCategories.inverse().get(categoryAccountCombo.getValue()));
 
 		model.updateAccount(oldFiscalCode, data);
 	}

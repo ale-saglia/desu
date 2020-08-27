@@ -10,6 +10,8 @@ import java.util.Properties;
 
 import org.jasypt.properties.EncryptableProperties;
 
+import com.google.common.collect.BiMap;
+
 import dclient.Key;
 import dclient.db.SicurteaDAO;
 
@@ -20,7 +22,7 @@ public class Model {
 	
 	SicurteaDAO dao;
 
-	Map<String, String> accountCategories;
+	BiMap<String, String> accountCategories;
 
 	List<String> jobCategories;
 	List<String> jobTypes;
@@ -42,7 +44,7 @@ public class Model {
 		return dao.getRSPP(jobID, jobStart);
 	}
 
-	public Map<String, String> getAccountCategories() {
+	public BiMap<String, String> getAccountCategories() {
 		return accountCategories;
 	}
 

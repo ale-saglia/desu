@@ -12,8 +12,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.TreeMap;
-
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
@@ -25,7 +25,7 @@ import dclient.model.RSPP;
 
 public class SicurteaDAO {
 	int daysAdvance;
-	
+
 	Properties config;
 	Session session;
 
@@ -91,9 +91,9 @@ public class SicurteaDAO {
 		return tableElements;
 	}
 
-	public Map<String, String> getAccountsCategories() {
+	public BiMap<String, String> getAccountsCategories() {
 		String sql = "select * from accounts.accounts_categories ac ";
-		Map<String, String> categories = new TreeMap<String, String>();
+		BiMap<String, String> categories = HashBiMap.create();
 
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
@@ -305,9 +305,11 @@ public class SicurteaDAO {
 	}
 
 	public void updateAccount(String oldFiscalCode, Map<String, Object> data) {
-		String query = "update accounts.accounts "
-				+ "set fiscalcode = ? , name = ? , numbervat = ? , atecocode = ? , legal_address = ? , customer_category = ? "
-				+ "where fiscalcode = ? ";
+		String query = "UPDATE accounts.accounts "
+				+ "SET fiscalcode = ?, \"name\" = ?, numbervat = ?, atecocode = ?, legal_address = ?, customer_category = ? "
+				+ "WHERE fiscalcode = ? ";
+
+		int rowsAffected = 0;
 
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
@@ -321,17 +323,21 @@ public class SicurteaDAO {
 			st.setString(6, (String) data.get("customerCategory"));
 			st.setString(7, oldFiscalCode);
 
-			st.executeUpdate();
+			rowsAffected = st.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");
 			throw new RuntimeException("Error Connection Database");
 		}
+
+		System.out.println("Rows updated ACCOUNT => " + rowsAffected);
 	}
 
 	public void updateJob(String oldJobCode, Map<String, Object> data) {
-		String query = "update jobs.jobs "
-				+ "set jobs_id = ? , jobs_category = ? , jobs_type = ? , jobs_description = ? " + "where jobs_id = ? ";
+		String query = "update jobs.jobs " + "set jobs_id = ?, jobs_category = ?, jobs_type = ?, jobs_description = ? "
+				+ "where jobs_id = ? ";
+
+		int rowsAffected = 0;
 
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
@@ -343,7 +349,7 @@ public class SicurteaDAO {
 			st.setString(4, (String) data.get("description"));
 			st.setString(5, oldJobCode);
 
-			st.executeQuery();
+			rowsAffected = st.executeUpdate();
 
 			if (data.containsKey("cig")) {
 				query = "update jobs.jobs_pa \r\n"
@@ -357,18 +363,20 @@ public class SicurteaDAO {
 				st.setDate(3, (Date.valueOf((LocalDate) data.get("decreeDate"))));
 				st.setString(4, (String) data.get("jobCode"));
 
-				st.executeUpdate();
+				rowsAffected = st.executeUpdate();
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");
 			throw new RuntimeException("Error Connection Database");
 		}
+		
+		System.out.println("Rows updated JOBS => " + rowsAffected);
 
 	}
 
 	public void updateNote(String accountID, String note) {
-		String query = "INSERT INTO deadlines.rspp_notes (fiscalcode, notes) " + "VALUES ( ? , ? ) "
+		String query = "INSERT INTO deadlines.rspp_notes " + "(fiscalcode, notes) VALUES ( ? , ? ) "
 				+ "ON CONFLICT (fiscalcode) DO UPDATE SET notes = ? where fiscalcode = ? ";
 
 		try {
@@ -422,18 +430,19 @@ public class SicurteaDAO {
 				st.setString(1, (String) data.get("invoiceID"));
 			else
 				st.setString(1, oldInvoiceID);
-			st.setString(2, ((String) data.get("invoiceNumber")) + "/" + ((String) data.get("type")).toUpperCase() + " " + (LocalDate) data.get("invoiceEmissionDate"));
+			st.setString(2, ((String) data.get("invoiceNumber")) + "/" + ((String) data.get("type")).toUpperCase() + " "
+					+ (LocalDate) data.get("invoiceEmissionDate"));
 			st.setDate(3, (Date.valueOf((LocalDate) data.get("invoiceEmissionDate"))));
 			st.setString(4, (String) data.get("type"));
 			st.setBoolean(5, (Boolean) data.get("payed"));
-			
+
 			st.setString(7, (String) data.get("invoiceNumber"));
 			st.setString(8, (String) data.get("invoiceNumber"));
 			st.setDate(9, (Date.valueOf((LocalDate) data.get("invoiceEmissionDate"))));
 			st.setString(10, (String) data.get("type"));
 			st.setBoolean(11, (Boolean) data.get("payed"));
 			st.setString(12, oldInvoiceID);
-			
+
 			st.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();

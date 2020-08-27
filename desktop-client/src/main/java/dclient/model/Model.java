@@ -77,20 +77,20 @@ public class Model {
 		return config;
 	}
 
-	public void updateAccount(String oldFiscalCode, Map<String, Object> data) {
-		dao.updateAccount(oldFiscalCode, data);
+	public void updateAccount(String oldFiscalCode, Account account) {
+		dao.updateAccount(oldFiscalCode, account);
 	}
 
-	public void updateJob(String oldJobCode, Map<String, Object> data) {
-		dao.updateJob(oldJobCode, data);
+	public void updateJob(String oldJobCode, Job job) {
+		dao.updateJob(oldJobCode, job);
 	}
 
 	public void updateNote(String accountID, String note) {
 		dao.updateNote(accountID, note);
 	}
 
-	public void updateRSPP(String jobCode, LocalDate oldJobStart, Map<String, Object> data) {
-		dao.updateRSPP(jobCode, oldJobStart, data);
+	public void updateRSPP(String jobCode, LocalDate oldJobStart, RSPP rspp) {
+		dao.updateRSPP(jobCode, oldJobStart, rspp);
 	}
 
 	public void updateInvoice(String oldInvoiceID, Invoice invoice, RSPP rspp) {

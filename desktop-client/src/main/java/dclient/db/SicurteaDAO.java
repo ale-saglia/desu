@@ -303,7 +303,7 @@ public class SicurteaDAO {
 		return message;
 	}
 
-	public void updateAccount(String oldFiscalCode, Map<String, Object> data) {
+	public void updateAccount(String oldFiscalCode, Account account) {
 		String query = "UPDATE accounts.accounts "
 				+ "SET fiscalcode = ?, \"name\" = ?, numbervat = ?, atecocode = ?, legal_address = ?, customer_category = ? "
 				+ "WHERE fiscalcode = ? ";
@@ -314,12 +314,12 @@ public class SicurteaDAO {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(query);
 
-			st.setString(1, (String) data.get("fiscalCode"));
-			st.setString(2, (String) data.get("name"));
-			st.setString(3, (String) data.get("numberVAT"));
-			st.setString(4, (String) data.get("atecoCode"));
-			st.setString(5, (String) data.get("legaAddress"));
-			st.setString(6, (String) data.get("customerCategory"));
+			st.setString(1, account.getFiscalCode());
+			st.setString(2, account.getName());
+			st.setString(3, account.getNumberVAT());
+			st.setString(4, account.getAtecoCode());
+			st.setString(5, account.getLegalAddress());
+			st.setString(6, account.getCategory());
 			st.setString(7, oldFiscalCode);
 
 			rowsAffected = st.executeUpdate();
@@ -332,7 +332,7 @@ public class SicurteaDAO {
 		System.out.println("Rows updated ACCOUNT => " + rowsAffected);
 	}
 
-	public void updateJob(String oldJobCode, Map<String, Object> data) {
+	public void updateJob(String oldJobCode, Job job) {
 		String query = "update jobs.jobs " + "set jobs_id = ?, jobs_category = ?, jobs_type = ?, jobs_description = ? "
 				+ "where jobs_id = ? ";
 
@@ -342,34 +342,34 @@ public class SicurteaDAO {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(query);
 
-			st.setString(1, (String) data.get("jobCode"));
-			st.setString(2, (String) data.get("category"));
-			st.setString(3, (String) data.get("type"));
-			st.setString(4, (String) data.get("description"));
+			st.setString(1, job.getId());
+			st.setString(2, job.getJobCategory());
+			st.setString(3, job.getJobType());
+			st.setString(4, job.getDescription());
 			st.setString(5, oldJobCode);
 
 			rowsAffected = st.executeUpdate();
 
-			if (data.containsKey("cig")) {
+			if (job instanceof JobPA) {
 				query = "update jobs.jobs_pa \r\n"
 						+ "set cig = ? , jobs_category = ? , decree_number = ? , decree_date = ? \r\n"
 						+ "where job_id = ? ";
 
 				st = conn.prepareStatement(query);
 
-				st.setString(1, (String) data.get("cig"));
-				st.setInt(2, Integer.parseInt((String) data.get("decreeNumber")));
-				st.setDate(3, (Date.valueOf((LocalDate) data.get("decreeDate"))));
-				st.setString(4, (String) data.get("jobCode"));
+				st.setString(1, ((JobPA) job).getCig());
+				st.setInt(2, ((JobPA) job).getDecreeNumber());
+				st.setDate(3, Date.valueOf(((JobPA) job).getDecreeDate()));
+				st.setString(4, job.getId());
 
-				rowsAffected = st.executeUpdate();
+				st.executeUpdate();
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");
 			throw new RuntimeException("Error Connection Database");
 		}
-		
+
 		System.out.println("Rows updated JOBS => " + rowsAffected);
 
 	}
@@ -379,7 +379,7 @@ public class SicurteaDAO {
 				+ "ON CONFLICT (fiscalcode) DO UPDATE SET notes = ? ";
 
 		int rowsAffected = 0;
-		
+
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(query);
@@ -387,7 +387,7 @@ public class SicurteaDAO {
 			st.setString(1, accountID);
 			st.setString(2, note);
 			st.setString(3, note);
-			
+
 			rowsAffected = st.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -397,20 +397,20 @@ public class SicurteaDAO {
 		System.out.println("Rows updated NOTES => " + rowsAffected);
 	}
 
-	public void updateRSPP(String jobCode, LocalDate oldJobStart, Map<String, Object> data) {
-		String query = "update deadlines.rspp \r\n" + "set jobstart = ? , jobend = ? \r\n"
+	public void updateRSPP(String jobCode, LocalDate oldJobStart, RSPP rspp) {
+		String query = "update deadlines.rspp set jobstart = ? , jobend = ? "
 				+ "where rspp_jobid = ? and jobstart = ? ";
-		
+
 		int rowsAffected = 0;
 
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(query);
 
-			st.setDate(1, (Date.valueOf((LocalDate) data.get("jobStart"))));
-			st.setDate(2, (Date.valueOf((LocalDate) data.get("jobEnd"))));
+			st.setDate(1, Date.valueOf(rspp.getStart()));
+			st.setDate(2, Date.valueOf(rspp.getEnd()));
 			st.setString(3, jobCode);
-			st.setDate(4, (Date.valueOf(oldJobStart)));
+			st.setDate(4, Date.valueOf(oldJobStart));
 
 			rowsAffected = st.executeUpdate();
 		} catch (SQLException e) {
@@ -418,7 +418,7 @@ public class SicurteaDAO {
 			System.out.println("Errore connessione al database");
 			throw new RuntimeException("Error Connection Database");
 		}
-		
+
 		System.out.println("Rows updated RSPP => " + rowsAffected);
 	}
 
@@ -426,7 +426,7 @@ public class SicurteaDAO {
 		String query = "INSERT INTO invoices.invoices (invoiceid, \"number\", emission, \"type\", payed) "
 				+ "VALUES ( ? , ? , ? , ? , ? ) ON CONFLICT (invoiceid) DO UPDATE SET "
 				+ "invoiceid = ? , \"number\" = ? , emission = ? , \"type\" = ? , payed = ?";
-		
+
 		int rowsAffected = 0;
 
 		try {
@@ -438,7 +438,7 @@ public class SicurteaDAO {
 			st.setDate(3, Date.valueOf(invoice.getEmission()));
 			st.setString(4, invoice.getType());
 			st.setBoolean(5, invoice.getPayed());
-			
+
 			st.setString(6, oldInvoiceID);
 			st.setInt(7, invoice.getNumber());
 			st.setDate(8, Date.valueOf(invoice.getEmission()));
@@ -446,15 +446,16 @@ public class SicurteaDAO {
 			st.setBoolean(10, invoice.getPayed());
 
 			rowsAffected = st.executeUpdate();
-			
-			if(oldInvoiceID != invoice.getId()) {
+
+			if (oldInvoiceID != invoice.getId()) {
 				st = conn.prepareStatement("update invoices.invoices set invoiceid = ? where invoiceid = ? ");
 				st.setString(1, invoice.getId());
 				st.setString(2, oldInvoiceID);
 				st.executeUpdate();
 			}
-			
-			st = conn.prepareStatement("update deadlines.rspp set invoiceid = ? where rspp_jobid = ? AND jobstart = ? ");
+
+			st = conn
+					.prepareStatement("update deadlines.rspp set invoiceid = ? where rspp_jobid = ? AND jobstart = ? ");
 			st.setString(1, invoice.getId());
 			st.setString(2, rspp.getJob().getId());
 			st.setDate(3, Date.valueOf(rspp.getStart()));
@@ -464,7 +465,7 @@ public class SicurteaDAO {
 			System.out.println("Errore connessione al database");
 			throw new RuntimeException("Error Connection Database");
 		}
-		
+
 		System.out.println("Rows updated INVOICE => " + rowsAffected);
 	}
 }

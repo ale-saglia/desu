@@ -176,7 +176,7 @@ public class ViewEditController {
 				atecoCodeField.getText(), addressField.getText(),
 				accountCategories.inverse().get(categoryAccountCombo.getValue()));
 		if (newAccount.equals(rspp.getJob().getCustomer())) {
-			updateAccounts();
+			model.updateAccount(rspp.getJob().getCustomer().getFiscalCode(), newAccount);
 			isChanged = true;
 		}
 
@@ -188,13 +188,13 @@ public class ViewEditController {
 					decreeDateField.getValue());
 		}
 		if (!newJob.equals(rspp.getJob())) {
-			updateJob();
+			model.updateJob(rspp.getJob().getId(), newJob);
 			isChanged = true;
 		}
 
 		// Check if rspp note needs to be updated
 		if (noteField.getText() != rsppNote) {
-			updateNote();
+			model.updateNote(fiscalCodeText.getText(), noteField.getText());
 			isChanged = true;
 		}
 
@@ -205,73 +205,17 @@ public class ViewEditController {
 		newInvoice = new Invoice(invoiceNumber, invoiceEmissionDateField.getValue(), newAccount.getCategory(),
 				payedCheck.isSelected());
 		if (!newInvoice.equals(rspp.getInvoice())) {
-			updateInvoice(newInvoice);
+			model.updateInvoice(invoiceNumberField.getText(), newInvoice, rspp);
 			isChanged = true;
 		}
 
 		// Check if RSPP needs to be updated
 		newRSPP = new RSPP(newJob, jobStartField.getValue(), jobEndField.getValue(), newInvoice);
 		if (!newRSPP.equals(rspp)) {
-			updateRSPP();
+			model.updateRSPP(rspp.getJob().getId(), rspp.getStart(), newRSPP);
 			isChanged = true;
 		}
 
 		closeButtonAction();
-	}
-
-	//TODO change this to proper object functions
-	private void updateAccounts() {
-		String oldFiscalCode = rspp.getJob().getCustomer().getFiscalCode();
-		Map<String, Object> data = new HashMap<String, Object>();
-
-		data.put("fiscalCode", fiscalCodeText.getText());
-		data.put("name", nameField.getText());
-		data.put("numberVAT", numberVATField.getText());
-		data.put("atecoCode", atecoCodeField.getText());
-		data.put("legaAddress", addressField.getText());
-		data.put("customerCategory", accountCategories.inverse().get(categoryAccountCombo.getValue()));
-
-		model.updateAccount(oldFiscalCode, data);
-	}
-
-	private void updateJob() {
-		String oldJobCode = rspp.getJob().getId();
-		Map<String, Object> data = new HashMap<String, Object>();
-
-		data.put("jobCode", jobCodeField.getText());
-		data.put("category", categoryJobCombo.getValue());
-		data.put("type", categoryTypeCombo.getValue());
-		data.put("description", jobdDescriptionField.getText());
-
-		if (rspp.getJob() instanceof JobPA) {
-			data.put("cig", cigField.getText());
-			data.put("decreeNumber", decreeNumberField.getText());
-			data.put("decreeDate", decreeDateField.getValue());
-		}
-
-		model.updateJob(oldJobCode, data);
-	}
-
-	private void updateNote() {
-		String accountID = fiscalCodeText.getText();
-		String note = noteField.getText();
-
-		model.updateNote(accountID, note);
-	}
-
-	private void updateRSPP() {
-		String jobCode = jobCodeField.getText();
-		LocalDate oldJobStart = rspp.getStart();
-		Map<String, Object> data = new HashMap<String, Object>();
-
-		data.put("jobStart", rspp.getStart());
-		data.put("jobEnd", rspp.getEnd());
-
-		model.updateRSPP(jobCode, oldJobStart, data);
-	}
-
-	private void updateInvoice(Invoice invoice) {
-		String oldInvoiceID = invoiceNumberField.getText();
-		model.updateInvoice(oldInvoiceID, invoice, rspp);
 	}
 }

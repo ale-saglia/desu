@@ -377,7 +377,7 @@ public class SicurteaDAO {
 
 	public void updateNote(String accountID, String note) {
 		String query = "INSERT INTO deadlines.rspp_notes " + "(fiscalcode, notes) VALUES ( ? , ? ) "
-				+ "ON CONFLICT (fiscalcode) DO UPDATE SET notes = ? where fiscalcode = ? ";
+				+ "ON CONFLICT (fiscalcode) DO UPDATE SET notes = ? ";
 
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
@@ -386,7 +386,6 @@ public class SicurteaDAO {
 			st.setString(1, accountID);
 			st.setString(2, note);
 			st.setString(3, note);
-			st.setString(4, accountID);
 			st.executeUpdate();
 
 		} catch (SQLException e) {
@@ -417,6 +416,7 @@ public class SicurteaDAO {
 		}
 	}
 
+	//TODO error generating when invoiceID Date is empty
 	public void updateInvoice(String oldInvoiceID, String jobID, Map<String, Object> data) {
 		String query = "INSERT INTO invoices.invoices (invoiceid, number, emission, type, payed) "
 				+ "VALUES ( ? , ? , ? , ? , ? ) ON CONFLICT (invoiceid) DO UPDATE SET "

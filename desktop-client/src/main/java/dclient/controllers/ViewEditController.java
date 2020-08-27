@@ -199,8 +199,11 @@ public class ViewEditController {
 		}
 
 		// Check if invoice needs to be updated
-		newInvoice = new Invoice(Integer.parseInt(invoiceNumberField.getText()), invoiceEmissionDateField.getValue(),
-				newAccount.getCategory(), payedCheck.isSelected());
+		Integer invoiceNumber = null;
+		if (!invoiceNumberField.getText().isEmpty())
+			invoiceNumber = Integer.parseInt(invoiceNumberField.getText());
+		newInvoice = new Invoice(invoiceNumber, invoiceEmissionDateField.getValue(), newAccount.getCategory(),
+				payedCheck.isSelected());
 		if (!newInvoice.equals(newInvoice)) {
 			updateInvoice();
 			isChanged = true;

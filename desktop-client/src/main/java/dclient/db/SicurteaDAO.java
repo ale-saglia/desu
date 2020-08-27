@@ -379,6 +379,8 @@ public class SicurteaDAO {
 		String query = "INSERT INTO deadlines.rspp_notes " + "(fiscalcode, notes) VALUES ( ? , ? ) "
 				+ "ON CONFLICT (fiscalcode) DO UPDATE SET notes = ? ";
 
+		int rowsAffected = 0;
+		
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(query);
@@ -386,18 +388,21 @@ public class SicurteaDAO {
 			st.setString(1, accountID);
 			st.setString(2, note);
 			st.setString(3, note);
-			st.executeUpdate();
-
+			
+			rowsAffected = st.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");
 			throw new RuntimeException("Error Connection Database");
 		}
+		System.out.println("Rows updated NOTES => " + rowsAffected);
 	}
 
 	public void updateRSPP(String jobCode, LocalDate oldJobStart, Map<String, Object> data) {
 		String query = "update deadlines.rspp \r\n" + "set jobstart = ? , jobend = ? \r\n"
 				+ "where rspp_jobid = ? and jobstart = ? ";
+		
+		int rowsAffected = 0;
 
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
@@ -408,19 +413,22 @@ public class SicurteaDAO {
 			st.setString(3, jobCode);
 			st.setDate(4, (Date.valueOf(oldJobStart)));
 
-			st.executeUpdate();
+			rowsAffected = st.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");
 			throw new RuntimeException("Error Connection Database");
 		}
+		
+		System.out.println("Rows updated RSPP => " + rowsAffected);
 	}
 
-	//TODO error generating when invoiceID Date is empty
 	public void updateInvoice(String oldInvoiceID, String jobID, Map<String, Object> data) {
 		String query = "INSERT INTO invoices.invoices (invoiceid, number, emission, type, payed) "
 				+ "VALUES ( ? , ? , ? , ? , ? ) ON CONFLICT (invoiceid) DO UPDATE SET "
 				+ "invoiceid = ? , number = ? , emission = ? , type = ? , payed = ? where invoiceid = ? ";
+		
+		int rowsAffected = 0;
 
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
@@ -443,11 +451,13 @@ public class SicurteaDAO {
 			st.setBoolean(11, (Boolean) data.get("payed"));
 			st.setString(12, oldInvoiceID);
 
-			st.executeUpdate();
+			rowsAffected = st.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");
 			throw new RuntimeException("Error Connection Database");
 		}
+		
+		System.out.println("Rows updated INVOICE => " + rowsAffected);
 	}
 }

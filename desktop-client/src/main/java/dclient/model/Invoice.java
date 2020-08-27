@@ -5,7 +5,7 @@ import java.time.LocalDate;
 public class Invoice {
 	
 	String id;
-	int number;
+	Integer number;
 	LocalDate emission;
 	String type;
 	Boolean payed;
@@ -18,7 +18,7 @@ public class Invoice {
 		this.payed = payed;
 	}
 
-	public Invoice(int number, LocalDate emission, String type, Boolean payed) {
+	public Invoice(Integer number, LocalDate emission, String type, Boolean payed) {
 		this.number = number;
 		this.emission = emission;
 		this.type = type;
@@ -34,7 +34,7 @@ public class Invoice {
 		return id;
 	}
 
-	public int getNumber() {
+	public Integer getNumber() {
 		return number;
 	}
 

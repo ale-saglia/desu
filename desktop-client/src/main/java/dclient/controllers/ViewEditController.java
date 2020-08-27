@@ -6,6 +6,9 @@ import java.util.Map;
 
 import com.google.common.collect.BiMap;
 
+import dclient.model.Account;
+import dclient.model.Invoice;
+import dclient.model.Job;
 import dclient.model.JobPA;
 import dclient.model.Model;
 import dclient.model.RSPP;
@@ -161,58 +164,55 @@ public class ViewEditController {
 		}
 	}
 
-	//TODO fire randomly update even if not needed
+	// TODO fire randomly update even if not needed
 	public void updateCheck() {
-		if (nameField.getText() != rspp.getJob().getCustomer().getName()
-				|| fiscalCodeText.getText() != rspp.getJob().getCustomer().getFiscalCode()
-				|| numberVATField.getText() != rspp.getJob().getCustomer().getNumberVAT()
-				|| categoryAccountCombo.getValue() != model.getAccountCategories()
-						.get(rspp.getJob().getCustomer().getCategory())
-				|| atecoCodeField.getText() != rspp.getJob().getCustomer().getAtecoCode()
-				|| addressField.getText() != rspp.getJob().getCustomer().getLegalAddress()) {
+		Account newAccount;
+		Job newJob;
+		RSPP newRSPP;
+		Invoice newInvoice;
+
+		// Check if account needs to be updated
+		newAccount = new Account(fiscalCodeText.getText(), nameField.getText(), numberVATField.getText(),
+				atecoCodeField.getText(), addressField.getText(),
+				accountCategories.inverse().get(categoryAccountCombo.getValue()));
+		if (newAccount.equals(rspp.getJob().getCustomer())) {
 			updateAccounts();
 			isChanged = true;
 		}
 
-		if (jobCodeField.getText() != rspp.getJob().getId()
-				|| categoryJobCombo.getValue() != rspp.getJob().getJobCategory()
-				|| categoryTypeCombo.getValue() != rspp.getJob().getJobType()
-				|| jobdDescriptionField.getText() != rspp.getJob().getDescription()) {
+		// Check if job needs to be updated
+		newJob = new Job(jobCodeField.getText(), categoryJobCombo.getValue(), categoryTypeCombo.getValue(),
+				jobdDescriptionField.getText(), newAccount);
+		if (rspp.getJob() instanceof JobPA) {
+			newJob = new JobPA(newJob, cigField.getText(), Integer.parseInt(decreeNumberField.getText()),
+					decreeDateField.getValue());
+		}
+		if (!newJob.equals(rspp.getJob())) {
 			updateJob();
 			isChanged = true;
 		}
 
-		if (rspp.getJob() instanceof JobPA) {
-			JobPA jobPA = (JobPA) rspp.getJob();
-			if (cigField.getText() != jobPA.getCig()
-					|| decreeNumberField.getText() != Integer.toString(jobPA.getDecreeNumber())
-					|| decreeDateField.getValue() != jobPA.getDecreeDate()) {
-				updateJob();
-				isChanged = true;
-			}
-		}
-
+		// Check if rspp note needs to be updated
 		if (noteField.getText() != rsppNote) {
 			updateNote();
 			isChanged = true;
 		}
 
-		if (jobStartField.getValue() != rspp.getStart() || jobEndField.getValue() != rspp.getEnd()) {
+		// Check if invoice needs to be updated
+		newInvoice = new Invoice(Integer.parseInt(invoiceNumberField.getText()), invoiceEmissionDateField.getValue(),
+				newAccount.getCategory(), payedCheck.isSelected());
+		if (!newInvoice.equals(newInvoice)) {
+			updateInvoice();
+			isChanged = true;
+		}
+
+		// Check if RSPP needs to be updated
+		newRSPP = new RSPP(newJob, jobStartField.getValue(), jobEndField.getValue(), newInvoice);
+		if (!newRSPP.equals(rspp)) {
 			updateRSPP();
 			isChanged = true;
 		}
 
-		String invoiceNumber;
-		if (rspp.getInvoice() == null)
-			invoiceNumber = null;
-		else
-			invoiceNumber = Integer.toString(rspp.getInvoice().getNumber());
-		if (invoiceNumberField.getText() != invoiceNumber
-				|| invoiceEmissionDateField.getValue() != rspp.getInvoice().getEmission()
-				|| payedCheck.isSelected() != rspp.getInvoice().getPayed()) {
-			updateInvoice();
-			isChanged = true;
-		}
 		closeButtonAction();
 	}
 

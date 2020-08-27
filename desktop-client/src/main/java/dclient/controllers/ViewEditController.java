@@ -156,51 +156,50 @@ public class ViewEditController {
 		}
 	}
 
-	//TODO fix mess updatting field
 	public void updateCheck() {
-		if (!nameField.getText().equals(rspp.getJob().getCustomer().getName())
-				|| !fiscalCodeText.getText().equals(rspp.getJob().getCustomer().getFiscalCode())
-				|| !numberVATField.getText().equals(rspp.getJob().getCustomer().getNumberVAT())
-				|| !categoryAccountCombo.getValue()
-						.equals(model.getAccountCategories().get(rspp.getJob().getCustomer().getCategory()))
-				|| !atecoCodeField.getText().equals(rspp.getJob().getCustomer().getAtecoCode())
-				|| !addressField.getText().equals(rspp.getJob().getCustomer().getLegalAddress())) {
+		if (nameField.getText() != rspp.getJob().getCustomer().getName()
+				|| fiscalCodeText.getText() != rspp.getJob().getCustomer().getFiscalCode()
+				|| numberVATField.getText() != rspp.getJob().getCustomer().getNumberVAT()
+				|| categoryAccountCombo.getValue()
+						 != model.getAccountCategories().get(rspp.getJob().getCustomer().getCategory())
+				|| atecoCodeField.getText() != rspp.getJob().getCustomer().getAtecoCode()
+				|| addressField.getText() != rspp.getJob().getCustomer().getLegalAddress()) {
 			updateAccounts();
 			isChanged = true;
 		}
 
-		if (!jobCodeField.getText().equals(rspp.getJob().getId())
-				|| !categoryJobCombo.getValue().equals(rspp.getJob().getJobCategory())
-				|| !categoryTypeCombo.getValue().equals(rspp.getJob().getJobType())
-				|| !jobdDescriptionField.getText().equals(rspp.getJob().getDescription())) {
+		if (jobCodeField.getText() != rspp.getJob().getId()
+				|| categoryJobCombo.getValue() != rspp.getJob().getJobCategory()
+				|| categoryTypeCombo.getValue() != rspp.getJob().getJobType()
+				|| jobdDescriptionField.getText() != rspp.getJob().getDescription()) {
 			updateJob();
 			isChanged = true;
 		}
 
 		if (rspp.getJob() instanceof JobPA) {
 			JobPA jobPA = (JobPA) rspp.getJob();
-			if (!cigField.getText().equals(jobPA.getCig())
-					|| !decreeNumberField.getText().equals(Integer.toString(jobPA.getDecreeNumber()))
-					|| !decreeDateField.getValue().equals(jobPA.getDecreeDate())) {
+			if (cigField.getText() != jobPA.getCig()
+					|| decreeNumberField.getText() != Integer.toString(jobPA.getDecreeNumber())
+					|| decreeDateField.getValue() != jobPA.getDecreeDate()) {
 				updateJob();
 				isChanged = true;
 			}
 		}
 
-		if (!noteField.getText().equals(rsppNote)) {
+		if (noteField.getText() != rsppNote) {
 			updateNote();
 			isChanged = true;
 		}
 
-		if (!jobStartField.getValue().equals(rspp.getStart()) || !jobEndField.getValue().equals(rspp.getEnd())) {
+		if (jobStartField.getValue() != rspp.getStart() || jobEndField.getValue() != rspp.getEnd()) {
 			updateRSPP();
 			isChanged = true;
 		}
 
 		String invoiceNumber;
 		if(rspp.getInvoice() == null) invoiceNumber = null; else invoiceNumber = Integer.toString(rspp.getInvoice().getNumber());
-		if (!invoiceNumberField.getText().equals(invoiceNumber)
-				|| !invoiceEmissionDateField.getValue().equals(rspp.getInvoice().getEmission())
+		if (invoiceNumberField.getText() != invoiceNumber
+				|| invoiceEmissionDateField.getValue() != rspp.getInvoice().getEmission()
 				|| payedCheck.isSelected() != rspp.getInvoice().getPayed()) {
 			updateInvoice();
 			isChanged = true;

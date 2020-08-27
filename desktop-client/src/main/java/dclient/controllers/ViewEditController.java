@@ -204,8 +204,8 @@ public class ViewEditController {
 			invoiceNumber = Integer.parseInt(invoiceNumberField.getText());
 		newInvoice = new Invoice(invoiceNumber, invoiceEmissionDateField.getValue(), newAccount.getCategory(),
 				payedCheck.isSelected());
-		if (!newInvoice.equals(newInvoice)) {
-			updateInvoice();
+		if (!newInvoice.equals(rspp.getInvoice())) {
+			updateInvoice(newInvoice);
 			isChanged = true;
 		}
 
@@ -219,6 +219,7 @@ public class ViewEditController {
 		closeButtonAction();
 	}
 
+	//TODO change this to proper object functions
 	private void updateAccounts() {
 		String oldFiscalCode = rspp.getJob().getCustomer().getFiscalCode();
 		Map<String, Object> data = new HashMap<String, Object>();
@@ -269,16 +270,8 @@ public class ViewEditController {
 		model.updateRSPP(jobCode, oldJobStart, data);
 	}
 
-	private void updateInvoice() {
+	private void updateInvoice(Invoice invoice) {
 		String oldInvoiceID = invoiceNumberField.getText();
-		String jobID = jobCodeField.getText();
-		Map<String, Object> data = new HashMap<String, Object>();
-
-		data.put("invoiceNumber", invoiceNumberField.getText());
-		data.put("invoiceEmissionDate", invoiceEmissionDateField.getValue());
-		data.put("type", categoryAccountCombo.getValue());
-		data.put("payed", payedCheck.isSelected());
-
-		model.updateInvoice(oldInvoiceID, jobID, data);
+		model.updateInvoice(oldInvoiceID, invoice, rspp);
 	}
 }

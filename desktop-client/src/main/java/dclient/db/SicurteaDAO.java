@@ -224,7 +224,6 @@ public class SicurteaDAO {
 			ResultSet res = st.executeQuery();
 
 			if (res.next() != false) {
-				res.next();
 				invoice = new Invoice(res.getString("invoiceid"), res.getInt("number"),
 						res.getDate("emission").toLocalDate(), res.getString("type"), res.getBoolean("payed"));
 				return invoice;
@@ -423,10 +422,10 @@ public class SicurteaDAO {
 		System.out.println("Rows updated RSPP => " + rowsAffected);
 	}
 
-	public void updateInvoice(String oldInvoiceID, String jobID, Map<String, Object> data) {
-		String query = "INSERT INTO invoices.invoices (invoiceid, number, emission, type, payed) "
+	public void updateInvoice(String oldInvoiceID, Invoice invoice, RSPP rspp) {
+		String query = "INSERT INTO invoices.invoices (invoiceid, \"number\", emission, \"type\", payed) "
 				+ "VALUES ( ? , ? , ? , ? , ? ) ON CONFLICT (invoiceid) DO UPDATE SET "
-				+ "invoiceid = ? , number = ? , emission = ? , type = ? , payed = ? where invoiceid = ? ";
+				+ "invoiceid = ? , \"number\" = ? , emission = ? , \"type\" = ? , payed = ?";
 		
 		int rowsAffected = 0;
 
@@ -434,24 +433,32 @@ public class SicurteaDAO {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(query);
 
-			if (oldInvoiceID.equals(null) || oldInvoiceID.isBlank())
-				st.setString(1, (String) data.get("invoiceID"));
-			else
-				st.setString(1, oldInvoiceID);
-			st.setString(2, ((String) data.get("invoiceNumber")) + "/" + ((String) data.get("type")).toUpperCase() + " "
-					+ (LocalDate) data.get("invoiceEmissionDate"));
-			st.setDate(3, (Date.valueOf((LocalDate) data.get("invoiceEmissionDate"))));
-			st.setString(4, (String) data.get("type"));
-			st.setBoolean(5, (Boolean) data.get("payed"));
-
-			st.setString(7, (String) data.get("invoiceNumber"));
-			st.setString(8, (String) data.get("invoiceNumber"));
-			st.setDate(9, (Date.valueOf((LocalDate) data.get("invoiceEmissionDate"))));
-			st.setString(10, (String) data.get("type"));
-			st.setBoolean(11, (Boolean) data.get("payed"));
-			st.setString(12, oldInvoiceID);
+			st.setString(1, oldInvoiceID);
+			st.setInt(2, invoice.getNumber());
+			st.setDate(3, Date.valueOf(invoice.getEmission()));
+			st.setString(4, invoice.getType());
+			st.setBoolean(5, invoice.getPayed());
+			
+			st.setString(6, oldInvoiceID);
+			st.setInt(7, invoice.getNumber());
+			st.setDate(8, Date.valueOf(invoice.getEmission()));
+			st.setString(9, invoice.getType());
+			st.setBoolean(10, invoice.getPayed());
 
 			rowsAffected = st.executeUpdate();
+			
+			if(oldInvoiceID != invoice.getId()) {
+				st = conn.prepareStatement("update invoices.invoices set invoiceid = ? where invoiceid = ? ");
+				st.setString(1, invoice.getId());
+				st.setString(2, oldInvoiceID);
+				st.executeUpdate();
+			}
+			
+			st = conn.prepareStatement("update deadlines.rspp set invoiceid = ? where rspp_jobid = ? AND jobstart = ? ");
+			st.setString(1, invoice.getId());
+			st.setString(2, rspp.getJob().getId());
+			st.setDate(3, Date.valueOf(rspp.getStart()));
+			st.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");

@@ -93,8 +93,8 @@ public class Model {
 		dao.updateRSPP(jobCode, oldJobStart, data);
 	}
 
-	public void updateInvoice(String oldInvoiceID, String jobID, Map<String, Object> data) {
-		dao.updateInvoice(oldInvoiceID, jobID, data);
+	public void updateInvoice(String oldInvoiceID, Invoice invoice, RSPP rspp) {
+		dao.updateInvoice(oldInvoiceID, invoice, rspp);
 	}
 	
 	public static String getConfigPath() {

@@ -1,9 +1,6 @@
 package dclient.controllers;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.google.common.collect.BiMap;
 
 import dclient.model.Account;
@@ -199,13 +196,16 @@ public class ViewEditController {
 		}
 
 		// Check if invoice needs to be updated
+		String oldInvoiceID = null;
 		Integer invoiceNumber = null;
 		if (!invoiceNumberField.getText().isEmpty())
 			invoiceNumber = Integer.parseInt(invoiceNumberField.getText());
+		if(rspp.getInvoice() != null)
+			oldInvoiceID = rspp.getInvoice().getId();
 		newInvoice = new Invoice(invoiceNumber, invoiceEmissionDateField.getValue(), newAccount.getCategory(),
 				payedCheck.isSelected());
 		if (!newInvoice.equals(rspp.getInvoice())) {
-			model.updateInvoice(invoiceNumberField.getText(), newInvoice, rspp);
+			model.updateInvoice(oldInvoiceID, newInvoice, rspp);
 			isChanged = true;
 		}
 

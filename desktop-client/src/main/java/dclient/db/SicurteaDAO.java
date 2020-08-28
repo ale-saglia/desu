@@ -269,11 +269,11 @@ public class SicurteaDAO {
 			st.setString(1, fiscalCode);
 
 			ResultSet res = st.executeQuery();
+			conn.close();
 			if (res.next() == false)
 				return "";
 			else {
 				notes = res.getString("notes");
-				conn.close();
 				return notes;
 			}
 
@@ -323,6 +323,8 @@ public class SicurteaDAO {
 			st.setString(7, oldFiscalCode);
 
 			rowsAffected = st.executeUpdate();
+			
+			conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");
@@ -363,6 +365,8 @@ public class SicurteaDAO {
 				st.setString(4, job.getId());
 
 				st.executeUpdate();
+				
+				conn.close();
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -389,6 +393,8 @@ public class SicurteaDAO {
 			st.setString(3, note);
 
 			rowsAffected = st.executeUpdate();
+			
+			conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");
@@ -413,6 +419,8 @@ public class SicurteaDAO {
 			st.setDate(4, Date.valueOf(oldJobStart));
 
 			rowsAffected = st.executeUpdate();
+			
+			conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");
@@ -423,49 +431,50 @@ public class SicurteaDAO {
 	}
 
 	public void updateInvoice(String oldInvoiceID, Invoice invoice, RSPP rspp) {
-		String query = "INSERT INTO invoices.invoices (invoiceid, \"number\", emission, \"type\", payed) "
-				+ "VALUES ( ? , ? , ? , ? , ? ) ON CONFLICT (invoiceid) DO UPDATE SET "
-				+ "invoiceid = ? , \"number\" = ? , emission = ? , \"type\" = ? , payed = ?";
-
 		int rowsAffected = 0;
 
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
-			PreparedStatement st = conn.prepareStatement(query);
+			PreparedStatement st;
 
-			st.setString(1, oldInvoiceID);
-			st.setInt(2, invoice.getNumber());
-			st.setDate(3, Date.valueOf(invoice.getEmission()));
-			st.setString(4, invoice.getType());
-			st.setBoolean(5, invoice.getPayed());
-
-			st.setString(6, oldInvoiceID);
-			st.setInt(7, invoice.getNumber());
-			st.setDate(8, Date.valueOf(invoice.getEmission()));
-			st.setString(9, invoice.getType());
-			st.setBoolean(10, invoice.getPayed());
-
-			rowsAffected = st.executeUpdate();
-
-			if (oldInvoiceID != invoice.getId()) {
-				st = conn.prepareStatement("update invoices.invoices set invoiceid = ? where invoiceid = ? ");
+			if (oldInvoiceID == null || oldInvoiceID.isEmpty()) {
+				// Case add new invoice
+				st = conn.prepareStatement(
+						"insert into invoices.invoices (invoiceid, \"number\", emission, \"type\", payed) values ( ? , ? , ? , ? , ? )");
 				st.setString(1, invoice.getId());
-				st.setString(2, oldInvoiceID);
-				st.executeUpdate();
+				st.setInt(2, invoice.getNumber());
+				st.setDate(3, Date.valueOf(invoice.getEmission()));
+				st.setString(4, invoice.getType());
+				st.setBoolean(5, invoice.getPayed());
+				rowsAffected = st.executeUpdate();
+
+			} else {
+				// Case edit invoice
+				st = conn.prepareStatement(
+						"update invoices.invoices set invoiceid = ? , \"number\" = ? , emission = ? , \"type\" = ? , payed = ? "
+								+ "where invoiceid = ? ");
+				st.setString(1, invoice.getId());
+				st.setInt(2, invoice.getNumber());
+				st.setDate(3, Date.valueOf(invoice.getEmission()));
+				st.setString(4, invoice.getType());
+				st.setBoolean(5, invoice.getPayed());
+				st.setString(6, oldInvoiceID);
+				rowsAffected = st.executeUpdate();
 			}
 
 			st = conn
-					.prepareStatement("update deadlines.rspp set invoiceid = ? where rspp_jobid = ? AND jobstart = ? ");
+					.prepareStatement("update deadlines.rspp set invoiceid = ? where rspp_jobid = ? and jobstart = ? ");
 			st.setString(1, invoice.getId());
 			st.setString(2, rspp.getJob().getId());
 			st.setDate(3, Date.valueOf(rspp.getStart()));
-			st.executeUpdate();
+			rowsAffected += st.executeUpdate();
+
+			conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");
 			throw new RuntimeException("Error Connection Database");
 		}
-
 		System.out.println("Rows updated INVOICE => " + rowsAffected);
 	}
 }

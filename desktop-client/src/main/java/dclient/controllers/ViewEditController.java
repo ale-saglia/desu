@@ -25,6 +25,8 @@ public class ViewEditController {
 	private String rsppNote;
 
 	private BiMap<String, String> accountCategories;
+	
+	MainController mainController;
 
 	boolean isChanged;
 
@@ -103,6 +105,10 @@ public class ViewEditController {
 	public void setModel(Model model) {
 		this.model = model;
 	}
+	
+	public void setMainControllerRef(MainController mainController) {
+		this.mainController = mainController;
+	}
 
 	public void setCombo() {
 		accountCategories = model.getAccountCategories();
@@ -172,7 +178,7 @@ public class ViewEditController {
 		newAccount = new Account(fiscalCodeText.getText(), nameField.getText(), numberVATField.getText(),
 				atecoCodeField.getText(), addressField.getText(),
 				accountCategories.inverse().get(categoryAccountCombo.getValue()));
-		if (newAccount.equals(rspp.getJob().getCustomer())) {
+		if (!newAccount.equals(rspp.getJob().getCustomer())) {
 			model.updateAccount(rspp.getJob().getCustomer().getFiscalCode(), newAccount);
 			isChanged = true;
 		}
@@ -190,7 +196,7 @@ public class ViewEditController {
 		}
 
 		// Check if rspp note needs to be updated
-		if (noteField.getText() != rsppNote) {
+		if (!noteField.getText().equals(rsppNote)) {
 			model.updateNote(fiscalCodeText.getText(), noteField.getText());
 			isChanged = true;
 		}
@@ -198,24 +204,30 @@ public class ViewEditController {
 		// Check if invoice needs to be updated
 		String oldInvoiceID = null;
 		Integer invoiceNumber = null;
+		
 		if (!invoiceNumberField.getText().isEmpty())
 			invoiceNumber = Integer.parseInt(invoiceNumberField.getText());
 		if(rspp.getInvoice() != null)
 			oldInvoiceID = rspp.getInvoice().getId();
 		newInvoice = new Invoice(invoiceNumber, invoiceEmissionDateField.getValue(), newAccount.getCategory(),
 				payedCheck.isSelected());
-		if (!newInvoice.equals(rspp.getInvoice())) {
+		
+		if (!newInvoice.equals(rspp.getInvoice()) && newInvoice.getId() != null) {
 			model.updateInvoice(oldInvoiceID, newInvoice, rspp);
 			isChanged = true;
 		}
 
 		// Check if RSPP needs to be updated
 		newRSPP = new RSPP(newJob, jobStartField.getValue(), jobEndField.getValue(), newInvoice);
-		if (!newRSPP.equals(rspp)) {
+		if (!newRSPP.equals(rspp) && newInvoice.getId() != null) {
 			model.updateRSPP(rspp.getJob().getId(), rspp.getStart(), newRSPP);
 			isChanged = true;
 		}
 
+		if(isChanged) {
+			System.out.println("Some elements were modified");
+			mainController.refresh();
+		}
 		closeButtonAction();
 	}
 }

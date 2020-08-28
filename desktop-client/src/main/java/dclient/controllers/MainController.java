@@ -7,19 +7,13 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 import dclient.model.Model;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -36,7 +30,6 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 public class MainController {
 	@FXML
@@ -80,7 +73,7 @@ public class MainController {
 		rsppElements = FXCollections.observableArrayList();
 
 		for (final Map<String, String> rsppElement : datas)
-			rsppElements.add(new RSPPtableElement(rsppElement));
+			rsppElements.add(new RSPPtableElement(rsppElement, model));
 
 		filteredrsppElements = new FilteredList<RSPPtableElement>(rsppElements);
 
@@ -152,88 +145,7 @@ public class MainController {
 		return true;
 	}
 
-	public class RSPPtableElement {
-		String jobID;
-		LocalDate jobStart;
-		ObjectProperty<LocalDate> jobEnd;
-		StringProperty accountName;
-		StringProperty category;
-		StringProperty invoiceID;
-		BooleanProperty payed;
-		StringProperty note;
-
-		public RSPPtableElement(final Map<String, String> rsspElement) {
-			this.jobID = rsspElement.get("jobid");
-			this.jobStart = LocalDate.parse(rsspElement.get("jobstart"));
-			this.jobEnd = new SimpleObjectProperty<LocalDate>(LocalDate.parse(rsspElement.get("jobend")));
-			this.accountName = new SimpleStringProperty(rsspElement.get("name"));
-			this.note = new SimpleStringProperty(rsspElement.get("note"));
-			this.category = new SimpleStringProperty(model.getAccountCategories().get(rsspElement.get("category")));
-			this.invoiceID = new SimpleStringProperty(rsspElement.get("invoiceid"));
-			this.payed = new SimpleBooleanProperty(rsspElement.get("payed").contains("true"));
-		}
-
-		public StringProperty accountNameProperty() {
-			return accountName;
-		}
-
-		public String getAccountName() {
-			return accountName.get();
-		}
-
-		public StringProperty categoryProperty() {
-			return category;
-		}
-
-		public String getCategory() {
-			return category.get();
-		}
-
-		public ObjectProperty<LocalDate> jobEndProperty() {
-			return jobEnd;
-		}
-
-		public String getJobEnd() {
-			return (jobEnd.get().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-		}
-
-		public LocalDate jobEndDate() {
-			return jobEnd.get();
-		}
-
-		public StringProperty invoiceIDProperty() {
-			return invoiceID;
-		}
-
-		public String getInvoiceID() {
-			return invoiceID.get();
-		}
-
-		public BooleanProperty payedProperty() {
-			return payed;
-		}
-
-		public Boolean getPayed() {
-			return payed.get();
-		}
-
-		public String getJobID() {
-			return jobID;
-		}
-
-		public LocalDate getJobStart() {
-			return jobStart;
-		}
-
-		public StringProperty noteProperty() {
-			return note;
-		}
-
-		public String getNote() {
-			return note.get();
-		}
-
-	}
+	
 
 	public void setModel(final Model model) {
 		this.model = model;
@@ -259,23 +171,14 @@ public class MainController {
 
 				controller.setModel(model);
 				controller.setCombo();
+				controller.setMainControllerRef(this);
 				controller.setRSPP(selectedItems.getJobID(), selectedItems.getJobStart());
 
 				final Scene scene = new Scene(root);
 				scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 				stage.setScene(scene);
 				stage.show();
-				stage.setOnCloseRequest((EventHandler<WindowEvent>) new EventHandler<WindowEvent>() {
-					public void handle(WindowEvent we) {
-						if (controller.isChanged) {
-							System.out.println("Some elements were modified");
-							refresh();
-						}
 
-						Platform.exit();
-						System.exit(0);
-					}
-				});
 
 			} catch (final Exception e) {
 				e.printStackTrace();

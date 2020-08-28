@@ -3,13 +3,13 @@ package dclient.model;
 import java.time.LocalDate;
 
 public class Invoice {
-	
+
 	String id;
 	Integer number;
 	LocalDate emission;
 	String type;
 	Boolean payed;
-	
+
 	public Invoice(String id, int number, LocalDate emission, String type, Boolean payed) {
 		this.id = id;
 		this.number = number;
@@ -19,24 +19,26 @@ public class Invoice {
 	}
 
 	public Invoice(Integer number, LocalDate emission, String type, Boolean payed) {
+		this.id = createID(number, type, emission);
 		this.number = number;
 		this.emission = emission;
 		this.type = type;
 		this.payed = payed;
-		createID();
 	}
 
-	public void createID() {
-		this.id = (number + "/" + type + " " + emission);
+	public String createID(Integer number, String type, LocalDate emission) {
+		if (number == null || type == null || emission == null)
+			return null;
+		else
+			return (number + "/" + type + " " + emission);
 	}
 
 	public String getId() {
 		return id;
 	}
 
-	public int getNumber() {
-		System.out.println(number.intValue());
-		return number.intValue();
+	public Integer getNumber() {
+		return number;
 	}
 
 	public LocalDate getEmission() {
@@ -98,7 +100,5 @@ public class Invoice {
 		} else if (!type.equals(other.type))
 			return false;
 		return true;
-	}	
-	
-	
+	}
 }

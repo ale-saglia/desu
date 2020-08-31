@@ -106,4 +106,11 @@ public class Account {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "Account [name=" + name + "]";
+	}
+	
+	
+
 }

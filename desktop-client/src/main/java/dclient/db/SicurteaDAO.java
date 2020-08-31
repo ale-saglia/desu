@@ -542,4 +542,60 @@ public class SicurteaDAO {
 		System.out.println("Rows updated ACCOUNT => " + rowsAffected);
 		return 0;
 	}
+
+	public List<Account> getAllAccounts() {
+		String sql = "select * from accounts.accounts ";
+		List<Account> accounts = new LinkedList<Account>();
+
+		try {
+			Connection conn = ConnectDB.getConnection(session, config);
+			PreparedStatement st = conn.prepareStatement(sql);
+
+			ResultSet res = st.executeQuery();
+
+			while (res.next()) {
+				accounts.add(new Account(res.getString("fiscalcode"), res.getString("name"), res.getString("numbervat"),
+						res.getString("atecocode"), res.getString("legal_address"),
+						res.getString("customer_category")));
+			}
+			return accounts;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+	}
+
+	public List<Job> getAllJobOfAccount(Account account) {
+		List<Job> jobs = new LinkedList<Job>();
+
+		if (account.getCategory().equals("pa"))
+
+			try {
+				Connection conn = ConnectDB.getConnection(session, config);
+				PreparedStatement st = conn.prepareStatement(
+						"select j.jobs_id, jobs_category, jobs_type, jobs_description, cig, decree_number, decree_date from jobs.jobs j left join jobs.jobs_pa jp on j.jobs_id = jp.job_id where customer = ? ");
+
+				st.setString(1, account.getFiscalCode());
+				ResultSet res = st.executeQuery();
+
+				while (res.next()) {
+					Job job = new Job(res.getString("jobs_id"), res.getString("jobs_category"),
+							res.getString("jobs_type"), res.getString("jobs_description"), account);
+
+					if (account.getCategory().equals("pa")) {
+						job = new JobPA(job, res.getString("cig"), res.getInt("decree_number"),
+								res.getDate("decree_date").toLocalDate());
+					}
+					jobs.add(job);
+				}
+				return jobs;
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				System.out.println("Errore connessione al database");
+			}
+		return null;
+	}
 }

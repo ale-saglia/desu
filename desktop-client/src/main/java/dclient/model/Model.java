@@ -104,8 +104,16 @@ public class Model {
 	public int newAccount(Account account) {
 		return dao.newAccount(account);
 	}
-	
+
 	public Account getAccount(String fiscalCode) {
 		return dao.getAccount(fiscalCode);
+	}
+
+	public List<Account> getAllAccounts() {
+		return dao.getAllAccounts();
+	}
+	
+	public List<Job> getAllJobOfAccount(Account account){
+		return dao.getAllJobOfAccount(account);
 	}
 }

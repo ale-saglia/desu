@@ -139,8 +139,6 @@ public class MainController {
 		return true;
 	}
 
-	
-
 	public void setModel(final Model model) {
 		this.model = model;
 	}
@@ -173,7 +171,6 @@ public class MainController {
 				stage.setScene(scene);
 				stage.show();
 
-
 			} catch (final Exception e) {
 				e.printStackTrace();
 			}
@@ -187,5 +184,25 @@ public class MainController {
 			alert.showAndWait();
 		}
 
+	}
+
+	public void switchToNewView() {
+		try {
+			final Stage stage = new Stage();
+
+			final FXMLLoader loader = new FXMLLoader(getClass().getResource("new.fxml"));
+			final VBox root = (VBox) loader.load();
+			final NewRSPPController controller = loader.getController();
+
+			controller.initController(model);
+
+			final Scene scene = new Scene(root);
+			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			stage.setScene(scene);
+			stage.show();
+
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

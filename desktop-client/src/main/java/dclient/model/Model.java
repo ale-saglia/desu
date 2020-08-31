@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.jasypt.properties.EncryptableProperties;
@@ -13,6 +12,7 @@ import org.jasypt.properties.EncryptableProperties;
 import com.google.common.collect.BiMap;
 
 import dclient.Key;
+import dclient.controllers.visualModels.RSPPtableElement;
 import dclient.db.SicurteaDAO;
 
 public class Model {
@@ -60,7 +60,7 @@ public class Model {
 		return dao.getRSPPnote(fiscalCode);
 	}
 
-	public List<Map<String, String>> getDataForTable() {
+	public List<RSPPtableElement> getDataForTable() {
 		return dao.getDataForTable();
 	}
 

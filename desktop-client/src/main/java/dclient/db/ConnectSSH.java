@@ -36,11 +36,6 @@ public class ConnectSSH {
 							+ session.setPortForwardingL(0, config.getProperty("ssh.host"),
 									Integer.parseInt(config.getProperty("db.port")))
 							+ " -> " + config.getProperty("db.port"));
-			System.out
-					.println("localhost:"
-							+ session.setPortForwardingL(0, config.getProperty("ssh.host"),
-									Integer.parseInt(config.getProperty("db.port")))
-							+ " -> " + config.getProperty("db.port"));
 			System.out.println("Port Forwarded");
 
 		} catch (Exception e) {

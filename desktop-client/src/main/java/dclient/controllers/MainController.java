@@ -2,8 +2,6 @@ package dclient.controllers;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Map;
 import java.util.function.Predicate;
 
 import dclient.controllers.visualModels.RSPPtableElement;
@@ -70,12 +68,7 @@ public class MainController {
 	Model model;
 
 	public void createTable() {
-		final List<Map<String, String>> datas = model.getDataForTable();
-		rsppElements = FXCollections.observableArrayList();
-
-		for (final Map<String, String> rsppElement : datas)
-			rsppElements.add(new RSPPtableElement(rsppElement, model));
-
+		rsppElements = FXCollections.observableArrayList(model.getDataForTable());
 		filteredrsppElements = new FilteredList<RSPPtableElement>(rsppElements);
 
 		nameColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("accountName"));

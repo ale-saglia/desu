@@ -2,9 +2,6 @@ package dclient.controllers.visualModels;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
-
-import dclient.model.Model;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -22,15 +19,17 @@ public class RSPPtableElement {
 	BooleanProperty payed;
 	StringProperty note;
 
-	public RSPPtableElement(final Map<String, String> rsspElement, Model model) {
-		this.jobID = rsspElement.get("jobid");
-		this.jobStart = LocalDate.parse(rsspElement.get("jobstart"));
-		this.jobEnd = new SimpleObjectProperty<LocalDate>(LocalDate.parse(rsspElement.get("jobend")));
-		this.accountName = new SimpleStringProperty(rsspElement.get("name"));
-		this.note = new SimpleStringProperty(rsspElement.get("note"));
-		this.category = new SimpleStringProperty(model.getAccountCategories().get(rsspElement.get("category")));
-		this.invoiceID = new SimpleStringProperty(rsspElement.get("invoiceid"));
-		this.payed = new SimpleBooleanProperty(rsspElement.get("payed").contains("true"));
+	public RSPPtableElement(String name, String category, LocalDate jobEnd, String invoiceID, Boolean payed,
+			String note, String jobID, LocalDate jobStart) {
+		this.jobID = jobID;
+		this.jobStart = jobStart;
+
+		this.jobEnd = new SimpleObjectProperty<LocalDate>(jobEnd);
+		this.accountName = new SimpleStringProperty(name);
+		this.note = new SimpleStringProperty(note);
+		this.category = new SimpleStringProperty(category);
+		this.invoiceID = new SimpleStringProperty(category);
+		this.payed = new SimpleBooleanProperty(payed);
 	}
 
 	public StringProperty accountNameProperty() {
@@ -92,5 +91,4 @@ public class RSPPtableElement {
 	public String getNote() {
 		return note.get();
 	}
-
 }

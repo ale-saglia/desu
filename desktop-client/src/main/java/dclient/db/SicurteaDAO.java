@@ -6,17 +6,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
+import dclient.controllers.visualModels.RSPPtableElement;
 import dclient.model.Account;
 import dclient.model.Invoice;
 import dclient.model.Job;
@@ -29,20 +27,20 @@ public class SicurteaDAO {
 	Properties config;
 	Session session;
 
-	public SicurteaDAO(Properties config2) {
-		this.config = config2;
-		daysAdvance = Integer.parseInt(config2.getProperty("rsppTable.daysAdvance", "14"));
-		this.session = ConnectSSH.getSession(config2);
+	public SicurteaDAO(Properties config) {
+		this.config = config;
+		daysAdvance = Integer.parseInt(config.getProperty("rsppTable.daysAdvance", "14"));
+		this.session = ConnectSSH.getSession(config);
 	}
 
-	public List<Map<String, String>> getDataForTable() {
+	public List<RSPPtableElement> getDataForTable() {
 		String sql = ("SELECT jobid,\n" + "       jobstart,\n" + "       jobend,\n" + "       \"name\",\n"
 				+ "       category,\n" + "       n2.invoiceid,\n" + "       payed,\n" + "       notes\n"
 				+ "FROM   (SELECT jobid,\n" + "               jobstart,\n" + "               jobend,\n"
 				+ "               \"name\",\n" + "               category,\n" + "               invoiceid,\n"
 				+ "               notes\n" + "        FROM   (SELECT r.rspp_jobid        AS jobid,\n"
 				+ "                       r.jobstart          AS jobstart,\n"
-				+ "                       r.jobstart          AS jobend,\n"
+				+ "                       r.jobend          AS jobend,\n"
 				+ "                       j.customer          AS fiscalcode,\n"
 				+ "                       a.\"name\"            AS \"name\",\n"
 				+ "                       a.customer_category AS category,\n"
@@ -53,31 +51,19 @@ public class SicurteaDAO {
 				+ "                          jobstart) AS n1\n" + "               LEFT JOIN deadlines.rspp_notes rn\n"
 				+ "                      ON n1.fiscalcode = rn.fiscalcode) AS n2\n"
 				+ "       LEFT JOIN invoices.invoices i\n" + "              ON i.invoiceid = n2.invoiceid ");
-		List<Map<String, String>> tableElements;
+
+		List<RSPPtableElement> tableElements = new LinkedList<RSPPtableElement>();
 
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
-
-			tableElements = new ArrayList<Map<String, String>>();
-			Map<String, String> temp;
-
 			PreparedStatement st = conn.prepareStatement(sql);
 
 			ResultSet res = st.executeQuery();
 
 			while (res.next()) {
-				temp = new HashMap<String, String>();
-				temp.put("name", res.getString("name"));
-				temp.put("category", res.getString("category"));
-				temp.put("jobend", res.getDate("jobend").toString());
-				temp.put("invoiceid", res.getString("invoiceid"));
-				temp.put("payed", String.valueOf(res.getBoolean("payed")));
-				temp.put("note", res.getString("notes"));
-
-				// Useful for tracking selected field when view / edit
-				temp.put("jobid", res.getString("jobid"));
-				temp.put("jobstart", res.getDate("jobstart").toString());
-				tableElements.add(temp);
+				tableElements.add(new RSPPtableElement(res.getString("name"), res.getString("category"),
+						res.getDate("jobend").toLocalDate(), res.getString("invoiceid"), res.getBoolean("payed"),
+						res.getString("notes"), res.getString("jobid"), res.getDate("jobstart").toLocalDate()));
 			}
 
 			conn.close();
@@ -171,6 +157,30 @@ public class SicurteaDAO {
 			res.next();
 			rspp = new RSPP(getJob(res.getString("rspp_jobid"), conn), res.getDate("jobstart").toLocalDate(),
 					res.getDate("jobend").toLocalDate(), getInvoice(res.getString("invoiceid"), conn));
+			conn.close();
+			return rspp;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+	}
+
+	public List<RSPP> getRSPPList() {
+		String sql = "select * from deadlines.rspp";
+		List<RSPP> rspp = new LinkedList<RSPP>();
+
+		try {
+			Connection conn = ConnectDB.getConnection(session, config);
+			PreparedStatement st = conn.prepareStatement(sql);
+
+			ResultSet res = st.executeQuery();
+
+			while (res.next()) {
+				rspp.add(new RSPP(getJob(res.getString("rspp_jobid"), conn), res.getDate("jobstart").toLocalDate(),
+						res.getDate("jobend").toLocalDate(), getInvoice(res.getString("invoiceid"), conn)));
+			}
 			conn.close();
 			return rspp;
 
@@ -323,7 +333,7 @@ public class SicurteaDAO {
 			st.setString(7, oldFiscalCode);
 
 			rowsAffected = st.executeUpdate();
-			
+
 			conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -365,7 +375,7 @@ public class SicurteaDAO {
 				st.setString(4, job.getId());
 
 				st.executeUpdate();
-				
+
 				conn.close();
 			}
 		} catch (SQLException e) {
@@ -393,7 +403,7 @@ public class SicurteaDAO {
 			st.setString(3, note);
 
 			rowsAffected = st.executeUpdate();
-			
+
 			conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -419,7 +429,7 @@ public class SicurteaDAO {
 			st.setDate(4, Date.valueOf(oldJobStart));
 
 			rowsAffected = st.executeUpdate();
-			
+
 			conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();

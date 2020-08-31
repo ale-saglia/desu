@@ -487,4 +487,35 @@ public class SicurteaDAO {
 		}
 		System.out.println("Rows updated INVOICE => " + rowsAffected);
 	}
+	
+	public int newAccount(Account account) {
+		String query = "insert into accounts.accounts "
+				+ "(fiscalcode,\"name\",numbervat,atecocode,legal_address,customer_category) "
+				+ "values ( ? , ? , ? , ? , ? , ? ) ";
+
+		int rowsAffected = 0;
+
+		try {
+			Connection conn = ConnectDB.getConnection(session, config);
+			PreparedStatement st = conn.prepareStatement(query);
+
+			st.setString(1, account.getFiscalCode());
+			st.setString(2, account.getName());
+			st.setString(3, account.getNumberVAT());
+			st.setString(4, account.getAtecoCode());
+			st.setString(5, account.getLegalAddress());
+			st.setString(6, account.getCategory());
+
+			rowsAffected = st.executeUpdate();
+
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database o campo già esistente");
+			return -1;
+		}
+
+		System.out.println("Rows updated ACCOUNT => " + rowsAffected);
+		return 0;
+	}
 }

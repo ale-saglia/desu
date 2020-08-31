@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import dclient.controllers.visualModels.RSPPtableElement;
 import dclient.model.Model;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;

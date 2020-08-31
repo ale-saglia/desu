@@ -1,4 +1,4 @@
-package dclient.controllers;
+package dclient.controllers.visualModels;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

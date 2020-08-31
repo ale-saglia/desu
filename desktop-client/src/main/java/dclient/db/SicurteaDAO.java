@@ -269,6 +269,30 @@ public class SicurteaDAO {
 		}
 	}
 
+	public Account getAccount(String fiscalCode) {
+		String sql = "select * from accounts.accounts a where a.fiscalcode = ? ";
+		Account account = null;
+
+		try {
+			Connection conn = ConnectDB.getConnection(session, config);
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setString(1, fiscalCode);
+
+			ResultSet res = st.executeQuery();
+
+			if (res.next()) {
+				account = new Account(res.getString("fiscalcode"), res.getString("name"), res.getString("numbervat"),
+						res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"));
+			}
+			return account;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+	}
+
 	public String getRSPPnote(String fiscalCode) {
 		String sql = "select * from deadlines.rspp_notes r where r.fiscalcode = ? ";
 		String notes;
@@ -487,7 +511,7 @@ public class SicurteaDAO {
 		}
 		System.out.println("Rows updated INVOICE => " + rowsAffected);
 	}
-	
+
 	public int newAccount(Account account) {
 		String query = "insert into accounts.accounts "
 				+ "(fiscalcode,\"name\",numbervat,atecocode,legal_address,customer_category) "

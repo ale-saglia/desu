@@ -1,8 +1,6 @@
 package dclient.controllers;
 
 import java.time.LocalDate;
-import com.google.common.collect.BiMap;
-
 import dclient.model.Account;
 import dclient.model.Invoice;
 import dclient.model.Job;
@@ -23,8 +21,6 @@ public class ViewEditController {
 	private Model model;
 	private RSPP rspp;
 	private String rsppNote;
-
-	private BiMap<String, String> accountCategories;
 	
 	MainController mainController;
 
@@ -111,8 +107,7 @@ public class ViewEditController {
 	}
 
 	public void setCombo() {
-		accountCategories = model.getAccountCategories();
-		categoryAccountCombo.getItems().setAll(accountCategories.values());
+		categoryAccountCombo.getItems().setAll(model.getAccountCategories().values());
 		categoryJobCombo.getItems().setAll(model.getJobCategories());
 		categoryTypeCombo.getItems().setAll(model.getJobTypes());
 	}
@@ -177,7 +172,7 @@ public class ViewEditController {
 		// Check if account needs to be updated
 		newAccount = new Account(fiscalCodeText.getText(), nameField.getText(), numberVATField.getText(),
 				atecoCodeField.getText(), addressField.getText(),
-				accountCategories.inverse().get(categoryAccountCombo.getValue()));
+				model.getAccountCategories().inverse().get(categoryAccountCombo.getValue()));
 		if (!newAccount.equals(rspp.getJob().getCustomer())) {
 			model.updateAccount(rspp.getJob().getCustomer().getFiscalCode(), newAccount);
 			isChanged = true;

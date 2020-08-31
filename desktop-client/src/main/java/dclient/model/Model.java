@@ -19,7 +19,7 @@ public class Model {
 	InputStream cfg;
 	public final static String CONFIG_PATH = System.getProperty("user.home") + "/.dclient/";
 	Properties config;
-	
+
 	SicurteaDAO dao;
 
 	BiMap<String, String> accountCategories;
@@ -29,7 +29,7 @@ public class Model {
 
 	public Model(String userPassword) throws IOException {
 		config = new Properties();
-		config.load(new FileInputStream(CONFIG_PATH + "config.properties"));	
+		config.load(new FileInputStream(CONFIG_PATH + "config.properties"));
 		config = new EncryptableProperties((new Key(userPassword, config)).getEnc());
 		config.load(new FileInputStream(CONFIG_PATH + "config.properties"));
 
@@ -96,8 +96,16 @@ public class Model {
 	public void updateInvoice(String oldInvoiceID, Invoice invoice, RSPP rspp) {
 		dao.updateInvoice(oldInvoiceID, invoice, rspp);
 	}
-	
+
 	public static String getConfigPath() {
 		return CONFIG_PATH;
+	}
+
+	public int newAccount(Account account) {
+		return dao.newAccount(account);
+	}
+	
+	public Account getAccount(String fiscalCode) {
+		return dao.getAccount(fiscalCode);
 	}
 }

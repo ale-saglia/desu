@@ -116,4 +116,12 @@ public class Model {
 	public List<Job> getAllJobOfAccount(Account account){
 		return dao.getAllJobOfAccount(account);
 	}
+	
+	public int newJob(Job job) {
+		return dao.newJob(job);
+	}
+	
+	public int newRSPP(RSPP rspp) {
+		return dao.newRSPP(rspp);		
+	}
 }

@@ -194,7 +194,7 @@ public class MainController {
 			final VBox root = (VBox) loader.load();
 			final NewRSPPController controller = loader.getController();
 
-			controller.initController(model);
+			controller.initController(this, model);
 
 			final Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());

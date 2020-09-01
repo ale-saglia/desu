@@ -28,8 +28,12 @@ public class NewRSPPController {
 	Model model;
 	RSPP rspp;
 	Account selectedAccount;
+	
+	MainController parent;
 
 	BiMap<String, Job> jobMap;
+
+	final String NEW_RSPP = "Nuovo...";
 
 	FilteredList<Account> filteredAccountList;
 
@@ -81,7 +85,8 @@ public class NewRSPPController {
 	@FXML
 	private Button closeButton;
 
-	public void initController(Model model) {
+	public void initController(MainController parent, Model model) {
+		this.parent = parent;
 		this.model = model;
 
 		rsppInfo.setDisable(true);
@@ -115,10 +120,10 @@ public class NewRSPPController {
 		}, accountSearch.textProperty()));
 
 		jobMap = HashBiMap.create();
-		
+
 		jobCategory.getItems().setAll(model.getJobCategories());
 		jobType.getItems().setAll(model.getJobTypes());
-		
+
 	}
 
 	public void addNewAccount() {
@@ -167,7 +172,7 @@ public class NewRSPPController {
 			jobMap.put(job.getId(), job);
 
 		jobCombo.getItems().clear();
-		jobCombo.getItems().add("Nuovo...");
+		jobCombo.getItems().add(NEW_RSPP);
 		jobCombo.getItems().addAll(jobMap.keySet());
 
 		selectBestResult();
@@ -178,10 +183,14 @@ public class NewRSPPController {
 			if (job != null && job.getJobType().contains("RSPP"))
 				jobCombo.getSelectionModel().select(jobMap.inverse().get(job));
 		}
+		if (jobCombo.getSelectionModel().getSelectedItem() == null)
+			jobCombo.getSelectionModel().select(NEW_RSPP);
 	}
 
 	@FXML
 	public void setFields() {
+		clearFields();
+		
 		if (jobMap.get(jobCombo.getSelectionModel().getSelectedItem()) != null) {
 			Job job = jobMap.get(jobCombo.getSelectionModel().getSelectedItem());
 			setJobFieldsBlocked(false);
@@ -194,7 +203,7 @@ public class NewRSPPController {
 			jobType.getSelectionModel().select(job.getJobType());
 
 			jobDescriptionField.setText(job.getDescription());
-			
+
 			rsppNotes.setText(model.getRSPPnote(job.getCustomer().getFiscalCode()));
 
 			if (job instanceof JobPA) {
@@ -204,18 +213,20 @@ public class NewRSPPController {
 				decreeDateField.setValue(jobPA.getDecreeDate());
 			}
 
-		}
-		else {
+		} else {
 			setJobFieldsBlocked(true);
 			paHbox.setDisable(false);
-			jobNumber.clear();
-			jobCategory.valueProperty().set(null);
-			jobType.valueProperty().set(null);
-			jobDescriptionField.clear();
-			cigField.clear();
-			decreeNumberField.clear();
-			decreeDateField.valueProperty().set(null);
 		}
+	}
+	
+	private void clearFields() {
+		jobNumber.clear();
+		jobCategory.valueProperty().set(null);
+		jobType.valueProperty().set(null);
+		jobDescriptionField.clear();
+		cigField.clear();
+		decreeNumberField.clear();
+		decreeDateField.valueProperty().set(null);
 	}
 
 	private void setJobFieldsBlocked(boolean status) {
@@ -227,5 +238,31 @@ public class NewRSPPController {
 		cigField.setEditable(status);
 		decreeNumberField.setEditable(status);
 		decreeDateField.setEditable(status);
+	}
+
+	@FXML
+	public void addRSPP() {
+		Job job = jobMap.get(jobCombo.getSelectionModel().getSelectedItem());
+		
+		if(job == null) {
+			//TODO add check for safety
+			job = new Job(jobNumber.getText(), jobCategory.getValue(), jobType.getValue(), jobDescriptionField.getText(), selectedAccount);
+			if(!selectedAccount.getCategory().contains("pa"))
+				model.newJob(job);
+			else
+				model.newJob(new JobPA(job, cigField.getText(), Integer.valueOf(decreeNumberField.getText()), decreeDateField.getValue()));
+		}
+		
+		//TODO add check for bad values
+		model.newRSPP(new RSPP(job, rsppStart.getValue(), rsppEnd.getValue(), null));
+		
+		parent.refresh();
+		closeButtonAction();
+	}
+	
+	@FXML
+	private void closeButtonAction() {
+		Stage stage = (Stage) closeButton.getScene().getWindow();
+		stage.close();
 	}
 }

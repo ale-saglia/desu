@@ -569,30 +569,92 @@ public class SicurteaDAO {
 
 	public List<Job> getAllJobOfAccount(Account account) {
 		List<Job> jobs = new LinkedList<Job>();
-			try {
-				Connection conn = ConnectDB.getConnection(session, config);
-				PreparedStatement st = conn.prepareStatement(
-						"select j.jobs_id, jobs_category, jobs_type, jobs_description, cig, decree_number, decree_date from jobs.jobs j left join jobs.jobs_pa jp on j.jobs_id = jp.job_id where customer = ? ");
+		try {
+			Connection conn = ConnectDB.getConnection(session, config);
+			PreparedStatement st = conn.prepareStatement(
+					"select j.jobs_id, jobs_category, jobs_type, jobs_description, cig, decree_number, decree_date from jobs.jobs j left join jobs.jobs_pa jp on j.jobs_id = jp.job_id where customer = ? ");
 
-				st.setString(1, account.getFiscalCode());
-				ResultSet res = st.executeQuery();
+			st.setString(1, account.getFiscalCode());
+			ResultSet res = st.executeQuery();
 
-				while (res.next()) {
-					Job job = new Job(res.getString("jobs_id"), res.getString("jobs_category"),
-							res.getString("jobs_type"), res.getString("jobs_description"), account);
+			while (res.next()) {
+				Job job = new Job(res.getString("jobs_id"), res.getString("jobs_category"), res.getString("jobs_type"),
+						res.getString("jobs_description"), account);
 
-					if (account.getCategory().equals("pa")) {
-						job = new JobPA(job, res.getString("cig"), res.getInt("decree_number"),
-								res.getDate("decree_date").toLocalDate());
-					}
-					jobs.add(job);
+				if (account.getCategory().equals("pa")) {
+					job = new JobPA(job, res.getString("cig"), res.getInt("decree_number"),
+							res.getDate("decree_date").toLocalDate());
 				}
-				return jobs;
-
-			} catch (SQLException e) {
-				e.printStackTrace();
-				System.out.println("Errore connessione al database");
+				jobs.add(job);
 			}
+			return jobs;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+		}
 		return null;
+	}
+
+	public int newJob(Job job) {
+		try {
+			Connection conn = ConnectDB.getConnection(session, config);
+			PreparedStatement st = conn.prepareStatement(
+					"insert into jobs.jobs (jobs_id, jobs_category, jobs_type, jobs_description, customer) "
+							+ "values ( ? , ? , ? , ? , ? ) ");
+
+			st.setString(1, job.getId());
+			st.setString(2, job.getJobCategory());
+			st.setString(3, job.getJobType());
+			st.setString(4, job.getDescription());
+			st.setString(5, job.getCustomer().getFiscalCode());
+
+			st.executeUpdate();
+
+			if (job instanceof JobPA) {
+				st = conn.prepareStatement("insert into jobs.jobs_pa (jobs_id, cig, decree_number, decree_date) "
+						+ "values ( ? , ? , ? , ? ) ");
+
+				st.setString(1, job.getId());
+				st.setString(2, ((JobPA) job).getCig());
+				st.setInt(3, ((JobPA) job).getDecreeNumber());
+				st.setDate(4, Date.valueOf(((JobPA) job).getDecreeDate()));
+
+				st.executeUpdate();
+			}
+
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database o campo già esistente");
+			return -1;
+		}
+		return 0;
+	}
+
+	public int newRSPP(RSPP rspp) {
+		String query = "insert into deadlines.rspp (rspp_jobid, jobstart, jobend) values (?, ?, ?)";
+
+		int rowsAffected = 0;
+
+		try {
+			Connection conn = ConnectDB.getConnection(session, config);
+			PreparedStatement st = conn.prepareStatement(query);
+
+			st.setString(1, rspp.getJob().getId());
+			st.setDate(2, Date.valueOf(rspp.getStart()));
+			st.setDate(3, Date.valueOf(rspp.getEnd()));
+
+			rowsAffected = st.executeUpdate();
+
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database o campo già esistente");
+			return -1;
+		}
+
+		System.out.println("Rows updated ACCOUNT => " + rowsAffected);
+		return 0;
 	}
 }

@@ -148,7 +148,7 @@ public class NewRSPPController {
 		}
 	}
 
-	private void refreshList() {
+	public void refreshList() {
 		filteredAccountList = new FilteredList<Account>(FXCollections.observableArrayList(model.getAllAccounts()));
 		accountListView.refresh();
 	}

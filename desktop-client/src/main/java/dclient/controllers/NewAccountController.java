@@ -50,13 +50,15 @@ public class NewAccountController {
 	}
 
 	@FXML
-	void createNewAccount() {
+	void createNewAccount() throws InterruptedException {
 		account = new Account(fiscalCodeText.getText(), nameField.getText(), numberVATField.getText(),
 				atecoCodeField.getText(), addressField.getText(),
 				model.getAccountCategories().inverse().get(categoryAccountCombo.getValue()));
 		int result = model.newAccount(account);
 
+		//TODO new account doesn't show up in list
 		if (result >= 0) {
+			parent.refreshList();
 			parent.selectAccount(account);
 			closeButtonAction();
 		} else {
@@ -67,7 +69,7 @@ public class NewAccountController {
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.setTitle("Valore duplicato");
 				alert.setHeaderText(
-						"Attenzione il codice fiscale inserito corrisponde già al cliente" + existingAccount.getName());
+						"Attenzione il codice fiscale inserito corrisponde già al cliente " + existingAccount.getName());
 
 				alert.showAndWait();
 			}

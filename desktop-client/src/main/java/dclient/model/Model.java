@@ -124,4 +124,8 @@ public class Model {
 	public int newRSPP(RSPP rspp) {
 		return dao.newRSPP(rspp);		
 	}
+	
+	public boolean isAccountExisting(Account account) {
+		return dao.isAccountExisting(account);
+	}
 }

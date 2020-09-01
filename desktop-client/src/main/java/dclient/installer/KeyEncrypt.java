@@ -1,4 +1,4 @@
-package dclient;
+package dclient.installer;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -19,6 +19,8 @@ import org.apache.commons.io.FileUtils;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.text.RandomStringGenerator;
+
+import dclient.Key;
 
 public class KeyEncrypt {
 	private final int DEFAULT_PASSWORD_LENGHT = 64;

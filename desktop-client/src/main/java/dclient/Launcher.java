@@ -1,5 +1,7 @@
 package dclient;
 
+import dclient.installer.KeyEncrypt;
+
 public class Launcher {
 
 	public static void main(String[] args) {

@@ -92,6 +92,8 @@ public class NewRSPPController {
 		rsppInfo.setDisable(true);
 
 		refreshList();
+		
+		paHbox.managedProperty().bind(paHbox.visibleProperty());
 
 		System.out.println(filteredAccountList);
 
@@ -190,11 +192,10 @@ public class NewRSPPController {
 	@FXML
 	public void setFields() {
 		clearFields();
-		
 		if (jobMap.get(jobCombo.getSelectionModel().getSelectedItem()) != null) {
 			Job job = jobMap.get(jobCombo.getSelectionModel().getSelectedItem());
 			setJobFieldsBlocked(false);
-			paHbox.setDisable(!(job instanceof JobPA));
+			paHbox.setVisible(job instanceof JobPA);
 
 			jobNumber.setText(job.getId());
 			jobCategory.getItems().setAll(model.getJobCategories());

@@ -24,7 +24,10 @@
                </font></Label>
             <HBox prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <TextField fx:id="accountSearch" HBox.hgrow="ALWAYS" />
+                  <TextField fx:id="accountSearch" HBox.hgrow="ALWAYS">
+                     <HBox.margin>
+                        <Insets bottom="5.0" right="7.0" />
+                     </HBox.margin></TextField>
                   <Button mnemonicParsing="false" onAction="#addNewAccount" text="Nuovo" />
                </children>
             </HBox>
@@ -36,44 +39,92 @@
          <children>
             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                <children>
-                  <Label text="Pratica" />
-                  <ComboBox fx:id="jobCombo" onAction="#setFields" prefWidth="150.0" HBox.hgrow="ALWAYS" />
+                  <Label text="Pratica">
+                     <padding>
+                        <Insets right="7.0" />
+                     </padding></Label>
+                  <ComboBox fx:id="jobCombo" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" onAction="#setFields" HBox.hgrow="ALWAYS" />
                </children>
+               <padding>
+                  <Insets bottom="15.0" />
+               </padding>
             </HBox>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Label text="Numero" />
+                  <Label minWidth="-Infinity" text="Numero">
+                     <padding>
+                        <Insets right="7.0" />
+                     </padding></Label>
                   <TextField fx:id="jobNumber" HBox.hgrow="ALWAYS" />
-                  <Label text="Categoria" />
+                  <Label minWidth="-Infinity" text="Categoria">
+                     <padding>
+                        <Insets left="10.0" right="7.0" />
+                     </padding></Label>
                   <ComboBox fx:id="jobCategory" prefWidth="150.0" />
-                  <Label text="Sottocategoria" />
+                  <Label minWidth="-Infinity" text="Sottocategoria">
+                     <padding>
+                        <Insets left="10.0" right="7.0" />
+                     </padding></Label>
                   <ComboBox fx:id="jobType" prefWidth="150.0" />
                </children>
+               <padding>
+                  <Insets bottom="10.0" />
+               </padding>
             </HBox>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Label text="Descrizione" />
+                  <Label minWidth="-Infinity" text="Descrizione">
+                     <padding>
+                        <Insets right="7.0" />
+                     </padding></Label>
                   <TextField fx:id="jobDescriptionField" HBox.hgrow="ALWAYS" />
                </children>
+               <padding>
+                  <Insets bottom="10.0" />
+               </padding>
             </HBox>
-            <HBox fx:id="paHbox" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+            <HBox fx:id="paHbox" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" visible="false">
                <children>
-                  <Label minHeight="-Infinity" minWidth="-Infinity" text="CIG" />
+                  <Label minHeight="-Infinity" minWidth="-Infinity" text="CIG">
+                     <padding>
+                        <Insets right="7.0" />
+                     </padding></Label>
                   <TextField fx:id="cigField" HBox.hgrow="ALWAYS" />
-                  <Label minHeight="-Infinity" minWidth="-Infinity" text="Numero decreto" />
+                  <Label minHeight="-Infinity" minWidth="-Infinity" text="Numero decreto">
+                     <padding>
+                        <Insets left="10.0" right="7.0" />
+                     </padding></Label>
                   <TextField fx:id="decreeNumberField" HBox.hgrow="ALWAYS" />
-                  <Label minHeight="-Infinity" minWidth="-Infinity" text="Data decreto" />
+                  <Label minHeight="-Infinity" minWidth="-Infinity" text="Data decreto">
+                     <padding>
+                        <Insets left="10.0" right="7.0" />
+                     </padding></Label>
                   <DatePicker fx:id="decreeDateField" HBox.hgrow="ALWAYS" />
                </children>
+               <padding>
+                  <Insets bottom="15.0" />
+               </padding>
             </HBox>
-            <Separator prefWidth="200.0" />
+            <Separator prefWidth="200.0">
+               <padding>
+                  <Insets bottom="10.0" />
+               </padding></Separator>
             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Label text="Inizio incarico" />
-                  <DatePicker fx:id="rsppStart" />
-                  <Label text="Inizio incarico" />
-                  <DatePicker fx:id="rsppEnd" />
+                  <Label text="Inizio incarico">
+                     <HBox.margin>
+                        <Insets right="7.0" />
+                     </HBox.margin></Label>
+                  <DatePicker fx:id="rsppStart" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                  <Label text="Inizio incarico">
+                     <padding>
+                        <Insets left="10.0" right="7.0" />
+                     </padding></Label>
+                  <DatePicker fx:id="rsppEnd" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
                </children>
+               <padding>
+                  <Insets bottom="15.0" />
+               </padding>
             </HBox>
             <VBox prefHeight="200.0" prefWidth="100.0">
                <children>

@@ -582,8 +582,11 @@ public class SicurteaDAO {
 						res.getString("jobs_description"), account);
 
 				if (account.getCategory().equals("pa")) {
-					job = new JobPA(job, res.getString("cig"), res.getInt("decree_number"),
-							res.getDate("decree_date").toLocalDate());
+					if (res.getDate("decree_date") == null)
+						job = new JobPA(job, res.getString("cig"), res.getInt("decree_number"), null);
+					else
+						job = new JobPA(job, res.getString("cig"), res.getInt("decree_number"),
+								res.getDate("decree_date").toLocalDate());
 				}
 				jobs.add(job);
 			}
@@ -657,7 +660,7 @@ public class SicurteaDAO {
 		System.out.println("Rows updated ACCOUNT => " + rowsAffected);
 		return 0;
 	}
-	
+
 	public boolean isAccountExisting(Account account) {
 		String query = "SELECT COUNT(1) FROM accounts.accounts WHERE fiscalcode = ? ";
 
@@ -666,12 +669,12 @@ public class SicurteaDAO {
 			PreparedStatement st = conn.prepareStatement(query);
 
 			st.setString(1, account.getFiscalCode());
-			
+
 			ResultSet res = st.executeQuery();
 			conn.close();
 			res.next();
 
-			if(res.getInt(1) == 0)
+			if (res.getInt(1) == 0)
 				return false;
 			else
 				return true;

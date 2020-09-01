@@ -544,7 +544,7 @@ public class SicurteaDAO {
 	}
 
 	public List<Account> getAllAccounts() {
-		String sql = "select * from accounts.accounts ";
+		String sql = "select * from accounts.accounts order by \"name\"";
 		List<Account> accounts = new LinkedList<Account>();
 
 		try {
@@ -569,9 +569,6 @@ public class SicurteaDAO {
 
 	public List<Job> getAllJobOfAccount(Account account) {
 		List<Job> jobs = new LinkedList<Job>();
-
-		if (account.getCategory().equals("pa"))
-
 			try {
 				Connection conn = ConnectDB.getConnection(session, config);
 				PreparedStatement st = conn.prepareStatement(

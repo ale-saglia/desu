@@ -34,10 +34,10 @@
       <Separator prefWidth="200.0" />
       <VBox fx:id="rsppInfo" prefHeight="200.0" prefWidth="100.0">
          <children>
-            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                <children>
                   <Label text="Pratica" />
-                  <ComboBox fx:id="jobCombo" prefWidth="150.0" HBox.hgrow="ALWAYS" />
+                  <ComboBox fx:id="jobCombo" onAction="#setFields" prefWidth="150.0" HBox.hgrow="ALWAYS" />
                </children>
             </HBox>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
@@ -50,6 +50,23 @@
                   <ComboBox fx:id="jobType" prefWidth="150.0" />
                </children>
             </HBox>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Label text="Descrizione" />
+                  <TextField fx:id="jobDescriptionField" HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+            <HBox fx:id="paHbox" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Label minHeight="-Infinity" minWidth="-Infinity" text="CIG" />
+                  <TextField fx:id="cigField" HBox.hgrow="ALWAYS" />
+                  <Label minHeight="-Infinity" minWidth="-Infinity" text="Numero decreto" />
+                  <TextField fx:id="decreeNumberField" HBox.hgrow="ALWAYS" />
+                  <Label minHeight="-Infinity" minWidth="-Infinity" text="Data decreto" />
+                  <DatePicker fx:id="decreeDateField" HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+            <Separator prefWidth="200.0" />
             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
                <children>
                   <Label text="Inizio incarico" />
@@ -61,7 +78,7 @@
             <VBox prefHeight="200.0" prefWidth="100.0">
                <children>
                   <Label nodeOrientation="LEFT_TO_RIGHT" text="Note RSPP" />
-                  <TextArea fx:id="rsppNotes" prefHeight="200.0" prefWidth="200.0" />
+                  <TextArea fx:id="rsppNotes" editable="false" prefHeight="200.0" prefWidth="200.0" />
                </children>
             </VBox>
          </children>

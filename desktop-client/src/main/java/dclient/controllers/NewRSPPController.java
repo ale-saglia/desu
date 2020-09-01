@@ -1,7 +1,11 @@
 package dclient.controllers;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+
 import dclient.model.Account;
 import dclient.model.Job;
+import dclient.model.JobPA;
 import dclient.model.Model;
 import dclient.model.RSPP;
 import javafx.collections.FXCollections;
@@ -16,6 +20,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -23,6 +28,8 @@ public class NewRSPPController {
 	Model model;
 	RSPP rspp;
 	Account selectedAccount;
+
+	BiMap<String, Job> jobMap;
 
 	FilteredList<Account> filteredAccountList;
 
@@ -36,7 +43,7 @@ public class NewRSPPController {
 	private VBox rsppInfo;
 
 	@FXML
-	private ComboBox<Job> jobCombo;
+	private ComboBox<String> jobCombo;
 
 	@FXML
 	private TextField jobNumber;
@@ -46,6 +53,21 @@ public class NewRSPPController {
 
 	@FXML
 	private ComboBox<String> jobType;
+
+	@FXML
+	private TextField jobDescriptionField;
+
+	@FXML
+	private HBox paHbox;
+
+	@FXML
+	private TextField cigField;
+
+	@FXML
+	private TextField decreeNumberField;
+
+	@FXML
+	private DatePicker decreeDateField;
 
 	@FXML
 	private DatePicker rsppStart;
@@ -91,6 +113,12 @@ public class NewRSPPController {
 				return (account) -> account.getName().toLowerCase().contains(lowercase);
 			}
 		}, accountSearch.textProperty()));
+
+		jobMap = HashBiMap.create();
+		
+		jobCategory.getItems().setAll(model.getJobCategories());
+		jobType.getItems().setAll(model.getJobTypes());
+		
 	}
 
 	public void addNewAccount() {
@@ -134,25 +162,70 @@ public class NewRSPPController {
 			rsppInfo.setDisable(false);
 		}
 
-		jobCombo.getItems().setAll(model.getAllJobOfAccount(selectedAccount));
-		jobCombo.setCellFactory(param -> new ListCell<Job>() {
-			@Override
-			protected void updateItem(Job item, boolean empty) {
-				super.updateItem(item, empty);
+		jobMap.clear();
+		for (Job job : model.getAllJobOfAccount(selectedAccount))
+			jobMap.put(job.getId(), job);
 
-				if (empty || item == null || item.getId() == null) {
-					setText(null);
-				} else {
-					setText(item.getId());
-				}
-			}
-		});
+		jobCombo.getItems().clear();
+		jobCombo.getItems().add("Nuovo...");
+		jobCombo.getItems().addAll(jobMap.keySet());
 
-		for (Job job : jobCombo.getItems()) {
-			if (job.getJobType().equals("RSPP") && (jobCombo.getSelectionModel().getSelectedItem() == null
-					|| job.getId().compareTo(jobCombo.getSelectionModel().getSelectedItem().getId()) > 0)) {
-				jobCombo.getSelectionModel().select(job);
-			}
+		selectBestResult();
+	}
+
+	private void selectBestResult() {
+		for (Job job : jobMap.values()) {
+			if (job != null && job.getJobType().contains("RSPP"))
+				jobCombo.getSelectionModel().select(jobMap.inverse().get(job));
 		}
+	}
+
+	@FXML
+	public void setFields() {
+		if (jobMap.get(jobCombo.getSelectionModel().getSelectedItem()) != null) {
+			Job job = jobMap.get(jobCombo.getSelectionModel().getSelectedItem());
+			setJobFieldsBlocked(false);
+			paHbox.setDisable(!(job instanceof JobPA));
+
+			jobNumber.setText(job.getId());
+			jobCategory.getItems().setAll(model.getJobCategories());
+			jobCategory.getSelectionModel().select(job.getJobCategory());
+			jobType.getItems().setAll(model.getJobTypes());
+			jobType.getSelectionModel().select(job.getJobType());
+
+			jobDescriptionField.setText(job.getDescription());
+			
+			rsppNotes.setText(model.getRSPPnote(job.getCustomer().getFiscalCode()));
+
+			if (job instanceof JobPA) {
+				JobPA jobPA = (JobPA) job;
+				cigField.setText(jobPA.getCig());
+				decreeNumberField.setText(Integer.toString(jobPA.getDecreeNumber()));
+				decreeDateField.setValue(jobPA.getDecreeDate());
+			}
+
+		}
+		else {
+			setJobFieldsBlocked(true);
+			paHbox.setDisable(false);
+			jobNumber.clear();
+			jobCategory.valueProperty().set(null);
+			jobType.valueProperty().set(null);
+			jobDescriptionField.clear();
+			cigField.clear();
+			decreeNumberField.clear();
+			decreeDateField.valueProperty().set(null);
+		}
+	}
+
+	private void setJobFieldsBlocked(boolean status) {
+		jobNumber.setEditable(status);
+		jobCategory.setEditable(status);
+		jobType.setEditable(status);
+		jobDescriptionField.setEditable(status);
+
+		cigField.setEditable(status);
+		decreeNumberField.setEditable(status);
+		decreeDateField.setEditable(status);
 	}
 }

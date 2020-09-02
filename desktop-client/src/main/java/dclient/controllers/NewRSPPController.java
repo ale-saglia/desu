@@ -14,6 +14,8 @@ import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
@@ -251,20 +253,26 @@ public class NewRSPPController {
 
 		if (job == null) {
 			if (jobNumber.getText() == null || jobNumber.getText().isEmpty()) {
-				// TODO warning empty job number
+				warningDialog("Attenzione, il numero della pratica non può essere vuoto");
+				return;
 			} else if (!jobNumber.getText().matches("((\\d{4}+)\\-(\\d{4}+))")) {
-				// TODO warning invalid job id
-			} else if (jobCategory.getValue() != null && !jobCategory.getValue().isEmpty() && jobType.getValue() != null
+				warningDialog(
+						"Attenzione, il numero della pratica deve essere nel formato *ANNO*-*NUMERO_DI_4_CIFRE*, eventualmente inserendo gli zero davanti nel caso di numeri inferiori a 1000");
+				return;
+			} else if (jobCategory.getValue() == null && !jobCategory.getValue().isEmpty() && jobType.getValue() == null
 					&& !jobType.getValue().isEmpty()) {
-				// TODO warning missing category
+				System.out.println(jobCategory.getValue() + " - " + jobType.getValue());
+				warningDialog("Attenzione, la categoria e/o il tipo del lavoro non possone essere vuoti");
+				return;
 			} else {
 				job = new Job(jobNumber.getText(), jobCategory.getValue(), jobType.getValue(),
 						jobDescriptionField.getText(), accountListView.getSelectionModel().getSelectedItem());
-				
-				if(model.isJobExisting(job)) {
-					//TODO duplicated job id
+
+				if (model.isJobExisting(job)) {
+					warningDialog("Attenzione, è stato rilevato un altro lavoro con lo stesso numero di pratica");
+					return;
 				}
-				
+
 				if (!accountListView.getSelectionModel().getSelectedItem().getCategory().contains("pa"))
 					model.newJob(job);
 				else
@@ -274,20 +282,27 @@ public class NewRSPPController {
 			}
 		}
 
-		if(rsppStart.getValue() == null || rsppEnd.getValue() == null) {
-			//TODO null rspp date
+		if (rsppStart.getValue() == null || rsppEnd.getValue() == null) {
+			warningDialog("Attenzione, occorre inserire entrambe le date di inizio e edi fine per l'incarico RSPP");
 			return;
-		} else if(rsppStart.getValue().isBefore(rsppEnd.getValue())) {
-			//TODO start date is after end date
+		} else if (!rsppStart.getValue().isBefore(rsppEnd.getValue())) {
+			warningDialog("Attenzione, occorre che la data di inizio sia precedente alla data di fine");
 			return;
 		} else {
 			model.newRSPP(new RSPP(job, rsppStart.getValue(), rsppEnd.getValue(), null));
 		}
-		
-		
-		
+
 		parent.refresh();
 		closeButtonAction();
+	}
+
+	private void warningDialog(String message) {
+		Alert alert = new Alert(AlertType.WARNING);
+		alert.setTitle("ATTENZIONE: campi non validi");
+		alert.setHeaderText("Attenzione sono stati rilevati campi non validi");
+		alert.setContentText(message);
+
+		alert.showAndWait();
 	}
 
 	@FXML

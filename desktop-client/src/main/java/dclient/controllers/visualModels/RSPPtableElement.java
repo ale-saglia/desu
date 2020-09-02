@@ -28,7 +28,7 @@ public class RSPPtableElement {
 		this.accountName = new SimpleStringProperty(name);
 		this.note = new SimpleStringProperty(note);
 		this.category = new SimpleStringProperty(category);
-		this.invoiceID = new SimpleStringProperty(category);
+		this.invoiceID = new SimpleStringProperty(invoiceID);
 		this.payed = new SimpleBooleanProperty(payed);
 	}
 

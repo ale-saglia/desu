@@ -250,19 +250,42 @@ public class NewRSPPController {
 		Job job = jobMap.get(jobCombo.getSelectionModel().getSelectedItem());
 
 		if (job == null) {
-			// TODO add check for safety
-			job = new Job(jobNumber.getText(), jobCategory.getValue(), jobType.getValue(),
-					jobDescriptionField.getText(), accountListView.getSelectionModel().getSelectedItem());
-			if (!accountListView.getSelectionModel().getSelectedItem().getCategory().contains("pa"))
-				model.newJob(job);
-			else
-				model.newJob(new JobPA(job, cigField.getText(), Integer.valueOf(decreeNumberField.getText()),
-						decreeDateField.getValue()));
+			if (jobNumber.getText() == null || jobNumber.getText().isEmpty()) {
+				// TODO warning empty job number
+			} else if (!jobNumber.getText().matches("((\\d{4}+)\\-(\\d{4}+))")) {
+				// TODO warning invalid job id
+			} else if (jobCategory.getValue() != null && !jobCategory.getValue().isEmpty() && jobType.getValue() != null
+					&& !jobType.getValue().isEmpty()) {
+				// TODO warning missing category
+			} else {
+				job = new Job(jobNumber.getText(), jobCategory.getValue(), jobType.getValue(),
+						jobDescriptionField.getText(), accountListView.getSelectionModel().getSelectedItem());
+				
+				if(model.isJobExisting(job)) {
+					//TODO duplicated job id
+				}
+				
+				if (!accountListView.getSelectionModel().getSelectedItem().getCategory().contains("pa"))
+					model.newJob(job);
+				else
+					model.newJob(new JobPA(job, cigField.getText(), Integer.valueOf(decreeNumberField.getText()),
+							decreeDateField.getValue()));
+				enterAccount();
+			}
 		}
 
-		// TODO add check for bad values
-		model.newRSPP(new RSPP(job, rsppStart.getValue(), rsppEnd.getValue(), null));
-
+		if(rsppStart.getValue() == null || rsppEnd.getValue() == null) {
+			//TODO null rspp date
+			return;
+		} else if(rsppStart.getValue().isBefore(rsppEnd.getValue())) {
+			//TODO start date is after end date
+			return;
+		} else {
+			model.newRSPP(new RSPP(job, rsppStart.getValue(), rsppEnd.getValue(), null));
+		}
+		
+		
+		
 		parent.refresh();
 		closeButtonAction();
 	}

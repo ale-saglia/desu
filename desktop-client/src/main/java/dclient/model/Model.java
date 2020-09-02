@@ -128,4 +128,8 @@ public class Model {
 	public boolean isAccountExisting(Account account) {
 		return dao.isAccountExisting(account);
 	}
+	
+	public boolean isJobExisting(Job job) {
+		return dao.isJobExisting(job);
+	}
 }

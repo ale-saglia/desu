@@ -684,4 +684,28 @@ public class SicurteaDAO {
 		}
 		return true;
 	}
+	
+	public boolean isJobExisting(Job job) {
+		String query = "SELECT COUNT(1) FROM jobs.jobs WHERE jobs_id = ? ";
+
+		try {
+			Connection conn = ConnectDB.getConnection(session, config);
+			PreparedStatement st = conn.prepareStatement(query);
+
+			st.setString(1, job.getId());
+
+			ResultSet res = st.executeQuery();
+			conn.close();
+			res.next();
+
+			if (res.getInt(1) == 0)
+				return false;
+			else
+				return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+		}
+		return true;
+	}
 }

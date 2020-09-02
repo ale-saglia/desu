@@ -3,16 +3,6 @@ package dclient.model;
 public class Job {
 	String id;
 
-	enum jobCategory {
-		// TODO create autofetch of enum from database
-		SICUREZZA;
-	};
-
-	enum jobType {
-		// TODO create autofetch of enum from database
-		RSPP;
-	};
-
 	String description;
 	Account customer;
 	private String jobCategory;

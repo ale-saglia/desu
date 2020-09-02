@@ -46,9 +46,7 @@ public class Account {
 	}
 
 	private class Contact {
-		// TODO enum description types
-		// String contact;
-
+		// TODO 
 	}
 
 	@Override

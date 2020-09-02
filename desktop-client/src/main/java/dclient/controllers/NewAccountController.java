@@ -56,7 +56,6 @@ public class NewAccountController {
 				model.getAccountCategories().inverse().get(categoryAccountCombo.getValue()));
 		int result = model.newAccount(account);
 
-		//TODO new account doesn't show up in list
 		if (result >= 0) {
 			parent.refreshList();
 			parent.selectAccount(account);

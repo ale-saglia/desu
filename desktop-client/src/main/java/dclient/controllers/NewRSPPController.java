@@ -9,6 +9,7 @@ import dclient.model.JobPA;
 import dclient.model.Model;
 import dclient.model.RSPP;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -28,13 +29,14 @@ public class NewRSPPController {
 	Model model;
 	RSPP rspp;
 	Account selectedAccount;
-	
+
 	MainController parent;
 
 	BiMap<String, Job> jobMap;
 
 	final String NEW_RSPP = "Nuovo...";
 
+	ObservableList<Account> accountList;
 	FilteredList<Account> filteredAccountList;
 
 	@FXML
@@ -91,8 +93,10 @@ public class NewRSPPController {
 
 		rsppInfo.setDisable(true);
 
-		refreshList();
-		
+		accountList = FXCollections.observableArrayList(model.getAllAccounts());
+		filteredAccountList = new FilteredList<Account>(accountList);
+		accountListView.setItems(filteredAccountList);
+
 		paHbox.managedProperty().bind(paHbox.visibleProperty());
 
 		System.out.println(filteredAccountList);
@@ -151,14 +155,15 @@ public class NewRSPPController {
 	}
 
 	public void refreshList() {
-		filteredAccountList = new FilteredList<Account>(FXCollections.observableArrayList(model.getAllAccounts()));
+		accountList.setAll(model.getAllAccounts());
 		accountListView.refresh();
 	}
 
 	public void selectAccount(Account keyAccount) {
 		accountSearch.clear();
 		refreshList();
-		accountListView.getSelectionModel().select(keyAccount);
+		accountListView.getSelectionModel().clearAndSelect(accountListView.getItems().indexOf(keyAccount));
+		accountListView.scrollTo(keyAccount);
 		enterAccount();
 	}
 
@@ -219,7 +224,7 @@ public class NewRSPPController {
 			paHbox.setDisable(false);
 		}
 	}
-	
+
 	private void clearFields() {
 		jobNumber.clear();
 		jobCategory.valueProperty().set(null);
@@ -244,23 +249,25 @@ public class NewRSPPController {
 	@FXML
 	public void addRSPP() {
 		Job job = jobMap.get(jobCombo.getSelectionModel().getSelectedItem());
-		
-		if(job == null) {
-			//TODO add check for safety
-			job = new Job(jobNumber.getText(), jobCategory.getValue(), jobType.getValue(), jobDescriptionField.getText(), selectedAccount);
-			if(!selectedAccount.getCategory().contains("pa"))
+
+		if (job == null) {
+			// TODO add check for safety
+			job = new Job(jobNumber.getText(), jobCategory.getValue(), jobType.getValue(),
+					jobDescriptionField.getText(), selectedAccount);
+			if (!selectedAccount.getCategory().contains("pa"))
 				model.newJob(job);
 			else
-				model.newJob(new JobPA(job, cigField.getText(), Integer.valueOf(decreeNumberField.getText()), decreeDateField.getValue()));
+				model.newJob(new JobPA(job, cigField.getText(), Integer.valueOf(decreeNumberField.getText()),
+						decreeDateField.getValue()));
 		}
-		
-		//TODO add check for bad values
+
+		// TODO add check for bad values
 		model.newRSPP(new RSPP(job, rsppStart.getValue(), rsppEnd.getValue(), null));
-		
+
 		parent.refresh();
 		closeButtonAction();
 	}
-	
+
 	@FXML
 	private void closeButtonAction() {
 		Stage stage = (Stage) closeButton.getScene().getWindow();

@@ -28,7 +28,6 @@ import javafx.stage.Stage;
 public class NewRSPPController {
 	Model model;
 	RSPP rspp;
-	Account selectedAccount;
 
 	MainController parent;
 
@@ -253,8 +252,8 @@ public class NewRSPPController {
 		if (job == null) {
 			// TODO add check for safety
 			job = new Job(jobNumber.getText(), jobCategory.getValue(), jobType.getValue(),
-					jobDescriptionField.getText(), selectedAccount);
-			if (!selectedAccount.getCategory().contains("pa"))
+					jobDescriptionField.getText(), accountListView.getSelectionModel().getSelectedItem());
+			if (!accountListView.getSelectionModel().getSelectedItem().getCategory().contains("pa"))
 				model.newJob(job);
 			else
 				model.newJob(new JobPA(job, cigField.getText(), Integer.valueOf(decreeNumberField.getText()),

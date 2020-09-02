@@ -291,7 +291,7 @@
                         <Insets right="10.0" />
                      </HBox.margin>
                   </Label>
-                  <TextField fx:id="invoiceTypeField" />
+                  <TextField fx:id="invoiceTypeField" editable="false" />
                   <CheckBox fx:id="payedCheck" mnemonicParsing="false" text="Pagato" HBox.hgrow="ALWAYS">
                      <padding>
                         <Insets left="15.0" right="7.0" />

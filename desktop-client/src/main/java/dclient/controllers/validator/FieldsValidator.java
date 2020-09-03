@@ -19,6 +19,11 @@ public class FieldsValidator {
 			return error.trim();
 	}
 
+	public static String isNewInvoiceDuplicate(Model model, Invoice invoice) {
+		//TODO check if invoice already exist
+		return null;
+	}
+	
 	/**
 	 * Check if an Account is valid.
 	 * 
@@ -39,7 +44,7 @@ public class FieldsValidator {
 				error += "- Il codice fiscale non è valido: " + fiscaleCodeValidator + "\n";
 		}
 
-		if (account.getNumberVAT() == null)
+		if ((account.getNumberVAT() == null || account.getNumberVAT().isEmpty()) && !account.getCategory().contains("b2c"))
 			error += "- La partita IVA non può essere nulla\n";
 		else {
 			String vatNumberValidator = VATNumberValidator.validate(account.getNumberVAT());
@@ -86,8 +91,14 @@ public class FieldsValidator {
 	public static String isRSPPChangeValid(RSPP rspp) {
 		String error = "";
 
-		if (rspp.getStart().isAfter(rspp.getEnd()) || rspp.getStart().equals(rspp.getEnd()))
+		if(rspp.getStart() == null || rspp.getEnd() == null)
+			error += "- La data di inzio incarico e/o la data di inizio incarico devono essere inserite\n";
+		else {
+			if (rspp.getStart().isAfter(rspp.getEnd()) || rspp.getStart().equals(rspp.getEnd()))
 			error += "- La data di inizio dell'incarico deve essere precedente a quella di fine dell'incarico";
+		}
+		
+		
 
 		if (error.isEmpty())
 			return null;

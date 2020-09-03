@@ -266,9 +266,10 @@ public class NewRSPPController {
 				warningWindows(error);
 		}
 
+		RSPP rspp = new RSPP(job, rsppStart.getValue(), rsppEnd.getValue(), null);
 		String error = FieldsValidator.isRSPPChangeValid(rspp);
 		if (error == null) {
-			model.newRSPP(new RSPP(job, rsppStart.getValue(), rsppEnd.getValue(), null));
+			model.newRSPP(rspp);
 		} else
 			warningWindows(error);
 		parent.refresh();

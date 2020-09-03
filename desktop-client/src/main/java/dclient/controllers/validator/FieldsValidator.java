@@ -43,14 +43,14 @@ public class FieldsValidator {
 			error += "- La partita IVA non può essere nulla\n";
 		else {
 			String vatNumberValidator = VATNumberValidator.validate(account.getNumberVAT());
-			if (vatNumberValidator != null && !account.getNumberVAT().equals(account.getFiscalCode()))
+			if (vatNumberValidator != null)
 				error += "- La partita IVA non è valida: " + vatNumberValidator + "\n";
 		}
 
 		if (account.getCategory() == null)
 			error += "- La categoria dell'account non può essere vuota\n";
 
-		if ((account.getAtecoCode() != null || !account.getAtecoCode().isEmpty())
+		if ((account.getAtecoCode() != null && !account.getAtecoCode().isEmpty())
 				&& !account.getAtecoCode().matches("\\d{2}[.]{1}\\d{2}[.]{1}[0-9A-Za-z]{1}"))
 			error += "- Il codice ATECO inserito non è in un formato valido\n";
 

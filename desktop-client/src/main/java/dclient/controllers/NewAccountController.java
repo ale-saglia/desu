@@ -52,8 +52,8 @@ public class NewAccountController {
 
 	@FXML
 	void createNewAccount() throws InterruptedException {
-		account = new Account(fiscalCodeText.getText(), nameField.getText(), numberVATField.getText(),
-				atecoCodeField.getText(), addressField.getText(),
+		account = new Account(fiscalCodeText.getText().trim(), nameField.getText().trim(), numberVATField.getText().trim(),
+				atecoCodeField.getText().trim(), addressField.getText().trim(),
 				model.getAccountCategories().inverse().get(categoryAccountCombo.getValue()));
 		
 		String error = FieldsValidator.isAccountChangeValid(account);

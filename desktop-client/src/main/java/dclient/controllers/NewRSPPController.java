@@ -171,13 +171,12 @@ public class NewRSPPController {
 
 	@FXML
 	public void enterAccount() {
-		Account selectedAccount = accountListView.getSelectionModel().getSelectedItem();
-		if (selectedAccount != null) {
+		if (accountListView.getSelectionModel().getSelectedItem() != null) {
 			rsppInfo.setDisable(false);
 		}
 
 		jobMap.clear();
-		for (Job job : model.getAllJobOfAccount(selectedAccount))
+		for (Job job : model.getAllJobOfAccount(accountListView.getSelectionModel().getSelectedItem()))
 			jobMap.put(job.getId(), job);
 
 		jobCombo.getItems().clear();
@@ -253,13 +252,13 @@ public class NewRSPPController {
 		Job job = jobMap.get(jobCombo.getSelectionModel().getSelectedItem());
 
 		if (job == null) {
+			job = new Job(jobNumber.getText().trim(), jobCategory.getValue(), jobType.getValue(), jobDescriptionField.getText().trim(), accountListView.getSelectionModel().getSelectedItem());
 			String error = FieldsValidator.isJobChangeValid(job);
-
 			if (error == null) {
 				if (!accountListView.getSelectionModel().getSelectedItem().getCategory().contains("pa"))
 					model.newJob(job);
 				else
-					model.newJob(new JobPA(job, cigField.getText(), Integer.valueOf(decreeNumberField.getText()),
+					model.newJob(new JobPA(job, cigField.getText().trim(), Integer.valueOf(decreeNumberField.getText().trim()),
 							decreeDateField.getValue()));
 
 				enterAccount();

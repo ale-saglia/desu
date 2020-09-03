@@ -177,8 +177,8 @@ public class ViewEditController {
 		Invoice newInvoice;
 
 		// Check if account needs to be updated
-		newAccount = new Account(fiscalCodeText.getText(), nameField.getText(), numberVATField.getText(),
-				atecoCodeField.getText(), addressField.getText(),
+		newAccount = new Account(fiscalCodeText.getText().trim(), nameField.getText().trim(), numberVATField.getText().trim(),
+				atecoCodeField.getText().trim(), addressField.getText().trim(),
 				model.getAccountCategories().inverse().get(categoryAccountCombo.getValue()));
 		if (!newAccount.equals(rspp.getJob().getCustomer())) {
 			String error = FieldsValidator.isAccountChangeValid(newAccount);
@@ -193,8 +193,8 @@ public class ViewEditController {
 		}
 
 		// Check if job needs to be updated
-		newJob = new Job(jobCodeField.getText(), categoryJobCombo.getValue(), categoryTypeCombo.getValue(),
-				jobdDescriptionField.getText(), newAccount);
+		newJob = new Job(jobCodeField.getText().trim(), categoryJobCombo.getValue().trim(), categoryTypeCombo.getValue().trim(),
+				jobdDescriptionField.getText().trim(), newAccount);
 		if (rspp.getJob() instanceof JobPA) {
 			newJob = new JobPA(newJob, cigField.getText(), Integer.parseInt(decreeNumberField.getText()),
 					decreeDateField.getValue());
@@ -212,7 +212,7 @@ public class ViewEditController {
 		}
 
 		// Check if rspp note needs to be updated 
-		if (!noteField.getText().equals(rsppNote)) {
+		if (!noteField.getText().trim().equals(rsppNote)) {
 			String error = FieldsValidator.isRSPPNoteChangeValid(rsppNote);
 			if (error == null) {
 				model.updateNote(fiscalCodeText.getText(), noteField.getText());
@@ -228,8 +228,8 @@ public class ViewEditController {
 		String oldInvoiceID = null;
 		Integer invoiceNumber = null;
 
-		if (!invoiceNumberField.getText().isEmpty())
-			invoiceNumber = Integer.parseInt(invoiceNumberField.getText());
+		if (!invoiceNumberField.getText().trim().isEmpty())
+			invoiceNumber = Integer.parseInt(invoiceNumberField.getText().trim());
 		if (rspp.getInvoice() != null)
 			oldInvoiceID = rspp.getInvoice().getId();
 		newInvoice = new Invoice(invoiceNumber, invoiceEmissionDateField.getValue(), newAccount.getCategory(),

@@ -6,6 +6,7 @@
 
 # Visual studio code
 .vscode
+.project
 
 #Eclipse
 *.prefs
@@ -42,3 +43,4 @@ desktop-client/target
 # Ignore debug files
 *.log
 *.log.lck
+desktop-client/.project

@@ -10,6 +10,8 @@ import dclient.model.JobPA;
 import dclient.model.Model;
 import dclient.model.RSPP;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -179,7 +181,7 @@ public class ViewEditController {
 				atecoCodeField.getText(), addressField.getText(),
 				model.getAccountCategories().inverse().get(categoryAccountCombo.getValue()));
 		if (!newAccount.equals(rspp.getJob().getCustomer())) {
-			String error = FieldsValidator.isAccountChangeValid(model, newAccount);
+			String error = FieldsValidator.isAccountChangeValid(newAccount);
 			if (error == null) {
 				model.updateAccount(rspp.getJob().getCustomer().getFiscalCode(), newAccount);
 				isChanged = true;
@@ -198,25 +200,25 @@ public class ViewEditController {
 					decreeDateField.getValue());
 		}
 		if (!newJob.equals(rspp.getJob())) {
-			String error = FieldsValidator.isAccountChangeValid(model, newAccount);
-			if (isJobChangeValid()) {
+			String error = FieldsValidator.isJobChangeValid(newJob);
+			if (error == null) {
 				model.updateJob(rspp.getJob().getId(), newJob);
 				isChanged = true;
 			} else {
-				warningWindows("Attenzione, i valori inseriti per la pratica non sono validi, si prega di verificarli");
+				warningWindows(error);
 				return;
 			}
 
 		}
 
-		// Check if rspp note needs to be updated
+		// Check if rspp note needs to be updated 
 		if (!noteField.getText().equals(rsppNote)) {
-			if (isNoteChangeValid()) {
+			String error = FieldsValidator.isRSPPNoteChangeValid(rsppNote);
+			if (error == null) {
 				model.updateNote(fiscalCodeText.getText(), noteField.getText());
 				isChanged = true;
 			} else {
-				warningWindows(
-						"Attenzione, i valori inseriti per la nota dell'RSPP non sono validi, si prega di verificarli");
+				warningWindows(error);
 				return;
 			}
 
@@ -234,11 +236,12 @@ public class ViewEditController {
 				payedCheck.isSelected());
 
 		if (!newInvoice.equals(rspp.getInvoice()) && newInvoice.getId() != null) {
-			if (isInvoiceChangeValid()) {
+			String error = FieldsValidator.isInvoiceChangeValid(newInvoice);
+			if (error == null) {
 				model.updateInvoice(oldInvoiceID, newInvoice, rspp);
 				isChanged = true;
 			} else {
-				warningWindows("Attenzione, i valori inseriti per la fattura non sono validi, si prega di verificarli");
+				warningWindows(error);
 				return;
 			}
 
@@ -247,11 +250,12 @@ public class ViewEditController {
 		// Check if RSPP needs to be updated
 		newRSPP = new RSPP(newJob, jobStartField.getValue(), jobEndField.getValue(), newInvoice);
 		if (!newRSPP.equals(rspp) && newInvoice.getId() != null) {
-			if (isRSPPChangeValid()) {
+			String error = FieldsValidator.isRSPPChangeValid(newRSPP);
+			if (error == null) {
 				model.updateRSPP(rspp.getJob().getId(), rspp.getStart(), newRSPP);
 				isChanged = true;
 			} else {
-				warningWindows("Attenzione, i valori inseriti per l'RSPP non sono validi, si prega di verificarli");
+				warningWindows(error);
 				return;
 			}
 
@@ -264,8 +268,13 @@ public class ViewEditController {
 		closeButtonAction();
 	}
 
-
 	private void warningWindows(String message) {
+		Alert alert = new Alert(AlertType.WARNING);
+		alert.setTitle("Attenzione");
+		alert.setHeaderText("Sono stati rilevati i seguenti campi non validi:");
+		alert.setContentText(message);
 
+		//TODO refresh changed fields
+		alert.showAndWait();
 	}
 }

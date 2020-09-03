@@ -4,13 +4,28 @@ import dclient.model.*;
 
 public class FieldsValidator {
 
+	public static String isNewAccountDuplicate(Model model, Account account) {
+		String error = "";
+
+		if (model.isAccountFiscalCodeExisting(account.getFiscalCode()))
+			error += "- Il codice fiscale è già presente nel database per " + model.getAccount(account.getFiscalCode()).getName() + "\n";
+
+		if(model.isAccountVatNumberExisting(account.getNumberVAT()))
+			error += "- La partita IVA è già presente nel database per " + model.getAccount(account.getFiscalCode()).getName() + "\n";
+		
+		if (error.isEmpty())
+			return null;
+		else
+			return error.trim();
+	}
+
 	/**
 	 * Check if an Account is valid.
 	 * 
 	 * @param account
 	 * @return null if it's valid or a string explaining why is not valid.
 	 */
-	public static String isAccountChangeValid(Model model, Account account) {
+	public static String isAccountChangeValid(Account account) {
 		String error = "";
 
 		if (account.getName() == null && account.getName().isBlank())
@@ -22,15 +37,13 @@ public class FieldsValidator {
 			String fiscaleCodeValidator = FiscalCodeValidator.validate(account.getFiscalCode());
 			if (fiscaleCodeValidator != null)
 				error += "- Il codice fiscale non è valido: " + fiscaleCodeValidator + "\n";
-			else if (model.isAccountExisting(account))
-				error += "- Il codice fiscale esiste già nel database\n";
 		}
 
 		if (account.getNumberVAT() == null)
 			error += "- La partita IVA non può essere nulla\n";
 		else {
 			String vatNumberValidator = VATNumberValidator.validate(account.getNumberVAT());
-			if (vatNumberValidator != null)
+			if (vatNumberValidator != null && !account.getNumberVAT().equals(account.getFiscalCode()))
 				error += "- La partita IVA non è valida: " + vatNumberValidator + "\n";
 		}
 
@@ -46,7 +59,7 @@ public class FieldsValidator {
 		if (error.isEmpty())
 			return null;
 		else
-			return error;
+			return error.trim().trim();
 	}
 
 	public static String isJobChangeValid(Job job) {
@@ -62,30 +75,35 @@ public class FieldsValidator {
 		if (error.isEmpty())
 			return null;
 		else
-			return error;
+			return error.trim();
 	}
-	
+
+	public static String isRSPPNoteChangeValid(String note) {
+		// TODO add eventual field validation
+		return null;
+	}
+
 	public static String isRSPPChangeValid(RSPP rspp) {
 		String error = "";
-		
-		if(rspp.getStart().isAfter(rspp.getEnd()) || rspp.getStart().equals(rspp.getEnd()))
+
+		if (rspp.getStart().isAfter(rspp.getEnd()) || rspp.getStart().equals(rspp.getEnd()))
 			error += "- La data di inizio dell'incarico deve essere precedente a quella di fine dell'incarico";
-		
+
 		if (error.isEmpty())
 			return null;
 		else
-			return error;
+			return error.trim();
 	}
-	
+
 	public static String isInvoiceChangeValid(Invoice invoice) {
 		String error = "";
-		
-		if(invoice.getNumber() <= 0)
+
+		if (invoice.getNumber() <= 0)
 			error += "- La fattura deve avere un numero maggiore di 0";
-	
+
 		if (error.isEmpty())
 			return null;
 		else
-			return error;
+			return error.trim();
 	}
 }

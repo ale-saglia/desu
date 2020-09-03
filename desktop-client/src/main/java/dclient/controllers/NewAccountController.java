@@ -1,5 +1,6 @@
 package dclient.controllers;
 
+import dclient.controllers.validator.FieldsValidator;
 import dclient.model.Account;
 import dclient.model.Model;
 import javafx.fxml.FXML;
@@ -54,25 +55,33 @@ public class NewAccountController {
 		account = new Account(fiscalCodeText.getText(), nameField.getText(), numberVATField.getText(),
 				atecoCodeField.getText(), addressField.getText(),
 				model.getAccountCategories().inverse().get(categoryAccountCombo.getValue()));
+		
+		String error = FieldsValidator.isAccountChangeValid(account);
+		if(error != null) {
+			Alert alert = new Alert(AlertType.WARNING);
+			alert.setTitle("ATTENZIONE: campi non validi");
+			alert.setHeaderText("Attenzione sono stati rilevati campi non validi");
+			alert.setContentText(error);
+			alert.showAndWait();
+			return;
+		}
+		
+		error = FieldsValidator.isNewAccountDuplicate(model, account);
+		if(error != null) {
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("ATTENZIONE: campi duplicati");
+			alert.setHeaderText("Attenzione sono stati rilevati conflitti nel database e non è possibile inserire i dati");
+			alert.setContentText(error);
+			alert.showAndWait();
+			return;
+		}
+		
 		int result = model.newAccount(account);
 
 		if (result >= 0) {
 			parent.refreshList();
 			parent.selectAccount(account);
 			closeButtonAction();
-		} else {
-			// Can't connect to DB or duplicate primary key
-			Account existingAccount = model.getAccount(account.getFiscalCode());
-			if (existingAccount != null) {
-				// Duplicate Entry
-				Alert alert = new Alert(AlertType.ERROR);
-				alert.setTitle("Valore duplicato");
-				alert.setHeaderText(
-						"Attenzione il codice fiscale inserito corrisponde già al cliente " + existingAccount.getName());
-
-				alert.showAndWait();
-			}
-
 		}
 	}
 

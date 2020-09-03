@@ -661,14 +661,38 @@ public class SicurteaDAO {
 		return 0;
 	}
 
-	public boolean isAccountExisting(Account account) {
+	public boolean isAccountFiscalCodeExisting(String fiscalCode) {
 		String query = "SELECT COUNT(1) FROM accounts.accounts WHERE fiscalcode = ? ";
 
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(query);
 
-			st.setString(1, account.getFiscalCode());
+			st.setString(1,fiscalCode);
+
+			ResultSet res = st.executeQuery();
+			conn.close();
+			res.next();
+
+			if (res.getInt(1) == 0)
+				return false;
+			else
+				return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+		}
+		return true;
+	}
+	
+	public boolean isAccountVatNumberExisting(String vatNumber) {
+		String query = "SELECT COUNT(1) FROM accounts.accounts WHERE numbervat = ? ";
+		
+		try {
+			Connection conn = ConnectDB.getConnection(session, config);
+			PreparedStatement st = conn.prepareStatement(query);
+
+			st.setString(1, vatNumber);
 
 			ResultSet res = st.executeQuery();
 			conn.close();

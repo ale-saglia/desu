@@ -3,6 +3,7 @@ package dclient.controllers;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
+import dclient.controllers.validator.FieldsValidator;
 import dclient.model.Account;
 import dclient.model.Job;
 import dclient.model.JobPA;
@@ -252,54 +253,33 @@ public class NewRSPPController {
 		Job job = jobMap.get(jobCombo.getSelectionModel().getSelectedItem());
 
 		if (job == null) {
-			if (jobNumber.getText() == null || jobNumber.getText().isEmpty()) {
-				warningDialog("Attenzione, il numero della pratica non può essere vuoto");
-				return;
-			} else if (!jobNumber.getText().matches("((\\d{4}+)\\-(\\d{4}+))")) {
-				warningDialog(
-						"Attenzione, il numero della pratica deve essere nel formato *ANNO*-*NUMERO_DI_4_CIFRE*, eventualmente inserendo gli zero davanti nel caso di numeri inferiori a 1000");
-				return;
-			} else if (jobCategory.getValue() == null && !jobCategory.getValue().isEmpty() && jobType.getValue() == null
-					&& !jobType.getValue().isEmpty()) {
-				System.out.println(jobCategory.getValue() + " - " + jobType.getValue());
-				warningDialog("Attenzione, la categoria e/o il tipo del lavoro non possone essere vuoti");
-				return;
-			} else {
-				job = new Job(jobNumber.getText(), jobCategory.getValue(), jobType.getValue(),
-						jobDescriptionField.getText(), accountListView.getSelectionModel().getSelectedItem());
+			String error = FieldsValidator.isJobChangeValid(job);
 
-				if (model.isJobExisting(job)) {
-					warningDialog("Attenzione, è stato rilevato un altro lavoro con lo stesso numero di pratica");
-					return;
-				}
-
+			if (error == null) {
 				if (!accountListView.getSelectionModel().getSelectedItem().getCategory().contains("pa"))
 					model.newJob(job);
 				else
 					model.newJob(new JobPA(job, cigField.getText(), Integer.valueOf(decreeNumberField.getText()),
 							decreeDateField.getValue()));
+
 				enterAccount();
-			}
+			} else
+				warningWindows(error);
 		}
 
-		if (rsppStart.getValue() == null || rsppEnd.getValue() == null) {
-			warningDialog("Attenzione, occorre inserire entrambe le date di inizio e edi fine per l'incarico RSPP");
-			return;
-		} else if (!rsppStart.getValue().isBefore(rsppEnd.getValue())) {
-			warningDialog("Attenzione, occorre che la data di inizio sia precedente alla data di fine");
-			return;
-		} else {
+		String error = FieldsValidator.isRSPPChangeValid(rspp);
+		if (error == null) {
 			model.newRSPP(new RSPP(job, rsppStart.getValue(), rsppEnd.getValue(), null));
-		}
-
+		} else
+			warningWindows(error);
 		parent.refresh();
 		closeButtonAction();
 	}
 
-	private void warningDialog(String message) {
+	private void warningWindows(String message) {
 		Alert alert = new Alert(AlertType.WARNING);
-		alert.setTitle("ATTENZIONE: campi non validi");
-		alert.setHeaderText("Attenzione sono stati rilevati campi non validi");
+		alert.setTitle("Attenzione");
+		alert.setHeaderText("Sono stati rilevati i seguenti campi non validi:");
 		alert.setContentText(message);
 
 		alert.showAndWait();

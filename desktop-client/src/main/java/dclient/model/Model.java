@@ -125,8 +125,12 @@ public class Model {
 		return dao.newRSPP(rspp);		
 	}
 	
-	public boolean isAccountExisting(Account account) {
-		return dao.isAccountExisting(account);
+	public boolean isAccountFiscalCodeExisting(String fiscalCode) {
+		return dao.isAccountFiscalCodeExisting(fiscalCode);
+	}
+	
+	public boolean isAccountVatNumberExisting(String vatNumber) {
+		return dao.isAccountVatNumberExisting(vatNumber);
 	}
 	
 	public boolean isJobExisting(Job job) {

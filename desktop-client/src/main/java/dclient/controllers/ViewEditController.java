@@ -1,6 +1,8 @@
 package dclient.controllers;
 
 import java.time.LocalDate;
+
+import dclient.controllers.validator.FieldsValidator;
 import dclient.model.Account;
 import dclient.model.Invoice;
 import dclient.model.Job;
@@ -21,7 +23,7 @@ public class ViewEditController {
 	private Model model;
 	private RSPP rspp;
 	private String rsppNote;
-	
+
 	MainController mainController;
 
 	boolean isChanged;
@@ -101,7 +103,7 @@ public class ViewEditController {
 	public void setModel(Model model) {
 		this.model = model;
 	}
-	
+
 	public void setMainControllerRef(MainController mainController) {
 		this.mainController = mainController;
 	}
@@ -162,7 +164,10 @@ public class ViewEditController {
 		}
 	}
 
-	// TODO fire randomly update even if not needed
+	/**
+	 * Check if fields has been edited, than check if fields are valid and finally
+	 * update only the edited fields to the DB.
+	 */
 	public void updateCheck() {
 		Account newAccount;
 		Job newJob;
@@ -174,8 +179,15 @@ public class ViewEditController {
 				atecoCodeField.getText(), addressField.getText(),
 				model.getAccountCategories().inverse().get(categoryAccountCombo.getValue()));
 		if (!newAccount.equals(rspp.getJob().getCustomer())) {
-			model.updateAccount(rspp.getJob().getCustomer().getFiscalCode(), newAccount);
-			isChanged = true;
+			String error = FieldsValidator.isAccountChangeValid(model, newAccount);
+			if (error == null) {
+				model.updateAccount(rspp.getJob().getCustomer().getFiscalCode(), newAccount);
+				isChanged = true;
+			} else {
+				warningWindows(error);
+				return;
+			}
+
 		}
 
 		// Check if job needs to be updated
@@ -186,43 +198,74 @@ public class ViewEditController {
 					decreeDateField.getValue());
 		}
 		if (!newJob.equals(rspp.getJob())) {
-			model.updateJob(rspp.getJob().getId(), newJob);
-			isChanged = true;
+			String error = FieldsValidator.isAccountChangeValid(model, newAccount);
+			if (isJobChangeValid()) {
+				model.updateJob(rspp.getJob().getId(), newJob);
+				isChanged = true;
+			} else {
+				warningWindows("Attenzione, i valori inseriti per la pratica non sono validi, si prega di verificarli");
+				return;
+			}
+
 		}
 
 		// Check if rspp note needs to be updated
 		if (!noteField.getText().equals(rsppNote)) {
-			model.updateNote(fiscalCodeText.getText(), noteField.getText());
-			isChanged = true;
+			if (isNoteChangeValid()) {
+				model.updateNote(fiscalCodeText.getText(), noteField.getText());
+				isChanged = true;
+			} else {
+				warningWindows(
+						"Attenzione, i valori inseriti per la nota dell'RSPP non sono validi, si prega di verificarli");
+				return;
+			}
+
 		}
 
 		// Check if invoice needs to be updated
 		String oldInvoiceID = null;
 		Integer invoiceNumber = null;
-		
+
 		if (!invoiceNumberField.getText().isEmpty())
 			invoiceNumber = Integer.parseInt(invoiceNumberField.getText());
-		if(rspp.getInvoice() != null)
+		if (rspp.getInvoice() != null)
 			oldInvoiceID = rspp.getInvoice().getId();
 		newInvoice = new Invoice(invoiceNumber, invoiceEmissionDateField.getValue(), newAccount.getCategory(),
 				payedCheck.isSelected());
-		
+
 		if (!newInvoice.equals(rspp.getInvoice()) && newInvoice.getId() != null) {
-			model.updateInvoice(oldInvoiceID, newInvoice, rspp);
-			isChanged = true;
+			if (isInvoiceChangeValid()) {
+				model.updateInvoice(oldInvoiceID, newInvoice, rspp);
+				isChanged = true;
+			} else {
+				warningWindows("Attenzione, i valori inseriti per la fattura non sono validi, si prega di verificarli");
+				return;
+			}
+
 		}
 
 		// Check if RSPP needs to be updated
 		newRSPP = new RSPP(newJob, jobStartField.getValue(), jobEndField.getValue(), newInvoice);
 		if (!newRSPP.equals(rspp) && newInvoice.getId() != null) {
-			model.updateRSPP(rspp.getJob().getId(), rspp.getStart(), newRSPP);
-			isChanged = true;
+			if (isRSPPChangeValid()) {
+				model.updateRSPP(rspp.getJob().getId(), rspp.getStart(), newRSPP);
+				isChanged = true;
+			} else {
+				warningWindows("Attenzione, i valori inseriti per l'RSPP non sono validi, si prega di verificarli");
+				return;
+			}
+
 		}
 
-		if(isChanged) {
+		if (isChanged) {
 			System.out.println("Some elements were modified");
 			mainController.refresh();
 		}
 		closeButtonAction();
+	}
+
+
+	private void warningWindows(String message) {
+
 	}
 }

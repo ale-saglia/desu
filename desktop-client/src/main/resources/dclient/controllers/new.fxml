@@ -22,7 +22,7 @@
                <font>
                   <Font size="20.0" />
                </font></Label>
-            <HBox prefHeight="100.0" prefWidth="200.0">
+            <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity">
                <children>
                   <TextField fx:id="accountSearch" HBox.hgrow="ALWAYS">
                      <HBox.margin>
@@ -31,11 +31,11 @@
                   <Button mnemonicParsing="false" onAction="#addNewAccount" text="Nuovo" />
                </children>
             </HBox>
-            <ListView fx:id="accountListView" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#enterAccount" />
+            <ListView fx:id="accountListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#enterAccount" onMouseClicked="#enterAccount" VBox.vgrow="ALWAYS" />
          </children>
       </VBox>
       <Separator prefWidth="200.0" />
-      <VBox fx:id="rsppInfo" prefHeight="200.0" prefWidth="100.0">
+      <VBox fx:id="rsppInfo" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-Infinity" VBox.vgrow="ALWAYS">
          <children>
             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                <children>
@@ -136,7 +136,8 @@
       </VBox>
       <ButtonBar prefHeight="40.0" prefWidth="200.0">
         <buttons>
-          <Button mnemonicParsing="false" onAction="#addRSPP" text="Salva ed Esci" />
+            <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addRSPP" text="Salva" />
+          <Button mnemonicParsing="false" onAction="#saveAndClose" text="Salva ed Esci" />
             <Button fx:id="closeButton" layoutX="565.0" layoutY="10.0" mnemonicParsing="false" onAction="#closeButtonAction" text="Esci senza salvare" />
         </buttons>
       </ButtonBar>

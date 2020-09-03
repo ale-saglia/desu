@@ -273,6 +273,11 @@ public class NewRSPPController {
 		} else
 			warningWindows(error);
 		parent.refresh();
+	}
+	
+	@FXML
+	public void saveAndClose() {
+		addRSPP();
 		closeButtonAction();
 	}
 

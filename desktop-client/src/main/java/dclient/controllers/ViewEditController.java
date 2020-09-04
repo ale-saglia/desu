@@ -128,20 +128,49 @@ public class ViewEditController {
 	}
 
 	private void setAnagrafica() {
-		nameField.setText(rspp.getJob().getCustomer().getName());
-		fiscalCodeText.setText(rspp.getJob().getCustomer().getFiscalCode());
-		numberVATField.setText(rspp.getJob().getCustomer().getNumberVAT());
+		if (rspp.getJob().getCustomer().getName() != null)
+			nameField.setText(rspp.getJob().getCustomer().getName());
+		else
+			nameField.clear();
+
+		if (rspp.getJob().getCustomer().getFiscalCode() != null)
+			fiscalCodeText.setText(rspp.getJob().getCustomer().getFiscalCode());
+		else
+			fiscalCodeText.clear();
+
+		if (rspp.getJob().getCustomer().getNumberVAT() != null)
+			numberVATField.setText(rspp.getJob().getCustomer().getNumberVAT());
+		else
+			numberVATField.clear();
+
 		categoryAccountCombo.setValue(model.getAccountCategories().get(rspp.getJob().getCustomer().getCategory()));
 		atecoCodeField.setText(rspp.getJob().getCustomer().getAtecoCode());
-		addressField.setText(rspp.getJob().getCustomer().getLegalAddress());
+
+		if (rspp.getJob().getCustomer().getLegalAddress() != null)
+			addressField.setText(rspp.getJob().getCustomer().getLegalAddress());
+		else
+			addressField.clear();
 	}
 
 	private void setJobs() {
-		jobCodeField.setText(rspp.getJob().getId());
+		if (rspp.getJob().getId() != null)
+			jobCodeField.setText(rspp.getJob().getId());
+		else
+			jobCodeField.clear();
+
 		categoryJobCombo.setValue(rspp.getJob().getJobCategory());
 		categoryTypeCombo.setValue(rspp.getJob().getJobType());
-		jobdDescriptionField.setText(rspp.getJob().getDescription());
-		noteField.setText(rsppNote = model.getRSPPnote(rspp.getJob().getCustomer().getFiscalCode()));
+
+		if (rspp.getJob().getDescription() != null)
+			jobdDescriptionField.setText(rspp.getJob().getDescription());
+		else
+			jobdDescriptionField.clear();
+
+		rsppNote = model.getRSPPnote(rspp.getJob().getCustomer().getFiscalCode());
+		if (rsppNote != null)
+			noteField.setText(rsppNote);
+		else
+			noteField.clear();
 
 		if (rspp.getJob() instanceof JobPA) {
 			JobPA jobPA = (JobPA) rspp.getJob();
@@ -159,7 +188,10 @@ public class ViewEditController {
 
 	private void setInvoice() {
 		if (rspp.getInvoice() != null) {
-			invoiceNumberField.setText(Integer.toString(rspp.getInvoice().getNumber()));
+			if (Integer.toString(rspp.getInvoice().getNumber()) != null)
+				invoiceNumberField.setText(Integer.toString(rspp.getInvoice().getNumber()));
+			else
+				invoiceNumberField.clear();
 			invoiceEmissionDateField.setValue(rspp.getInvoice().getEmission());
 			invoiceTypeField.setText(model.getAccountCategories().get(rspp.getInvoice().getType()));
 			payedCheck.setSelected(rspp.getInvoice().getPayed());
@@ -176,9 +208,9 @@ public class ViewEditController {
 		RSPP newRSPP;
 		Invoice newInvoice;
 
-		// Check if account needs to be updated
-		newAccount = new Account(fiscalCodeText.getText().trim(), nameField.getText().trim(), numberVATField.getText().trim(),
-				atecoCodeField.getText().trim(), addressField.getText().trim(),
+		// Check if account needs to be update
+		newAccount = new Account(fiscalCodeText.getText().trim(), nameField.getText().trim(),
+				numberVATField.getText().trim(), atecoCodeField.getText().trim(), addressField.getText().trim(),
 				model.getAccountCategories().inverse().get(categoryAccountCombo.getValue()));
 		if (!newAccount.equals(rspp.getJob().getCustomer())) {
 			String error = FieldsValidator.isAccountChangeValid(newAccount);
@@ -193,8 +225,8 @@ public class ViewEditController {
 		}
 
 		// Check if job needs to be updated
-		newJob = new Job(jobCodeField.getText().trim(), categoryJobCombo.getValue().trim(), categoryTypeCombo.getValue().trim(),
-				jobdDescriptionField.getText().trim(), newAccount);
+		newJob = new Job(jobCodeField.getText().trim(), categoryJobCombo.getValue().trim(),
+				categoryTypeCombo.getValue().trim(), jobdDescriptionField.getText().trim(), newAccount);
 		if (rspp.getJob() instanceof JobPA) {
 			newJob = new JobPA(newJob, cigField.getText(), Integer.parseInt(decreeNumberField.getText()),
 					decreeDateField.getValue());
@@ -211,7 +243,7 @@ public class ViewEditController {
 
 		}
 
-		// Check if rspp note needs to be updated 
+		// Check if rspp note needs to be updated
 		if (!noteField.getText().trim().equals(rsppNote)) {
 			String error = FieldsValidator.isRSPPNoteChangeValid(rsppNote);
 			if (error == null) {
@@ -274,7 +306,7 @@ public class ViewEditController {
 		alert.setHeaderText("Sono stati rilevati i seguenti campi non validi:");
 		alert.setContentText(message);
 
-		//TODO refresh changed fields
+		// TODO refresh changed fields
 		alert.showAndWait();
 	}
 }

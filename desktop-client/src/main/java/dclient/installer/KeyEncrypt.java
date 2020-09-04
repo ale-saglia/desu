@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.ProcessBuilder.Redirect;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -27,7 +26,7 @@ public class KeyEncrypt {
 	private final int DEFAULT_PASSWORD_LENGHT = 64;
 	private final String DEFAULT_ENV_VARIABLE = "DCLIENT";
 	private final String DEFAULT_ENCRYPTION_ALGORITHM = "PBEWithHMACSHA512AndAES_256";
-	private final String DEFAULT_PASSWORD_VALID_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%*()_+-=[]?";
+	private final String DEFAULT_PASSWORD_VALID_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%*()_+-=[]";
 
 	private int passwordLenght;
 	private String passwordValidChars;

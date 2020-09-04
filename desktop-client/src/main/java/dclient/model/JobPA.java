@@ -9,6 +9,8 @@ public class JobPA extends Job {
 
 	public JobPA(String id, String jobCategory, String jobType, String description, Account customer) {
 		super(id, jobCategory, jobType, description, customer);
+		
+		trimAccountString();
 	}
 
 	public JobPA(Job job, String cig, int decreeNumber, LocalDate decreeDate) {
@@ -16,6 +18,8 @@ public class JobPA extends Job {
 		this.cig = cig;
 		this.decreeNumber = decreeNumber;
 		this.decreeDate = decreeDate;
+		
+		trimAccountString();
 	}
 
 	public String getCig() {
@@ -64,5 +68,14 @@ public class JobPA extends Job {
 		return true;
 	}
 
-	
+	private void trimAccountString() {
+		if(id != null)
+			id = id.trim();
+		
+		if(description != null)
+			description = description.trim();
+		
+		if(cig != null)
+			cig = cig.trim();
+	}
 }

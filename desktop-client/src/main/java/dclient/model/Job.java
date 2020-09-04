@@ -14,6 +14,8 @@ public class Job {
 		this.jobCategory = jobCategory;
 		this.jobType = jobType;
 		this.customer = customer;
+		
+		trimAccountString();
 	}
 
 	public String getId() {
@@ -90,6 +92,13 @@ public class Job {
 		return id;
 	}
 	
-	
+	private void trimAccountString() {
+		if(id != null)
+			id = id.trim();
+		
+		if(description != null)
+			description = description.trim();
+
+	}
 
 }

@@ -19,6 +19,8 @@ public class Account {
 		this.atecoCode = atecoCode;
 		this.legalAddress = legalAddress;
 		this.category = category;
+		
+		trimAccountString();
 	}
 
 	public String getFiscalCode() {
@@ -109,6 +111,20 @@ public class Account {
 		return "Account [name=" + name + "]";
 	}
 	
-	
+	private void trimAccountString() {
+		if(fiscalCode != null)
+			fiscalCode = fiscalCode.trim();
+		
+		if(name != null)
+			name = name.trim();
+		
+		if(numberVAT != null)
+			numberVAT = numberVAT.trim();
+		
+		if(atecoCode != null)
+			atecoCode = atecoCode.trim();
 
+		if(legalAddress != null)
+			legalAddress = legalAddress.trim();
+	}
 }

@@ -16,6 +16,9 @@ public class Invoice {
 		this.emission = emission;
 		this.type = type;
 		this.payed = payed;
+		
+		if(id != null)
+			id = id.trim();
 	}
 
 	public Invoice(Integer number, LocalDate emission, String type, Boolean payed) {
@@ -30,7 +33,7 @@ public class Invoice {
 		if (number == null || type == null || emission == null)
 			return null;
 		else
-			return (number + "/" + type + " " + emission);
+			return (number + "/" + type + " " + emission).trim();
 	}
 
 	public String getId() {

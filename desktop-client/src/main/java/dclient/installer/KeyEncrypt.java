@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.ProcessBuilder.Redirect;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -26,7 +27,7 @@ public class KeyEncrypt {
 	private final int DEFAULT_PASSWORD_LENGHT = 64;
 	private final String DEFAULT_ENV_VARIABLE = "DCLIENT";
 	private final String DEFAULT_ENCRYPTION_ALGORITHM = "PBEWithHMACSHA512AndAES_256";
-	private final String DEFAULT_PASSWORD_VALID_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*()_+-=[]?";
+	private final String DEFAULT_PASSWORD_VALID_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%*()_+-=[]?";
 
 	private int passwordLenght;
 	private String passwordValidChars;
@@ -79,11 +80,10 @@ public class KeyEncrypt {
 		config = new Properties();
 		try {
 			config.load(new FileInputStream("./installConfig.properties"));
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			logger.severe(ExceptionUtils.getStackTrace(e));
 			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+			System.exit(-1);
 		}
 
 		passwordLenght = Integer
@@ -94,7 +94,7 @@ public class KeyEncrypt {
 		sshNameIdentifier = config.getProperty("ssh.identifier", System.getProperty("user.name"));
 		envName = config.getProperty("env.variable", DEFAULT_ENV_VARIABLE);
 		envAlgorithm = config.getProperty("enc.algorithm", DEFAULT_ENCRYPTION_ALGORITHM);
-		passwordValidChars  = config.getProperty("password.validChars", DEFAULT_PASSWORD_VALID_CHARS);
+		passwordValidChars = config.getProperty("password.validChars", DEFAULT_PASSWORD_VALID_CHARS);
 	}
 
 	private void userInput() {
@@ -112,10 +112,8 @@ public class KeyEncrypt {
 
 	private void initKey() {
 		key = new Key(userPassword, envPassword, envAlgorithm);
-		logger.info("User password: " + userPassword + 
-				"\nEnv password: " + envPassword +
-				"\nUsed algorythm: " + envAlgorithm +
-				"\n" + key.getEnc().toString());
+		logger.info("User password: " + userPassword + "\nEnv password: " + envPassword + "\nUsed algorythm: "
+				+ envAlgorithm + "\n" + key.getEnc().toString());
 	}
 
 	private void nukeConfigDirectory() {

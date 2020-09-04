@@ -38,6 +38,7 @@ desktop-client/target
 *.jar
 
 # Ignore public key generated during debug
+*_rsa
 *.pub
 
 # Ignore debug files

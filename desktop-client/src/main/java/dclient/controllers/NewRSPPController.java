@@ -200,7 +200,7 @@ public class NewRSPPController {
 		clearFields();
 		if (jobMap.get(jobCombo.getSelectionModel().getSelectedItem()) != null) {
 			Job job = jobMap.get(jobCombo.getSelectionModel().getSelectedItem());
-			setJobFieldsBlocked(false);
+			setJobFieldsEditable(false);
 			paHbox.setVisible(job instanceof JobPA);
 
 			jobNumber.setText(job.getId());
@@ -221,8 +221,11 @@ public class NewRSPPController {
 			}
 
 		} else {
-			setJobFieldsBlocked(true);
-			paHbox.setDisable(false);
+			if (accountListView.getSelectionModel().getSelectedItem().getCategory().contains("pa"))
+				paHbox.setVisible(true);
+			else
+				paHbox.setVisible(false);
+			setJobFieldsEditable(true);
 		}
 	}
 
@@ -236,7 +239,7 @@ public class NewRSPPController {
 		decreeDateField.valueProperty().set(null);
 	}
 
-	private void setJobFieldsBlocked(boolean status) {
+	private void setJobFieldsEditable(boolean status) {
 		jobNumber.setEditable(status);
 		jobCategory.setEditable(status);
 		jobType.setEditable(status);
@@ -252,14 +255,21 @@ public class NewRSPPController {
 		Job job = jobMap.get(jobCombo.getSelectionModel().getSelectedItem());
 
 		if (job == null) {
-			job = new Job(jobNumber.getText().trim(), jobCategory.getValue(), jobType.getValue(), jobDescriptionField.getText().trim(), accountListView.getSelectionModel().getSelectedItem());
+			job = new Job(jobNumber.getText(), jobCategory.getValue(), jobType.getValue(),
+					jobDescriptionField.getText(), accountListView.getSelectionModel().getSelectedItem());
 			String error = FieldsValidator.isJobChangeValid(job);
 			if (error == null) {
 				if (!accountListView.getSelectionModel().getSelectedItem().getCategory().contains("pa"))
 					model.newJob(job);
-				else
-					model.newJob(new JobPA(job, cigField.getText().trim(), Integer.valueOf(decreeNumberField.getText().trim()),
-							decreeDateField.getValue()));
+				else {
+					JobPA jobPA = new JobPA(job, cigField.getText(), Integer.valueOf(decreeNumberField.getText()),
+							decreeDateField.getValue());
+					error = FieldsValidator.isJobPAValid(jobPA);
+					if (error != null)
+						model.newJob(jobPA);
+					else
+						warningWindows(error);
+				}
 
 				enterAccount();
 			} else
@@ -274,7 +284,7 @@ public class NewRSPPController {
 			warningWindows(error);
 		parent.refresh();
 	}
-	
+
 	@FXML
 	public void saveAndClose() {
 		addRSPP();
@@ -294,5 +304,10 @@ public class NewRSPPController {
 	private void closeButtonAction() {
 		Stage stage = (Stage) closeButton.getScene().getWindow();
 		stage.close();
+	}
+
+	@FXML
+	private void duplicateLastRSPP() {
+		// TODO
 	}
 }

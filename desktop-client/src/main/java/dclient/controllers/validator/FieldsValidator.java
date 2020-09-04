@@ -110,8 +110,22 @@ public class FieldsValidator {
 		String error = "";
 
 		if (invoice.getNumber() <= 0)
-			error += "- La fattura deve avere un numero maggiore di 0";
+			error += "- La fattura deve essere un numero maggiore di 0";
 
+		if (error.isEmpty())
+			return null;
+		else
+			return error.trim();
+	}
+	
+	public static String isJobPAValid(JobPA job) {
+		String error = "";
+		
+		if(job.getDecreeNumber() < 0)
+			error += "- Il numero deve essere un numero maggiore di 0";
+		
+		if(!job.getCig().matches("^[a-zA-Z0-9]{10,}$"))
+			error += "- Il CIG non è in un formato valido";
 		if (error.isEmpty())
 			return null;
 		else

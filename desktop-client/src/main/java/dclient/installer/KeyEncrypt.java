@@ -13,7 +13,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Properties;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
@@ -114,12 +113,8 @@ public class KeyEncrypt {
 	}
 
 	private void nukeConfigDirectory() {
-		try {
-			//TODO change to use system command
-			Files.cleanDirectory(new File(installationFolder));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		for (File sub : new File(installationFolder).listFiles())
+			sub.delete();
 	}
 
 	private void setEnvVar() {
@@ -165,9 +160,10 @@ public class KeyEncrypt {
 
 	private String passwordGenerator() {
 		StringBuilder sb = new StringBuilder();
-		for (int i= 0; i < passwordLenght; i++) {
-		    sb.append(passwordValidChars.charAt(ThreadLocalRandom.current().nextInt(0, passwordValidChars.length() + 1)));
-		}		
+		for (int i = 0; i < passwordLenght; i++) {
+			sb.append(
+					passwordValidChars.charAt(ThreadLocalRandom.current().nextInt(0, passwordValidChars.length() + 1)));
+		}
 		return sb.toString();
 	}
 

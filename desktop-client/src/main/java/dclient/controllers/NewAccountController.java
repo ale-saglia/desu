@@ -56,7 +56,7 @@ public class NewAccountController {
 				atecoCodeField.getText().trim(), addressField.getText().trim(),
 				model.getAccountCategories().inverse().get(categoryAccountCombo.getValue()));
 		
-		String error = FieldsValidator.isAccountChangeValid(account);
+		String error = FieldsValidator.isAccountValid(account);
 		if(error != null) {
 			Alert alert = new Alert(AlertType.WARNING);
 			alert.setTitle("ATTENZIONE: campi non validi");

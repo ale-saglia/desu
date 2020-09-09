@@ -43,6 +43,11 @@
       </TableView>
       <HBox minHeight="-Infinity" minWidth="-Infinity">
          <children>
+            <CheckBox fx:id="checkBoxPayed" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" selected="true" text="Nascondi pagati">
+               <padding>
+                  <Insets right="15.0" />
+               </padding>
+            </CheckBox>
             <CheckBox fx:id="checkBoxDeadline" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="Incarichi in scadenza" />
             <HBox HBox.hgrow="ALWAYS" />
           <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#switchToNewView" text="Crea nuovo" />

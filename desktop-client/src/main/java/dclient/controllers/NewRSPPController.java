@@ -1,7 +1,5 @@
 package dclient.controllers;
 
-import java.time.temporal.ChronoUnit;
-
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
@@ -221,22 +219,21 @@ public class NewRSPPController {
 				decreeNumberField.setText(Integer.toString(jobPA.getDecreeNumber()));
 				decreeDateField.setValue(jobPA.getDecreeDate());
 			}
-			
-			RSPP lastRSPP;
-			if((lastRSPP = model.getLastRSPP(accountListView.getSelectionModel().getSelectedItem())) != null) {
-				rsppStart.setValue(lastRSPP.getEnd().plusDays(1));
-				rsppEnd.setValue(rsppStart.getValue().plusDays(ChronoUnit.DAYS.between(lastRSPP.getStart(), lastRSPP.getEnd())).plusDays(1));
-			}
 
-		} else {
-			if (accountListView.getSelectionModel().getSelectedItem().getCategory().contains("pa"))
-				paHbox.setVisible(true);
-			else
-				paHbox.setVisible(false);
-			setJobFieldsEditable(true);
+			RSPP lastRSPP = model.getLastRSPP(accountListView.getSelectionModel().getSelectedItem());
+			if (lastRSPP != null) {
+				rsppStart.setValue(lastRSPP.getEnd().plusDays(1));
+				
+			} else {
+				if (accountListView.getSelectionModel().getSelectedItem().getCategory().contains("pa"))
+					paHbox.setVisible(true);
+				else
+					paHbox.setVisible(false);
+				setJobFieldsEditable(true);
+			}
 		}
 	}
-
+	
 	private void clearFields() {
 		jobNumber.clear();
 		jobCategory.valueProperty().set(null);
@@ -245,7 +242,7 @@ public class NewRSPPController {
 		cigField.clear();
 		decreeNumberField.clear();
 		decreeDateField.valueProperty().set(null);
-		
+
 		rsppStart.valueProperty().set(null);
 		rsppEnd.valueProperty().set(null);
 	}
@@ -268,7 +265,7 @@ public class NewRSPPController {
 		if (job == null) {
 			job = new Job(jobNumber.getText(), jobCategory.getValue(), jobType.getValue(),
 					jobDescriptionField.getText(), accountListView.getSelectionModel().getSelectedItem());
-			String error = FieldsValidator.isJobChangeValid(job);
+			String error = FieldsValidator.isJobValid(job);
 			if (error == null) {
 				if (!accountListView.getSelectionModel().getSelectedItem().getCategory().contains("pa"))
 					model.newJob(job);
@@ -294,6 +291,8 @@ public class NewRSPPController {
 		} else
 			warningWindows(error);
 		enterAccount();
+
+		parent.refresh();
 	}
 
 	@FXML

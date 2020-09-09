@@ -178,11 +178,11 @@ public class ViewEditController {
 		Invoice newInvoice;
 
 		// Check if account needs to be update
-		newAccount = new Account(fiscalCodeText.getText(), nameField.getText(),
-				numberVATField.getText(), atecoCodeField.getText(), addressField.getText(),
+		newAccount = new Account(fiscalCodeText.getText(), nameField.getText(), numberVATField.getText(),
+				atecoCodeField.getText(), addressField.getText(),
 				model.getAccountCategories().inverse().get(categoryAccountCombo.getValue()));
 		if (!newAccount.equals(rspp.getJob().getCustomer())) {
-			String error = FieldsValidator.isAccountChangeValid(newAccount);
+			String error = FieldsValidator.isAccountValid(newAccount);
 			if (error == null) {
 				model.updateAccount(rspp.getJob().getCustomer().getFiscalCode(), newAccount);
 				isChanged = true;
@@ -194,14 +194,14 @@ public class ViewEditController {
 		}
 
 		// Check if job needs to be updated
-		newJob = new Job(jobCodeField.getText(), categoryJobCombo.getValue(),
-				categoryTypeCombo.getValue(), jobdDescriptionField.getText(), newAccount);
+		newJob = new Job(jobCodeField.getText(), categoryJobCombo.getValue(), categoryTypeCombo.getValue(),
+				jobdDescriptionField.getText(), newAccount);
 		if (rspp.getJob() instanceof JobPA) {
 			newJob = new JobPA(newJob, cigField.getText(), Integer.parseInt(decreeNumberField.getText()),
 					decreeDateField.getValue());
 		}
 		if (!newJob.equals(rspp.getJob())) {
-			String error = FieldsValidator.isJobChangeValid(newJob);
+			String error = FieldsValidator.isJobValid(newJob);
 			if (error == null) {
 				model.updateJob(rspp.getJob().getId(), newJob);
 				isChanged = true;
@@ -214,7 +214,7 @@ public class ViewEditController {
 
 		// Check if rspp note needs to be updated
 		if (noteField.getText() != null && !noteField.getText().trim().equals(rsppNote)) {
-			String error = FieldsValidator.isRSPPNoteChangeValid(rsppNote);
+			String error = FieldsValidator.isRSPPNoteValid(rsppNote);
 			if (error == null) {
 				model.updateNote(fiscalCodeText.getText(), noteField.getText());
 				isChanged = true;
@@ -237,10 +237,17 @@ public class ViewEditController {
 				payedCheck.isSelected());
 
 		if (!newInvoice.equals(rspp.getInvoice()) && newInvoice.getId() != null) {
-			String error = FieldsValidator.isInvoiceChangeValid(newInvoice);
+			String error = FieldsValidator.isInvoiceValid(newInvoice);
 			if (error == null) {
-				model.updateInvoice(oldInvoiceID, newInvoice, rspp);
-				isChanged = true;
+				error = FieldsValidator.isNewInvoiceDuplicate(model, newInvoice);
+				if (error == null) {
+					model.updateInvoice(oldInvoiceID, newInvoice, rspp);
+					isChanged = true;
+				} else {
+					warningWindows(error);
+					return;
+				}
+
 			} else {
 				warningWindows(error);
 				return;

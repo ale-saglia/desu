@@ -250,7 +250,8 @@ public class SicurteaDAO {
 			st.setString(1, job_id);
 
 			ResultSet res = st.executeQuery();
-			res.next();
+			if (res.next() == false)
+				return null;
 			job = new Job(res.getString("jobs_id"), res.getString("jobs_category"), res.getString("jobs_type"),
 					res.getString("jobs_description"), getAccount(res.getString("customer"), conn));
 
@@ -307,7 +308,8 @@ public class SicurteaDAO {
 			st.setString(1, fiscalCode);
 
 			ResultSet res = st.executeQuery();
-			res.next();
+			if (res.next() == false)
+				return null;
 			account = new Account(res.getString("fiscalcode"), res.getString("name"), res.getString("numbervat"),
 					res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"));
 			return account;
@@ -710,76 +712,57 @@ public class SicurteaDAO {
 		System.out.println("Rows updated ACCOUNT => " + rowsAffected);
 		return 0;
 	}
-
-	public boolean isAccountFiscalCodeExisting(String fiscalCode) {
-		String query = "SELECT COUNT(1) FROM accounts.accounts WHERE fiscalcode = ? ";
-
-		try {
-			Connection conn = ConnectDB.getConnection(session, config);
-			PreparedStatement st = conn.prepareStatement(query);
-
-			st.setString(1,fiscalCode);
-
-			ResultSet res = st.executeQuery();
-			conn.close();
-			res.next();
-
-			if (res.getInt(1) == 0)
-				return false;
-			else
-				return true;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Errore connessione al database");
-		}
-		return true;
-	}
 	
-	public boolean isAccountVatNumberExisting(String vatNumber) {
-		String query = "SELECT COUNT(1) FROM accounts.accounts WHERE numbervat = ? ";
-		
+	public Account getAccountFromVATNumber(String vatNumber) {		
+		String query = "select * from accounts.accounts a where a.numbervat = ? ";
+		Account account;
+
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(query);
-
+			
 			st.setString(1, vatNumber);
 
 			ResultSet res = st.executeQuery();
-			conn.close();
-			res.next();
+			if (res.next() == false)
+				return null;
+			account = new Account(res.getString("fiscalcode"), res.getString("name"), res.getString("numbervat"),
+					res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"));
+			return account;
 
-			if (res.getInt(1) == 0)
-				return false;
-			else
-				return true;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
 		}
-		return true;
 	}
 	
-	public boolean isJobExisting(Job job) {
-		String query = "SELECT COUNT(1) FROM jobs.jobs WHERE jobs_id = ? ";
+	public Account getAccountOfInvoice(Invoice invoice) {
+		String query = "select a.fiscalcode, a.\"name\", a.numbervat, a.atecocode, a.legal_address, a.customer_category "
+				+ "from accounts.accounts a, jobs.jobs j, invoices.invoices i, deadlines.rspp r "
+				+ "where a.fiscalcode = j.customer and r.invoiceid = i.invoiceid and "
+				+ "i.\"number\" = ? and i.\"type\" = ? and date_part('year', emission) = ? ";
+		Account account;
 
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(query);
-
-			st.setString(1, job.getId());
+			
+			st.setInt(1, invoice.getNumber());
+			st.setString(2, invoice.getType());
+			st.setInt(3, invoice.getEmission().getYear());
 
 			ResultSet res = st.executeQuery();
-			conn.close();
-			res.next();
+			if (res.next() == false)
+				return null;
+			account = new Account(res.getString("fiscalcode"), res.getString("name"), res.getString("numbervat"),
+					res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"));
+			return account;
 
-			if (res.getInt(1) == 0)
-				return false;
-			else
-				return true;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
 		}
-		return true;
 	}
 }

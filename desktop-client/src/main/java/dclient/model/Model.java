@@ -125,20 +125,16 @@ public class Model {
 		return dao.newRSPP(rspp);		
 	}
 	
-	public boolean isAccountFiscalCodeExisting(String fiscalCode) {
-		return dao.isAccountFiscalCodeExisting(fiscalCode);
-	}
-	
-	public boolean isAccountVatNumberExisting(String vatNumber) {
-		return dao.isAccountVatNumberExisting(vatNumber);
-	}
-	
-	public boolean isJobExisting(Job job) {
-		return dao.isJobExisting(job);
+	public Account getAccountFromVATNumber(String vatNumber) {
+		return dao.getAccountFromVATNumber(vatNumber);
 	}
 	
 	public List<RSPP> getAllRSPP(Account account){
 		return dao.getRSPPList(account);
+	}
+	
+	public Account getAccountOfInvoice(Invoice invoice) {
+		return dao.getAccountOfInvoice(invoice);
 	}
 	
 	public RSPP getLastRSPP(Account account){

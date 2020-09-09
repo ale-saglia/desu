@@ -13,12 +13,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Properties;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
-import org.apache.commons.io.FileUtils;
-
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.commons.text.RandomStringGenerator;
 
 import dclient.Key;
 
@@ -80,7 +78,7 @@ public class KeyEncrypt {
 		try {
 			config.load(new FileInputStream("./installConfig.properties"));
 		} catch (IOException e) {
-			logger.severe(ExceptionUtils.getStackTrace(e));
+			logger.severe("Got an exception. " + e.getMessage());
 			e.printStackTrace();
 			System.exit(-1);
 		}
@@ -117,7 +115,8 @@ public class KeyEncrypt {
 
 	private void nukeConfigDirectory() {
 		try {
-			FileUtils.cleanDirectory(new File(installationFolder));
+			//TODO change to use system command
+			Files.cleanDirectory(new File(installationFolder));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -150,7 +149,7 @@ public class KeyEncrypt {
 			sshCreation = sshCreationBuilder.start();
 			sshCreation.waitFor();
 		} catch (IOException | InterruptedException e) {
-			logger.severe(ExceptionUtils.getStackTrace(e));
+			logger.severe("Got an exception. " + e.getMessage());
 		}
 	}
 
@@ -165,8 +164,11 @@ public class KeyEncrypt {
 	}
 
 	private String passwordGenerator() {
-		return new RandomStringGenerator.Builder().selectFrom(passwordValidChars.toCharArray()).build()
-				.generate(passwordLenght);
+		StringBuilder sb = new StringBuilder();
+		for (int i= 0; i < passwordLenght; i++) {
+		    sb.append(passwordValidChars.charAt(ThreadLocalRandom.current().nextInt(0, passwordValidChars.length() + 1)));
+		}		
+		return sb.toString();
 	}
 
 	private void createPropertiesFile() {

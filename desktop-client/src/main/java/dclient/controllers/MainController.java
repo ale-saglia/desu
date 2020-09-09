@@ -53,6 +53,9 @@ public class MainController {
 	private TableColumn<RSPPtableElement, String> noteColumn;
 
 	@FXML
+	private CheckBox checkBoxPayed;
+
+	@FXML
 	private CheckBox checkBoxDeadline;
 
 	@FXML
@@ -102,16 +105,20 @@ public class MainController {
 
 		final ObjectProperty<Predicate<RSPPtableElement>> nameFilter = new SimpleObjectProperty<>();
 		final ObjectProperty<Predicate<RSPPtableElement>> dateFilter = new SimpleObjectProperty<>();
+		final ObjectProperty<Predicate<RSPPtableElement>> payedFilter = new SimpleObjectProperty<>();
 
 		nameFilter.bind(Bindings.createObjectBinding(
 				() -> rspp -> rspp.getAccountName().toLowerCase().contains(searchField.getText().toLowerCase()),
 				searchField.textProperty()));
 
+		payedFilter.bind(Bindings.createObjectBinding(() -> rspp -> payedFilter(rspp), checkBoxPayed.selectedProperty()));
+
 		dateFilter.bind(
 				Bindings.createObjectBinding(() -> rspp -> dateFilter(rspp), checkBoxDeadline.selectedProperty()));
 
-		filteredrsppElements.predicateProperty().bind(
-				Bindings.createObjectBinding(() -> nameFilter.get().and(dateFilter.get()), nameFilter, dateFilter));
+		filteredrsppElements.predicateProperty()
+				.bind(Bindings.createObjectBinding(() -> nameFilter.get().and(dateFilter.get().and(payedFilter.get())),
+						nameFilter, dateFilter, payedFilter));
 
 		sortedFilteredrsppElements = new SortedList<>(filteredrsppElements);
 		rsppTable.setItems(sortedFilteredrsppElements);
@@ -132,6 +139,16 @@ public class MainController {
 		if (checkBoxDeadline.isSelected()) {
 			if (rspp.jobEndDate().isAfter(LocalDate.now()) && rspp.jobEndDate().isBefore(
 					LocalDate.now().plusDays(Integer.parseInt(model.getConfig().getProperty("rsppTable.daysAdvance")))))
+				return true;
+			else
+				return false;
+		}
+		return true;
+	}
+	
+	private boolean payedFilter(final RSPPtableElement rspp) {
+		if (checkBoxPayed.isSelected()) {
+			if (!rspp.getPayed())
 				return true;
 			else
 				return false;

@@ -316,9 +316,4 @@ public class NewRSPPController {
 		Stage stage = (Stage) closeButton.getScene().getWindow();
 		stage.close();
 	}
-
-	@FXML
-	private void duplicateLastRSPP() {
-		// TODO
-	}
 }

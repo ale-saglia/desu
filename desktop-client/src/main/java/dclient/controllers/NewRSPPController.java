@@ -1,5 +1,7 @@
 package dclient.controllers;
 
+import java.time.temporal.ChronoUnit;
+
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
@@ -219,6 +221,12 @@ public class NewRSPPController {
 				decreeNumberField.setText(Integer.toString(jobPA.getDecreeNumber()));
 				decreeDateField.setValue(jobPA.getDecreeDate());
 			}
+			
+			RSPP lastRSPP;
+			if((lastRSPP = model.getLastRSPP(accountListView.getSelectionModel().getSelectedItem())) != null) {
+				rsppStart.setValue(lastRSPP.getEnd().plusDays(1));
+				rsppEnd.setValue(rsppStart.getValue().plusDays(ChronoUnit.DAYS.between(lastRSPP.getStart(), lastRSPP.getEnd())).plusDays(1));
+			}
 
 		} else {
 			if (accountListView.getSelectionModel().getSelectedItem().getCategory().contains("pa"))
@@ -237,6 +245,9 @@ public class NewRSPPController {
 		cigField.clear();
 		decreeNumberField.clear();
 		decreeDateField.valueProperty().set(null);
+		
+		rsppStart.valueProperty().set(null);
+		rsppEnd.valueProperty().set(null);
 	}
 
 	private void setJobFieldsEditable(boolean status) {
@@ -282,7 +293,7 @@ public class NewRSPPController {
 			model.newRSPP(rspp);
 		} else
 			warningWindows(error);
-		parent.refresh();
+		enterAccount();
 	}
 
 	@FXML

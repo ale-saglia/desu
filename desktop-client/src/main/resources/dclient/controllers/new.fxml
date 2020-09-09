@@ -126,11 +126,6 @@
                   <Insets bottom="15.0" />
                </padding>
             </HBox>
-            <HBox alignment="CENTER_RIGHT" minWidth="-Infinity">
-               <children>
-                  <Button mnemonicParsing="false" onAction="#duplicateLastRSPP" text="Crea nuovo RSPP da ultimo" />
-               </children>
-            </HBox>
             <VBox prefHeight="200.0" prefWidth="100.0">
                <children>
                   <Label nodeOrientation="LEFT_TO_RIGHT" text="Note RSPP" />

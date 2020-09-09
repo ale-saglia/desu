@@ -50,7 +50,7 @@ public class SicurteaDAO {
 				+ "                       AND j.customer = a.fiscalcode\n" + "                ORDER  BY \"name\",\n"
 				+ "                          jobstart) AS n1\n" + "               LEFT JOIN deadlines.rspp_notes rn\n"
 				+ "                      ON n1.fiscalcode = rn.fiscalcode) AS n2\n"
-				+ "       LEFT JOIN invoices.invoices i\n" + "              ON i.invoiceid = n2.invoiceid ");
+				+ "       LEFT JOIN invoices.invoices i\n" + "              ON i.invoiceid = n2.invoiceid  ORDER BY \"name\", jobend DESC ");
 
 		List<RSPPtableElement> tableElements = new LinkedList<RSPPtableElement>();
 
@@ -166,6 +166,30 @@ public class SicurteaDAO {
 			throw new RuntimeException("Error Connection Database");
 		}
 	}
+	
+	public RSPP getLastRSPP(Account account) {
+		String sql = "select * from deadlines.rspp r, jobs.jobs j where r.rspp_jobid = j.jobs_id and customer = ? order by jobend desc LIMIT 1 ";
+		RSPP rspp = null;
+
+		try {
+			Connection conn = ConnectDB.getConnection(session, config);
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setString(1, account.getFiscalCode());
+
+			ResultSet res = st.executeQuery();
+			if (res.next() == false)
+				return null;
+			rspp = new RSPP(getJob(res.getString("rspp_jobid"), conn), res.getDate("jobstart").toLocalDate(),
+					res.getDate("jobend").toLocalDate(), getInvoice(res.getString("invoiceid"), conn));
+			conn.close();
+			return rspp;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+	}
 
 	public List<RSPP> getRSPPList() {
 		String sql = "select * from deadlines.rspp";
@@ -174,6 +198,32 @@ public class SicurteaDAO {
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(sql);
+
+			ResultSet res = st.executeQuery();
+
+			while (res.next()) {
+				rspp.add(new RSPP(getJob(res.getString("rspp_jobid"), conn), res.getDate("jobstart").toLocalDate(),
+						res.getDate("jobend").toLocalDate(), getInvoice(res.getString("invoiceid"), conn)));
+			}
+			conn.close();
+			return rspp;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+	}
+	
+	public List<RSPP> getRSPPList(Account account) {
+		String sql = "select * from deadlines.rspp r, jobs.jobs j where r.rspp_jobid = j.jobs_id and customer = ? ";
+		List<RSPP> rspp = new LinkedList<RSPP>();
+
+		try {
+			Connection conn = ConnectDB.getConnection(session, config);
+			PreparedStatement st = conn.prepareStatement(sql);
+			
+			st.setString(1, account.getFiscalCode());
 
 			ResultSet res = st.executeQuery();
 

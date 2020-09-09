@@ -136,4 +136,12 @@ public class Model {
 	public boolean isJobExisting(Job job) {
 		return dao.isJobExisting(job);
 	}
+	
+	public List<RSPP> getAllRSPP(Account account){
+		return dao.getRSPPList(account);
+	}
+	
+	public RSPP getLastRSPP(Account account){
+		return dao.getLastRSPP(account);
+	}
 }

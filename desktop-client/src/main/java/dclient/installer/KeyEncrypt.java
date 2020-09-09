@@ -121,7 +121,7 @@ public class KeyEncrypt {
 		envPassword = passwordGenerator();
 		try {
 			//Detect if Windows is running and set ENV variable for current user
-			if(System.getProperty("os.name").toLowerCase().indexOf("win") >= 0){
+			if(System.getProperty("os.name").toLowerCase().contains("win")){
 				Runtime.getRuntime().exec("setx " + envName + " " + envPassword);
 			} 
 			//Detect if a better OS is running and set ENV variable for current user

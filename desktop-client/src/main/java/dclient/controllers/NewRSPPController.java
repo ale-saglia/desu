@@ -1,5 +1,7 @@
 package dclient.controllers;
 
+import java.time.Period;
+
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
@@ -223,7 +225,7 @@ public class NewRSPPController {
 			RSPP lastRSPP = model.getLastRSPP(accountListView.getSelectionModel().getSelectedItem());
 			if (lastRSPP != null) {
 				rsppStart.setValue(lastRSPP.getEnd().plusDays(1));
-				
+				rsppEnd.setValue(rsppStart.getValue().plusMonths(Period.between(lastRSPP.getStart(), lastRSPP.getEnd()).getMonths()).minusDays(1));
 			} else {
 				if (accountListView.getSelectionModel().getSelectedItem().getCategory().contains("pa"))
 					paHbox.setVisible(true);

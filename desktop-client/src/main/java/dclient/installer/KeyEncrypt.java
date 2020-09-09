@@ -120,7 +120,14 @@ public class KeyEncrypt {
 	private void setEnvVar() {
 		envPassword = passwordGenerator();
 		try {
-			Runtime.getRuntime().exec("setx " + envName + " " + envPassword);
+			//Detect if Windows is running and set ENV variable for current user
+			if(System.getProperty("os.name").toLowerCase().indexOf("win") >= 0){
+				Runtime.getRuntime().exec("setx " + envName + " " + envPassword);
+			} 
+			//Detect if a better OS is running and set ENV variable for current user
+			else {
+				//Detect common bash profile in home folder and add export for variable.
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

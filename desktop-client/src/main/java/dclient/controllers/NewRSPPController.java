@@ -225,7 +225,8 @@ public class NewRSPPController {
 			RSPP lastRSPP = model.getLastRSPP(accountListView.getSelectionModel().getSelectedItem());
 			if (lastRSPP != null) {
 				rsppStart.setValue(lastRSPP.getEnd().plusDays(1));
-				rsppEnd.setValue(rsppStart.getValue().plusMonths(Period.between(lastRSPP.getStart(), lastRSPP.getEnd()).getMonths()).minusDays(1));
+				rsppEnd.setValue(rsppStart.getValue()
+						.plus(Period.between(lastRSPP.getStart(), lastRSPP.getEnd().plusDays(1))).minusDays(1));
 			} else {
 				if (accountListView.getSelectionModel().getSelectedItem().getCategory().contains("pa"))
 					paHbox.setVisible(true);
@@ -235,7 +236,7 @@ public class NewRSPPController {
 			}
 		}
 	}
-	
+
 	private void clearFields() {
 		jobNumber.clear();
 		jobCategory.valueProperty().set(null);

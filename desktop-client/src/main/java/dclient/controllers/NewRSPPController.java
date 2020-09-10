@@ -200,6 +200,7 @@ public class NewRSPPController {
 	@FXML
 	public void setFields() {
 		clearFields();
+		System.out.println(jobMap.get(jobCombo.getSelectionModel().getSelectedItem()));
 		if (jobMap.get(jobCombo.getSelectionModel().getSelectedItem()) != null) {
 			Job job = jobMap.get(jobCombo.getSelectionModel().getSelectedItem());
 			setJobFieldsEditable(false);
@@ -235,6 +236,8 @@ public class NewRSPPController {
 				setJobFieldsEditable(true);
 			}
 		}
+		else
+			setJobFieldsEditable(true);
 	}
 
 	private void clearFields() {

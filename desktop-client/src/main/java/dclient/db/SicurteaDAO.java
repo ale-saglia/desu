@@ -471,8 +471,8 @@ public class SicurteaDAO {
 			rowsAffected = st.executeUpdate();
 
 			if (job instanceof JobPA) {
-				query = "update jobs.jobs_pa \r\n"
-						+ "set cig = ? , jobs_category = ? , decree_number = ? , decree_date = ? \r\n"
+				query = "update jobs.jobs_pa "
+						+ "set cig = ? , decree_number = ? , decree_date = ? "
 						+ "where jobs_id = ? ";
 
 				st = conn.prepareStatement(query);
@@ -772,7 +772,7 @@ public class SicurteaDAO {
 	public Account getAccountOfInvoice(Invoice invoice) {
 		String query = "select a.fiscalcode, a.\"name\", a.numbervat, a.atecocode, a.legal_address, a.customer_category "
 				+ "from accounts.accounts a, jobs.jobs j, invoices.invoices i, deadlines.rspp r "
-				+ "where a.fiscalcode = j.customer and r.invoiceid = i.invoiceid and "
+				+ "where a.fiscalcode = j.customer and r.invoiceid = i.invoiceid and r.rspp_jobid = j.jobs_id and "
 				+ "i.\"number\" = ? and i.\"type\" = ? and date_part('year', emission) = ? ";
 		Account account;
 

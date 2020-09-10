@@ -227,16 +227,12 @@ public class ViewEditController {
 
 		// Check if invoice needs to be updated
 		String oldInvoiceID = null;
-		Integer invoiceNumber = null;
-
-		if (invoiceNumberField.getText() != null && !invoiceNumberField.getText().trim().isEmpty())
-			invoiceNumber = Integer.parseInt(invoiceNumberField.getText().trim());
 		if (rspp.getInvoice() != null)
 			oldInvoiceID = rspp.getInvoice().getId();
-		newInvoice = new Invoice(invoiceNumber, invoiceEmissionDateField.getValue(), newAccount.getCategory(),
+		newInvoice = new Invoice(invoiceNumberField.getText(), invoiceEmissionDateField.getValue(), newAccount.getCategory(),
 				payedCheck.isSelected());
 
-		if (!newInvoice.equals(rspp.getInvoice()) && newInvoice.getId() != null) {
+		if (!newInvoice.equals(rspp.getInvoice())) {
 			String error = FieldsValidator.isInvoiceValid(newInvoice);
 			if (error == null) {
 				error = FieldsValidator.isNewInvoiceDuplicate(model, newInvoice);
@@ -257,7 +253,7 @@ public class ViewEditController {
 
 		// Check if RSPP needs to be updated
 		newRSPP = new RSPP(newJob, jobStartField.getValue(), jobEndField.getValue(), newInvoice);
-		if (!newRSPP.equals(rspp) && newInvoice.getId() != null) {
+		if (!newRSPP.equals(rspp)) {
 			String error = FieldsValidator.isRSPPChangeValid(newRSPP);
 			if (error == null) {
 				model.updateRSPP(rspp.getJob().getId(), rspp.getStart(), newRSPP);

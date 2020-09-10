@@ -166,7 +166,6 @@ public class NewRSPPController {
 	}
 
 	public void selectAccount(Account keyAccount) {
-		safeExit = true;
 		accountSearch.clear();
 		refreshList();
 		accountListView.getSelectionModel().clearAndSelect(accountListView.getItems().indexOf(keyAccount));
@@ -176,6 +175,7 @@ public class NewRSPPController {
 
 	@FXML
 	public void enterAccount() {
+		safeExit = true;
 		if (accountListView.getSelectionModel().getSelectedItem() != null) {
 			rsppInfo.setDisable(false);
 		}

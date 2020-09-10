@@ -126,8 +126,13 @@ public class FieldsValidator {
 	public static String isInvoiceValid(Invoice invoice) {
 		String error = "";
 
-		if (invoice.getNumber() <= 0)
+		if(invoice.getNumber() != null) {
+			if (invoice.getNumber() <= 0)
 			error += "- La fattura deve essere un numero maggiore di 0\n";
+		}
+		else
+			error += "- La fattura non è un numero valido\n!";
+		
 
 		if (error.isEmpty())
 			return null;

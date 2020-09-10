@@ -17,8 +17,7 @@ public class Invoice {
 		this.type = type;
 		this.payed = payed;
 		
-		if(id != null)
-			id = id.trim();
+		trimInvoice();
 	}
 
 	public Invoice(Integer number, LocalDate emission, String type, Boolean payed) {
@@ -27,13 +26,37 @@ public class Invoice {
 		this.emission = emission;
 		this.type = type;
 		this.payed = payed;
+		
+		trimInvoice();
+	}
+	
+	public Invoice(String number, LocalDate emission, String type, Boolean payed) {
+		
+		this.emission = emission;
+		this.type = type;
+		this.payed = payed;
+		
+		try {
+			this.number = Integer.parseInt(number.trim());
+		} catch (NumberFormatException e) {
+			this.number = null;
+		}
+	
+		this.id = createID(this.number, type, emission);
+		
+		trimInvoice();
+	}
+	
+	private void trimInvoice() {
+		if(id != null)
+			id = id.trim();
 	}
 
 	public String createID(Integer number, String type, LocalDate emission) {
 		if (number == null || type == null || emission == null)
 			return null;
 		else
-			return (number + "/" + type + " " + emission).trim();
+			return (number + "/" + type + " " + emission);
 	}
 
 	public String getId() {

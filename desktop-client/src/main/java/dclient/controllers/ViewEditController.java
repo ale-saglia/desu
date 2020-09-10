@@ -48,6 +48,9 @@ public class ViewEditController {
 	@FXML
 	private TextField addressField;
 
+    @FXML
+    private TextField descriptorField;
+
 	@FXML
 	private TextField jobCodeField;
 
@@ -180,7 +183,7 @@ public class ViewEditController {
 		// Check if account needs to be update
 		newAccount = new Account(fiscalCodeText.getText(), nameField.getText(), numberVATField.getText(),
 				atecoCodeField.getText(), addressField.getText(),
-				model.getAccountCategories().inverse().get(categoryAccountCombo.getValue()));
+				model.getAccountCategories().inverse().get(categoryAccountCombo.getValue()), descriptorField.getText());
 		if (!newAccount.equals(rspp.getJob().getCustomer())) {
 			String error = FieldsValidator.isAccountValid(newAccount);
 			if (error == null) {

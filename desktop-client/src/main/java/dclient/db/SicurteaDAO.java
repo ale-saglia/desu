@@ -34,7 +34,7 @@ public class SicurteaDAO {
 	}
 
 	public List<RSPPtableElement> getDataForTable() {
-		String sql = ("SELECT jobid,\n" + "       jobstart,\n" + "       jobend,\n" + "       \"name\",\n"
+		String sql = ("SELECT jobid,\n" + "       jobstart,\n" + "       jobend,\n" + "       \"name\", descriptor,\n"
 				+ "       category,\n" + "       n2.invoiceid,\n" + "       payed,\n" + "       notes\n"
 				+ "FROM   (SELECT jobid,\n" + "               jobstart,\n" + "               jobend,\n"
 				+ "               \"name\",\n" + "               category,\n" + "               invoiceid,\n"
@@ -50,7 +50,8 @@ public class SicurteaDAO {
 				+ "                       AND j.customer = a.fiscalcode\n" + "                ORDER  BY \"name\",\n"
 				+ "                          jobstart) AS n1\n" + "               LEFT JOIN deadlines.rspp_notes rn\n"
 				+ "                      ON n1.fiscalcode = rn.fiscalcode) AS n2\n"
-				+ "       LEFT JOIN invoices.invoices i\n" + "              ON i.invoiceid = n2.invoiceid  ORDER BY \"name\", jobend DESC ");
+				+ "       LEFT JOIN invoices.invoices i\n"
+				+ "              ON i.invoiceid = n2.invoiceid  ORDER BY \"name\", jobend DESC ");
 
 		List<RSPPtableElement> tableElements = new LinkedList<RSPPtableElement>();
 
@@ -61,7 +62,7 @@ public class SicurteaDAO {
 			ResultSet res = st.executeQuery();
 
 			while (res.next()) {
-				tableElements.add(new RSPPtableElement(res.getString("name"), res.getString("category"),
+				tableElements.add(new RSPPtableElement(res.getString("name"), res.getString("descriptor"), res.getString("category"),
 						res.getDate("jobend").toLocalDate(), res.getString("invoiceid"), res.getBoolean("payed"),
 						res.getString("notes"), res.getString("jobid"), res.getDate("jobstart").toLocalDate()));
 			}
@@ -166,7 +167,7 @@ public class SicurteaDAO {
 			throw new RuntimeException("Error Connection Database");
 		}
 	}
-	
+
 	public RSPP getLastRSPP(Account account) {
 		String sql = "select * from deadlines.rspp r, jobs.jobs j where r.rspp_jobid = j.jobs_id and customer = ? order by jobend desc LIMIT 1 ";
 		RSPP rspp = null;
@@ -214,7 +215,7 @@ public class SicurteaDAO {
 			throw new RuntimeException("Error Connection Database");
 		}
 	}
-	
+
 	public List<RSPP> getRSPPList(Account account) {
 		String sql = "select * from deadlines.rspp r, jobs.jobs j where r.rspp_jobid = j.jobs_id and customer = ? ";
 		List<RSPP> rspp = new LinkedList<RSPP>();
@@ -222,7 +223,7 @@ public class SicurteaDAO {
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(sql);
-			
+
 			st.setString(1, account.getFiscalCode());
 
 			ResultSet res = st.executeQuery();
@@ -242,8 +243,8 @@ public class SicurteaDAO {
 	}
 
 	public int addJobPAInfos(JobPA jobPA) {
-		String query = "insert into jobs.jobs_pa (jobs_id, cig, decree_number, decree_date) values( ? , ? , ? , ? ) " + 
-				"on conflict (jobs_id) do update set cig = ? , decree_number= ? , decree_date= ? ";
+		String query = "insert into jobs.jobs_pa (jobs_id, cig, decree_number, decree_date) values( ? , ? , ? , ? ) "
+				+ "on conflict (jobs_id) do update set cig = ? , decree_number= ? , decree_date= ? ";
 
 		int rowsAffected = 0;
 
@@ -255,13 +256,13 @@ public class SicurteaDAO {
 			st.setString(2, jobPA.getCig());
 			st.setInt(3, jobPA.getDecreeNumber());
 			st.setDate(4, Date.valueOf(jobPA.getDecreeDate()));
-			
+
 			st.setString(5, jobPA.getCig());
 			st.setInt(6, jobPA.getDecreeNumber());
 			st.setDate(7, Date.valueOf(jobPA.getDecreeDate()));
-			
+
 			rowsAffected = st.executeUpdate();
-			
+
 			conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -272,7 +273,7 @@ public class SicurteaDAO {
 		System.out.println("Rows updated JOBS_PA => " + rowsAffected);
 		return rowsAffected;
 	}
-	
+
 	private Job getJob(String job_id, Connection conn) {
 		String sql = "select * from jobs.jobs j where j.jobs_id = ? ";
 		Job job;
@@ -343,7 +344,8 @@ public class SicurteaDAO {
 			if (res.next() == false)
 				return null;
 			account = new Account(res.getString("fiscalcode"), res.getString("name"), res.getString("numbervat"),
-					res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"));
+					res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"),
+					res.getString("descriptor"));
 			return account;
 
 		} catch (SQLException e) {
@@ -366,7 +368,8 @@ public class SicurteaDAO {
 
 			if (res.next()) {
 				account = new Account(res.getString("fiscalcode"), res.getString("name"), res.getString("numbervat"),
-						res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"));
+						res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"),
+						res.getString("descriptor"));
 			}
 			return account;
 
@@ -423,7 +426,7 @@ public class SicurteaDAO {
 
 	public void updateAccount(String oldFiscalCode, Account account) {
 		String query = "UPDATE accounts.accounts "
-				+ "SET fiscalcode = ?, \"name\" = ?, numbervat = ?, atecocode = ?, legal_address = ?, customer_category = ? "
+				+ "SET fiscalcode = ?, \"name\" = ?, numbervat = ?, atecocode = ?, legal_address = ?, customer_category = ? , descriptor = ? "
 				+ "WHERE fiscalcode = ? ";
 
 		int rowsAffected = 0;
@@ -438,6 +441,7 @@ public class SicurteaDAO {
 			st.setString(4, account.getAtecoCode());
 			st.setString(5, account.getLegalAddress());
 			st.setString(6, account.getCategory());
+			st.setString(7, account.getDescriptor());
 			st.setString(7, oldFiscalCode);
 
 			rowsAffected = st.executeUpdate();
@@ -471,8 +475,7 @@ public class SicurteaDAO {
 			rowsAffected = st.executeUpdate();
 
 			if (job instanceof JobPA) {
-				query = "update jobs.jobs_pa "
-						+ "set cig = ? , decree_number = ? , decree_date = ? "
+				query = "update jobs.jobs_pa " + "set cig = ? , decree_number = ? , decree_date = ? "
 						+ "where jobs_id = ? ";
 
 				st = conn.prepareStatement(query);
@@ -598,8 +601,8 @@ public class SicurteaDAO {
 
 	public int newAccount(Account account) {
 		String query = "insert into accounts.accounts "
-				+ "(fiscalcode,\"name\",numbervat,atecocode,legal_address,customer_category) "
-				+ "values ( ? , ? , ? , ? , ? , ? ) ";
+				+ "(fiscalcode,\"name\",numbervat,atecocode,legal_address,customer_category,descriptor) "
+				+ "values ( ? , ? , ? , ? , ? , ? , ? ) ";
 
 		int rowsAffected = 0;
 
@@ -613,6 +616,7 @@ public class SicurteaDAO {
 			st.setString(4, account.getAtecoCode());
 			st.setString(5, account.getLegalAddress());
 			st.setString(6, account.getCategory());
+			st.setString(7, account.getDescriptor());
 
 			rowsAffected = st.executeUpdate();
 
@@ -640,7 +644,7 @@ public class SicurteaDAO {
 			while (res.next()) {
 				accounts.add(new Account(res.getString("fiscalcode"), res.getString("name"), res.getString("numbervat"),
 						res.getString("atecocode"), res.getString("legal_address"),
-						res.getString("customer_category")));
+						res.getString("customer_category"), res.getString("descriptor")));
 			}
 			return accounts;
 
@@ -744,22 +748,22 @@ public class SicurteaDAO {
 		System.out.println("Rows updated ACCOUNT => " + rowsAffected);
 		return 0;
 	}
-	
-	public Account getAccountFromVATNumber(String vatNumber) {		
+
+	public Account getAccountFromVATNumber(String vatNumber) {
 		String query = "select * from accounts.accounts a where a.numbervat = ? ";
 		Account account;
 
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(query);
-			
+
 			st.setString(1, vatNumber);
 
 			ResultSet res = st.executeQuery();
 			if (res.next() == false)
 				return null;
 			account = new Account(res.getString("fiscalcode"), res.getString("name"), res.getString("numbervat"),
-					res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"));
+					res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"), res.getString("descriptor"));
 			return account;
 
 		} catch (SQLException e) {
@@ -768,9 +772,9 @@ public class SicurteaDAO {
 			throw new RuntimeException("Error Connection Database");
 		}
 	}
-	
+
 	public Account getAccountOfInvoice(Invoice invoice) {
-		String query = "select a.fiscalcode, a.\"name\", a.numbervat, a.atecocode, a.legal_address, a.customer_category "
+		String query = "select a.fiscalcode, a.\"name\", a.numbervat, a.atecocode, a.legal_address, a.customer_category, a.descriptor "
 				+ "from accounts.accounts a, jobs.jobs j, invoices.invoices i, deadlines.rspp r "
 				+ "where a.fiscalcode = j.customer and r.invoiceid = i.invoiceid and r.rspp_jobid = j.jobs_id and "
 				+ "i.\"number\" = ? and i.\"type\" = ? and date_part('year', emission) = ? ";
@@ -779,7 +783,7 @@ public class SicurteaDAO {
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(query);
-			
+
 			st.setInt(1, invoice.getNumber());
 			st.setString(2, invoice.getType());
 			st.setInt(3, invoice.getEmission().getYear());
@@ -788,7 +792,7 @@ public class SicurteaDAO {
 			if (res.next() == false)
 				return null;
 			account = new Account(res.getString("fiscalcode"), res.getString("name"), res.getString("numbervat"),
-					res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"));
+					res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"), res.getString("descriptor"));
 			return account;
 
 		} catch (SQLException e) {

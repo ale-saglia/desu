@@ -31,6 +31,9 @@ public class NewAccountController {
 	@FXML
 	private TextField atecoCodeField;
 
+    @FXML
+    private TextField descriptorField;
+	
 	@FXML
 	private TextField addressField;
 
@@ -52,12 +55,12 @@ public class NewAccountController {
 
 	@FXML
 	void createNewAccount() throws InterruptedException {
-		account = new Account(fiscalCodeText.getText().trim(), nameField.getText().trim(), numberVATField.getText().trim(),
-				atecoCodeField.getText().trim(), addressField.getText().trim(),
-				model.getAccountCategories().inverse().get(categoryAccountCombo.getValue()));
-		
+		account = new Account(fiscalCodeText.getText(), nameField.getText(), numberVATField.getText(),
+				atecoCodeField.getText(), addressField.getText(),
+				model.getAccountCategories().inverse().get(categoryAccountCombo.getValue()), descriptorField.getText());
+
 		String error = FieldsValidator.isAccountValid(account);
-		if(error != null) {
+		if (error != null) {
 			Alert alert = new Alert(AlertType.WARNING);
 			alert.setTitle("ATTENZIONE: campi non validi");
 			alert.setHeaderText("Attenzione sono stati rilevati campi non validi");
@@ -65,17 +68,18 @@ public class NewAccountController {
 			alert.showAndWait();
 			return;
 		}
-		
+
 		error = FieldsValidator.isNewAccountDuplicate(model, account);
-		if(error != null) {
+		if (error != null) {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("ATTENZIONE: campi duplicati");
-			alert.setHeaderText("Attenzione sono stati rilevati conflitti nel database e non è possibile inserire i dati");
+			alert.setHeaderText(
+					"Attenzione sono stati rilevati conflitti nel database e non è possibile inserire i dati");
 			alert.setContentText(error);
 			alert.showAndWait();
 			return;
 		}
-		
+
 		int result = model.newAccount(account);
 
 		if (result >= 0) {

@@ -103,22 +103,21 @@ public class MainController {
 
 		System.out.println(searchField.getText());
 
-		final ObjectProperty<Predicate<RSPPtableElement>> nameFilter = new SimpleObjectProperty<>();
+		final ObjectProperty<Predicate<RSPPtableElement>> textFilter = new SimpleObjectProperty<>();
 		final ObjectProperty<Predicate<RSPPtableElement>> dateFilter = new SimpleObjectProperty<>();
 		final ObjectProperty<Predicate<RSPPtableElement>> payedFilter = new SimpleObjectProperty<>();
 
-		nameFilter.bind(Bindings.createObjectBinding(
-				() -> rspp -> rspp.getAccountName().toLowerCase().contains(searchField.getText().toLowerCase()),
-				searchField.textProperty()));
+		textFilter.bind(Bindings.createObjectBinding(() -> rspp -> textFilter(rspp), searchField.textProperty()));
 
-		payedFilter.bind(Bindings.createObjectBinding(() -> rspp -> payedFilter(rspp), checkBoxPayed.selectedProperty()));
+		payedFilter
+				.bind(Bindings.createObjectBinding(() -> rspp -> payedFilter(rspp), checkBoxPayed.selectedProperty()));
 
 		dateFilter.bind(
 				Bindings.createObjectBinding(() -> rspp -> dateFilter(rspp), checkBoxDeadline.selectedProperty()));
 
 		filteredrsppElements.predicateProperty()
-				.bind(Bindings.createObjectBinding(() -> nameFilter.get().and(dateFilter.get().and(payedFilter.get())),
-						nameFilter, dateFilter, payedFilter));
+				.bind(Bindings.createObjectBinding(() -> textFilter.get().and(dateFilter.get().and(payedFilter.get())),
+						textFilter, dateFilter, payedFilter));
 
 		sortedFilteredrsppElements = new SortedList<>(filteredrsppElements);
 		rsppTable.setItems(sortedFilteredrsppElements);
@@ -135,6 +134,19 @@ public class MainController {
 		});
 	}
 
+	private boolean textFilter(final RSPPtableElement rspp) {
+		if(searchField.getText().isEmpty())
+			return true;
+		
+		if(rspp.getAccountName().toLowerCase().contains(searchField.getText().toLowerCase()))
+			return true;
+		
+		if(rspp.getAccountDescriptor().toLowerCase().contains(searchField.getText().toLowerCase()))
+			return true;
+		
+		return false;
+	}
+
 	private boolean dateFilter(final RSPPtableElement rspp) {
 		if (checkBoxDeadline.isSelected()) {
 			if (rspp.jobEndDate().isAfter(LocalDate.now()) && rspp.jobEndDate().isBefore(
@@ -145,7 +157,7 @@ public class MainController {
 		}
 		return true;
 	}
-	
+
 	private boolean payedFilter(final RSPPtableElement rspp) {
 		if (checkBoxPayed.isSelected()) {
 			if (!rspp.getPayed())

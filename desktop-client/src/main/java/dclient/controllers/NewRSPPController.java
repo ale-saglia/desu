@@ -243,7 +243,7 @@ public class NewRSPPController {
 		jobType.valueProperty().set(null);
 		jobDescriptionField.clear();
 		cigField.clear();
-		decreeNumberField.clear();
+		decreeNumberField.setText("");
 		decreeDateField.valueProperty().set(null);
 
 		rsppStart.valueProperty().set(null);
@@ -265,9 +265,27 @@ public class NewRSPPController {
 	public void addRSPP() {
 		Job job = jobMap.get(jobCombo.getSelectionModel().getSelectedItem());
 
+		// Add JobPA details if job exist but missing it
+		if ((!cigField.getText().isEmpty() || !decreeNumberField.getText().isEmpty()
+				|| decreeDateField.getValue() != null) && job instanceof JobPA) {
+			JobPA jobPA = new JobPA(job, cigField.getText(), Integer.valueOf(decreeNumberField.getText()),
+					decreeDateField.getValue());
+			String error = FieldsValidator.isJobValid(jobPA);
+
+			if (error == null)
+				model.addJobPAInfos(jobPA);
+			else {
+				warningWindows(error);
+				return;
+			}
+
+		}
+
+		// Add new Job if it is missing
 		if (job == null) {
 			job = new Job(jobNumber.getText(), jobCategory.getValue(), jobType.getValue(),
 					jobDescriptionField.getText(), accountListView.getSelectionModel().getSelectedItem());
+
 			String error = FieldsValidator.isJobValid(job);
 			if (error == null) {
 				if (!accountListView.getSelectionModel().getSelectedItem().getCategory().contains("pa"))
@@ -278,13 +296,19 @@ public class NewRSPPController {
 					error = FieldsValidator.isJobPAValid(jobPA);
 					if (error != null)
 						model.newJob(jobPA);
-					else
+					else {
 						warningWindows(error);
+						return;
+					}
+
 				}
 
 				enterAccount();
-			} else
+			} else {
 				warningWindows(error);
+				return;
+			}
+
 		}
 
 		RSPP rspp = new RSPP(job, rsppStart.getValue(), rsppEnd.getValue(), null);

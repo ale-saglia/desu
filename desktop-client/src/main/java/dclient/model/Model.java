@@ -140,4 +140,8 @@ public class Model {
 	public RSPP getLastRSPP(Account account){
 		return dao.getLastRSPP(account);
 	}
+	
+	public int addJobPAInfos(JobPA jobPA) {
+		return dao.addJobPAInfos(jobPA);
+	}
 }

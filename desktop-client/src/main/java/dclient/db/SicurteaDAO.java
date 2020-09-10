@@ -241,6 +241,38 @@ public class SicurteaDAO {
 		}
 	}
 
+	public int addJobPAInfos(JobPA jobPA) {
+		String query = "insert into jobs.jobs_pa (job_id, cig, decree_number, decree_date) values( ? , ? , ? , ? ) " + 
+				"on conflict (job_id) do update set cig = ? , decree_number= ? , decree_date= ? ";
+
+		int rowsAffected = 0;
+
+		try {
+			Connection conn = ConnectDB.getConnection(session, config);
+			PreparedStatement st = conn.prepareStatement(query);
+
+			st.setString(1, jobPA.getId());
+			st.setString(2, jobPA.getCig());
+			st.setInt(3, jobPA.getDecreeNumber());
+			st.setDate(4, Date.valueOf(jobPA.getDecreeDate()));
+			
+			st.setString(5, jobPA.getCig());
+			st.setInt(6, jobPA.getDecreeNumber());
+			st.setDate(7, Date.valueOf(jobPA.getDecreeDate()));
+			
+			rowsAffected = st.executeUpdate();
+			
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+
+		System.out.println("Rows updated JOBS_PA => " + rowsAffected);
+		return rowsAffected;
+	}
+	
 	private Job getJob(String job_id, Connection conn) {
 		String sql = "select * from jobs.jobs j where j.jobs_id = ? ";
 		Job job;

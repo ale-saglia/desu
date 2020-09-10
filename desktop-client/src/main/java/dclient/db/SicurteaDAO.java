@@ -242,8 +242,8 @@ public class SicurteaDAO {
 	}
 
 	public int addJobPAInfos(JobPA jobPA) {
-		String query = "insert into jobs.jobs_pa (job_id, cig, decree_number, decree_date) values( ? , ? , ? , ? ) " + 
-				"on conflict (job_id) do update set cig = ? , decree_number= ? , decree_date= ? ";
+		String query = "insert into jobs.jobs_pa (jobs_id, cig, decree_number, decree_date) values( ? , ? , ? , ? ) " + 
+				"on conflict (jobs_id) do update set cig = ? , decree_number= ? , decree_date= ? ";
 
 		int rowsAffected = 0;
 
@@ -288,7 +288,7 @@ public class SicurteaDAO {
 					res.getString("jobs_description"), getAccount(res.getString("customer"), conn));
 
 			if (job.getCustomer().getCategory().contains("pa")) {
-				sql = "select * from jobs.jobs_pa where job_id = ? ";
+				sql = "select * from jobs.jobs_pa where jobs_id = ? ";
 				st = conn.prepareStatement(sql);
 				st.setString(1, job.getId());
 				res = st.executeQuery();
@@ -473,7 +473,7 @@ public class SicurteaDAO {
 			if (job instanceof JobPA) {
 				query = "update jobs.jobs_pa \r\n"
 						+ "set cig = ? , jobs_category = ? , decree_number = ? , decree_date = ? \r\n"
-						+ "where job_id = ? ";
+						+ "where jobs_id = ? ";
 
 				st = conn.prepareStatement(query);
 
@@ -656,7 +656,7 @@ public class SicurteaDAO {
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(
-					"select j.jobs_id, jobs_category, jobs_type, jobs_description, cig, decree_number, decree_date from jobs.jobs j left join jobs.jobs_pa jp on j.jobs_id = jp.job_id where customer = ? ");
+					"select j.jobs_id, jobs_category, jobs_type, jobs_description, cig, decree_number, decree_date from jobs.jobs j left join jobs.jobs_pa jp on j.jobs_id = jp.jobs_id where customer = ? ");
 
 			st.setString(1, account.getFiscalCode());
 			ResultSet res = st.executeQuery();

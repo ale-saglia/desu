@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public class JobPA extends Job {
 	String cig;
-	int decreeNumber;
+	Integer decreeNumber;
 	LocalDate decreeDate;
 
 	public JobPA(String id, String jobCategory, String jobType, String description, Account customer) {
@@ -22,11 +22,22 @@ public class JobPA extends Job {
 		trimAccountString();
 	}
 
+	public JobPA(Job job, String cig, String decreeNumber, LocalDate decreeDate) {
+		super(job.getId(), job.getJobCategory(), job.getJobType(), job.getDescription(), job.getCustomer());
+		this.cig = cig;
+		this.decreeDate = decreeDate;
+		try {
+			this.decreeNumber = Integer.parseInt(decreeNumber);
+		} catch (NumberFormatException e) {
+			this.decreeNumber = null;
+		}
+	}
+
 	public String getCig() {
 		return cig;
 	}
 
-	public int getDecreeNumber() {
+	public Integer getDecreeNumber() {
 		return decreeNumber;
 	}
 

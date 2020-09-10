@@ -90,6 +90,12 @@ public class FieldsValidator {
 				|| job.getJobType().isEmpty())
 			error += "- La categoria e/o la sottocategoria non sono state inserite\n";
 
+		if(job instanceof JobPA) {
+			String paError = isJobPAValid((JobPA) job);
+			if (paError != null)
+				error += paError;
+		}
+		
 		if (error.isEmpty())
 			return null;
 		else
@@ -108,7 +114,7 @@ public class FieldsValidator {
 			error += "- La data di inzio incarico e/o la data di inizio incarico devono essere inserite\n";
 		else {
 			if (rspp.getStart().isAfter(rspp.getEnd()) || rspp.getStart().equals(rspp.getEnd()))
-				error += "- La data di inizio dell'incarico deve essere precedente a quella di fine dell'incarico";
+				error += "- La data di inizio dell'incarico deve essere precedente a quella di fine dell'incarico\n";
 		}
 
 		if (error.isEmpty())
@@ -121,7 +127,7 @@ public class FieldsValidator {
 		String error = "";
 
 		if (invoice.getNumber() <= 0)
-			error += "- La fattura deve essere un numero maggiore di 0";
+			error += "- La fattura deve essere un numero maggiore di 0\n";
 
 		if (error.isEmpty())
 			return null;
@@ -129,14 +135,18 @@ public class FieldsValidator {
 			return error.trim();
 	}
 
-	public static String isJobPAValid(JobPA job) {
+	private static String isJobPAValid(JobPA job) {
 		String error = "";
 
-		if (job.getDecreeNumber() < 0)
-			error += "- Il numero deve essere un numero maggiore di 0";
+		if(job.getDecreeNumber() != null) {
+			if (job.getDecreeNumber() < 0)
+				error += "- Il numero deve essere un numero maggiore di 0\n";
+		} else
+			error += "- Il numero di determina non è in un formato valido\n";
+		
 
 		if (!job.getCig().matches("^[a-zA-Z0-9]{10,}$"))
-			error += "- Il CIG non è in un formato valido";
+			error += "- Il CIG non è in un formato valido\n";
 		if (error.isEmpty())
 			return null;
 		else

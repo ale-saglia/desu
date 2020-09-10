@@ -33,6 +33,8 @@ import javafx.stage.Stage;
 public class NewRSPPController {
 	Model model;
 	RSPP rspp;
+	
+	boolean safeExit;
 
 	MainController parent;
 
@@ -164,6 +166,7 @@ public class NewRSPPController {
 	}
 
 	public void selectAccount(Account keyAccount) {
+		safeExit = true;
 		accountSearch.clear();
 		refreshList();
 		accountListView.getSelectionModel().clearAndSelect(accountListView.getItems().indexOf(keyAccount));
@@ -293,11 +296,11 @@ public class NewRSPPController {
 			if (error == null) {
 				if (!accountListView.getSelectionModel().getSelectedItem().getCategory().contains("pa"))
 					model.newJob(job);
-				else {
-					JobPA jobPA = new JobPA(job, cigField.getText(), Integer.valueOf(decreeNumberField.getText()),
+				else {					
+					JobPA jobPA = new JobPA(job, cigField.getText(), decreeNumberField.getText(),
 							decreeDateField.getValue());
-					error = FieldsValidator.isJobPAValid(jobPA);
-					if (error != null)
+					error = FieldsValidator.isJobValid(jobPA);
+					if (error == null)
 						model.newJob(jobPA);
 					else {
 						warningWindows(error);
@@ -328,7 +331,8 @@ public class NewRSPPController {
 	@FXML
 	public void saveAndClose() {
 		addRSPP();
-		closeButtonAction();
+		if(safeExit)
+			closeButtonAction();
 	}
 
 	private void warningWindows(String message) {
@@ -337,6 +341,8 @@ public class NewRSPPController {
 		alert.setHeaderText("Sono stati rilevati i seguenti campi non validi:");
 		alert.setContentText(message);
 
+		safeExit = false;
+		
 		alert.showAndWait();
 	}
 

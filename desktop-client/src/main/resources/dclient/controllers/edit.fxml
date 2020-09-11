@@ -88,6 +88,19 @@
                   <Insets bottom="5.0" />
                </padding>
             </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="490.0">
+               <children>
+                  <Label maxWidth="-Infinity" minWidth="-Infinity" text="Descrittore">
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
+                  </Label>
+                  <TextField fx:id="descriptorField" HBox.hgrow="ALWAYS" />
+               </children>
+               <padding>
+                  <Insets bottom="5.0" />
+               </padding>
+            </HBox>
             <HBox disable="true" prefHeight="100.0" prefWidth="200.0">
                <children>
                   <Label maxWidth="85.0" minWidth="85.0" prefWidth="85.0" text="Contatti">

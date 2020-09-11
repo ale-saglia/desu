@@ -9,16 +9,19 @@ public class Account {
 	String atecoCode;
 	String legalAddress;
 	String category;
+	String descriptor;
+	
 	Set<Contact> contacts;
 
 	public Account(String fiscalCode, String name, String numberVAT, String atecoCode, String legalAddress,
-			String category) {
+			String category, String descriptor) {
 		this.fiscalCode = fiscalCode;
 		this.name = name;
 		this.numberVAT = numberVAT;
 		this.atecoCode = atecoCode;
 		this.legalAddress = legalAddress;
 		this.category = category;
+		this.descriptor = descriptor;;
 		
 		trimAccountString();
 	}
@@ -47,9 +50,15 @@ public class Account {
 		return category;
 	}
 
+	public String getDescriptor() {
+		return descriptor;
+	}
+
 	private class Contact {
 		// TODO 
 	}
+
+
 
 	@Override
 	public int hashCode() {
@@ -57,6 +66,8 @@ public class Account {
 		int result = 1;
 		result = prime * result + ((atecoCode == null) ? 0 : atecoCode.hashCode());
 		result = prime * result + ((category == null) ? 0 : category.hashCode());
+		result = prime * result + ((contacts == null) ? 0 : contacts.hashCode());
+		result = prime * result + ((descriptor == null) ? 0 : descriptor.hashCode());
 		result = prime * result + ((fiscalCode == null) ? 0 : fiscalCode.hashCode());
 		result = prime * result + ((legalAddress == null) ? 0 : legalAddress.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
@@ -82,6 +93,16 @@ public class Account {
 			if (other.category != null)
 				return false;
 		} else if (!category.equals(other.category))
+			return false;
+		if (contacts == null) {
+			if (other.contacts != null)
+				return false;
+		} else if (!contacts.equals(other.contacts))
+			return false;
+		if (descriptor == null) {
+			if (other.descriptor != null)
+				return false;
+		} else if (!descriptor.equals(other.descriptor))
 			return false;
 		if (fiscalCode == null) {
 			if (other.fiscalCode != null)
@@ -126,5 +147,8 @@ public class Account {
 
 		if(legalAddress != null)
 			legalAddress = legalAddress.trim();
+		
+		if(descriptor != null)
+			descriptor = descriptor.trim();
 	}
 }

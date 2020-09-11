@@ -14,18 +14,20 @@ public class RSPPtableElement {
 	LocalDate jobStart;
 	ObjectProperty<LocalDate> jobEnd;
 	StringProperty accountName;
+	StringProperty accountDescriptor;
 	StringProperty category;
 	StringProperty invoiceID;
 	BooleanProperty payed;
 	StringProperty note;
 
-	public RSPPtableElement(String name, String category, LocalDate jobEnd, String invoiceID, Boolean payed,
+	public RSPPtableElement(String name, String descriptor, String category, LocalDate jobEnd, String invoiceID, Boolean payed,
 			String note, String jobID, LocalDate jobStart) {
 		this.jobID = jobID;
 		this.jobStart = jobStart;
 
 		this.jobEnd = new SimpleObjectProperty<LocalDate>(jobEnd);
 		this.accountName = new SimpleStringProperty(name);
+		this.accountDescriptor = new SimpleStringProperty(descriptor);
 		this.note = new SimpleStringProperty(note);
 		this.category = new SimpleStringProperty(category);
 		this.invoiceID = new SimpleStringProperty(invoiceID);
@@ -40,6 +42,14 @@ public class RSPPtableElement {
 		return accountName.get();
 	}
 
+	public StringProperty accountDescriptorProperty() {
+		return accountDescriptor;
+	}
+
+	public String getAccountDescriptor() {
+		return accountDescriptor.get();
+	}	
+	
 	public StringProperty categoryProperty() {
 		return category;
 	}

@@ -48,6 +48,9 @@ public class ViewEditController {
 	@FXML
 	private TextField addressField;
 
+    @FXML
+    private TextField descriptorField;
+
 	@FXML
 	private TextField jobCodeField;
 
@@ -134,6 +137,7 @@ public class ViewEditController {
 		categoryAccountCombo.setValue(model.getAccountCategories().get(rspp.getJob().getCustomer().getCategory()));
 		atecoCodeField.setText(rspp.getJob().getCustomer().getAtecoCode());
 		addressField.setText(rspp.getJob().getCustomer().getLegalAddress());
+		descriptorField.setText(rspp.getJob().getCustomer().getDescriptor());
 	}
 
 	private void setJobs() {
@@ -180,7 +184,7 @@ public class ViewEditController {
 		// Check if account needs to be update
 		newAccount = new Account(fiscalCodeText.getText(), nameField.getText(), numberVATField.getText(),
 				atecoCodeField.getText(), addressField.getText(),
-				model.getAccountCategories().inverse().get(categoryAccountCombo.getValue()));
+				model.getAccountCategories().inverse().get(categoryAccountCombo.getValue()), descriptorField.getText());
 		if (!newAccount.equals(rspp.getJob().getCustomer())) {
 			String error = FieldsValidator.isAccountValid(newAccount);
 			if (error == null) {
@@ -232,7 +236,7 @@ public class ViewEditController {
 		newInvoice = new Invoice(invoiceNumberField.getText(), invoiceEmissionDateField.getValue(), newAccount.getCategory(),
 				payedCheck.isSelected());
 
-		if (!newInvoice.equals(rspp.getInvoice())) {
+		if (!newInvoice.equals(rspp.getInvoice()) || (oldInvoiceID == null && !newInvoice.getId().isEmpty())) {
 			String error = FieldsValidator.isInvoiceValid(newInvoice);
 			if (error == null) {
 				error = FieldsValidator.isNewInvoiceDuplicate(model, newInvoice);

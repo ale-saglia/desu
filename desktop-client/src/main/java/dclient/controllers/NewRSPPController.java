@@ -122,6 +122,7 @@ public class NewRSPPController {
 		});
 
 		filteredAccountList.predicateProperty().bind(javafx.beans.binding.Bindings.createObjectBinding(() -> {
+			//TODO search in both account name and descriptor
 			String text = accountSearch.getText();
 			if (text == null || text.isEmpty()) {
 				return null;

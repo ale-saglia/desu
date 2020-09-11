@@ -48,7 +48,8 @@ public class ConnectSSH {
 			alert.setContentText("Questo potrebbe essere causato da uno dei seguenti scenari:\n\r "
 					+ "- La password non è stata inserita correttamente\n\r"
 					+ "- Non è possibile connettersi al server\n\r"
-					+ "- I dati nel file di configurazione non sono corretti");
+					+ "- I dati nel file di configurazione non sono corretti"
+					+ "- Se è appena stat eseguita l'installazione è necessaria la disconnessione o il riavvio");
 			alert.showAndWait();
 		}
 		return session;

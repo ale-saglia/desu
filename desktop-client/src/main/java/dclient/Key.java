@@ -32,6 +32,8 @@ public class Key {
 	}
 	
 	private String hashPassword(String userPassword, String envPassword) {
+		if(envPassword == null)
+			envPassword = "";
 		String hashed = Hashing.sha512().hashString((userPassword.concat(envPassword)), StandardCharsets.UTF_8).toString();
 		return hashed;
 	}

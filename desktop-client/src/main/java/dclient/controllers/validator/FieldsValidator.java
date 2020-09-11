@@ -131,7 +131,7 @@ public class FieldsValidator {
 			error += "- La fattura deve essere un numero maggiore di 0\n";
 		}
 		else
-			error += "- La fattura non è un numero valido\n!";
+			error += "- La fattura non è un numero valido\n";
 		
 
 		if (error.isEmpty())

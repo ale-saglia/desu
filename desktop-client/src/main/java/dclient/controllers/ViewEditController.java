@@ -236,7 +236,7 @@ public class ViewEditController {
 		newInvoice = new Invoice(invoiceNumberField.getText(), invoiceEmissionDateField.getValue(), newAccount.getCategory(),
 				payedCheck.isSelected());
 
-		if (!newInvoice.equals(rspp.getInvoice()) || (oldInvoiceID == null && !newInvoice.getId().isEmpty())) {
+		if (!newInvoice.equals(rspp.getInvoice()) && !(oldInvoiceID == null && newInvoice.getId() == null)) {
 			String error = FieldsValidator.isInvoiceValid(newInvoice);
 			if (error == null) {
 				error = FieldsValidator.isNewInvoiceDuplicate(model, newInvoice);

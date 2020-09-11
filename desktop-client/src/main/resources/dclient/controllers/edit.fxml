@@ -140,17 +140,17 @@
                         <Insets right="10.0" />
                      </HBox.margin>
                   </Label>
-                  <TextField fx:id="jobCodeField">
+                  <TextField fx:id="jobCodeField" minWidth="-Infinity" HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets right="12.0" />
                      </HBox.margin></TextField>
-                  <Label minHeight="-Infinity" text="Categoria">
+                  <Label minWidth="-Infinity" text="Categoria">
                      <HBox.margin>
                         <Insets right="10.0" />
                      </HBox.margin>
                   </Label>
                   <ComboBox fx:id="categoryJobCombo" editable="true" minWidth="-Infinity" HBox.hgrow="ALWAYS" />
-                  <Label minHeight="-Infinity" text="Sottocategoria">
+                  <Label minWidth="-Infinity" text="Sottocategoria">
                      <HBox.margin>
                         <Insets left="15.0" right="12.0" />
                      </HBox.margin></Label>

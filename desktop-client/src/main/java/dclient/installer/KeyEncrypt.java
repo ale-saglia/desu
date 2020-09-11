@@ -113,20 +113,27 @@ public class KeyEncrypt {
 	}
 
 	private void nukeConfigDirectory() {
+		try {
+			Files.createDirectories(Paths.get(installationFolder));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		for (File sub : new File(installationFolder).listFiles())
 			sub.delete();
+
 	}
 
 	private void setEnvVar() {
 		envPassword = passwordGenerator();
 		try {
-			//Detect if Windows is running and set ENV variable for current user
-			if(System.getProperty("os.name").toLowerCase().contains("win")){
+			// Detect if Windows is running and set ENV variable for current user
+			if (System.getProperty("os.name").toLowerCase().contains("win")) {
 				Runtime.getRuntime().exec("setx " + envName + " " + envPassword);
-			} 
-			//Detect if a better OS is running and set ENV variable for current user
+			}
+			// Detect if a better OS is running and set ENV variable for current user
 			else {
-				//Detect common bash profile in home folder and add export for variable.
+				// Detect common bash profile in home folder and add export for variable.
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -168,8 +175,7 @@ public class KeyEncrypt {
 	private String passwordGenerator() {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < passwordLenght; i++) {
-			sb.append(
-					passwordValidChars.charAt(ThreadLocalRandom.current().nextInt(0, passwordValidChars.length() + 1)));
+			sb.append(passwordValidChars.charAt(ThreadLocalRandom.current().nextInt(0, passwordValidChars.length())));
 		}
 		return sb.toString();
 	}

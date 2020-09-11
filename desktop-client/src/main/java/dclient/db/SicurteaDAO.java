@@ -1,16 +1,21 @@
 package dclient.db;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+
+import com.google.common.base.Charsets;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.io.Resources;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
@@ -34,24 +39,14 @@ public class SicurteaDAO {
 	}
 
 	public List<RSPPtableElement> getDataForTable() {
-		String sql = ("SELECT jobid,\n" + "       jobstart,\n" + "       jobend,\n" + "       \"name\", descriptor,\n"
-				+ "       category,\n" + "       n2.invoiceid,\n" + "       payed,\n" + "       notes\n"
-				+ "FROM   (SELECT jobid,\n" + "               jobstart,\n" + "               jobend,\n"
-				+ "               \"name\",\n" + "               category,\n" + "               invoiceid,\n"
-				+ "               notes\n" + "        FROM   (SELECT r.rspp_jobid        AS jobid,\n"
-				+ "                       r.jobstart          AS jobstart,\n"
-				+ "                       r.jobend          AS jobend,\n"
-				+ "                       j.customer          AS fiscalcode,\n"
-				+ "                       a.\"name\"            AS \"name\",\n"
-				+ "                       a.customer_category AS category,\n"
-				+ "                       r.invoiceid         AS invoiceid\n"
-				+ "                FROM   accounts.accounts a,\n" + "                       deadlines.rspp r,\n"
-				+ "                       jobs.jobs j\n" + "                WHERE  r.rspp_jobid = j.jobs_id\n"
-				+ "                       AND j.customer = a.fiscalcode\n" + "                ORDER  BY \"name\",\n"
-				+ "                          jobstart) AS n1\n" + "               LEFT JOIN deadlines.rspp_notes rn\n"
-				+ "                      ON n1.fiscalcode = rn.fiscalcode) AS n2\n"
-				+ "       LEFT JOIN invoices.invoices i\n"
-				+ "              ON i.invoiceid = n2.invoiceid  ORDER BY \"name\", jobend DESC ");
+		String sql;
+
+		try {
+			sql = Resources.toString(this.getClass().getResource("mainViewQuery.sql"), Charsets.UTF_8);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
 
 		List<RSPPtableElement> tableElements = new LinkedList<RSPPtableElement>();
 
@@ -62,9 +57,10 @@ public class SicurteaDAO {
 			ResultSet res = st.executeQuery();
 
 			while (res.next()) {
-				tableElements.add(new RSPPtableElement(res.getString("name"), res.getString("descriptor"), res.getString("category"),
-						res.getDate("jobend").toLocalDate(), res.getString("invoiceid"), res.getBoolean("payed"),
-						res.getString("notes"), res.getString("jobid"), res.getDate("jobstart").toLocalDate()));
+				tableElements.add(new RSPPtableElement(res.getString("name"), res.getString("descriptor"),
+						res.getString("category"), res.getDate("jobend").toLocalDate(), res.getString("invoiceid"),
+						res.getBoolean("payed"), res.getString("notes"), res.getString("jobid"),
+						res.getDate("jobstart").toLocalDate()));
 			}
 
 			conn.close();
@@ -438,11 +434,25 @@ public class SicurteaDAO {
 			st.setString(1, account.getFiscalCode());
 			st.setString(2, account.getName());
 			st.setString(3, account.getNumberVAT());
-			st.setString(4, account.getAtecoCode());
-			st.setString(5, account.getLegalAddress());
+			
+			if (account.getAtecoCode() == null || account.getAtecoCode().isEmpty())
+				st.setNull(4, Types.VARCHAR);
+			else
+				st.setString(4, account.getAtecoCode());
+			
+			if (account.getLegalAddress() == null || account.getLegalAddress().isEmpty())
+				st.setNull(5, Types.VARCHAR);
+			else
+				st.setString(5, account.getLegalAddress());
+			
 			st.setString(6, account.getCategory());
-			st.setString(7, account.getDescriptor());
-			st.setString(7, oldFiscalCode);
+			
+			if (account.getDescriptor() == null || account.getDescriptor().isEmpty())
+				st.setNull(7, Types.VARCHAR);
+			else
+				st.setString(7, account.getDescriptor());
+			
+			st.setString(8, oldFiscalCode);
 
 			rowsAffected = st.executeUpdate();
 
@@ -643,8 +653,8 @@ public class SicurteaDAO {
 
 			while (res.next()) {
 				accounts.add(new Account(res.getString("fiscalcode"), res.getString("name"), res.getString("numbervat"),
-						res.getString("atecocode"), res.getString("legal_address"),
-						res.getString("customer_category"), res.getString("descriptor")));
+						res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"),
+						res.getString("descriptor")));
 			}
 			return accounts;
 
@@ -763,7 +773,8 @@ public class SicurteaDAO {
 			if (res.next() == false)
 				return null;
 			account = new Account(res.getString("fiscalcode"), res.getString("name"), res.getString("numbervat"),
-					res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"), res.getString("descriptor"));
+					res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"),
+					res.getString("descriptor"));
 			return account;
 
 		} catch (SQLException e) {
@@ -792,7 +803,8 @@ public class SicurteaDAO {
 			if (res.next() == false)
 				return null;
 			account = new Account(res.getString("fiscalcode"), res.getString("name"), res.getString("numbervat"),
-					res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"), res.getString("descriptor"));
+					res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"),
+					res.getString("descriptor"));
 			return account;
 
 		} catch (SQLException e) {

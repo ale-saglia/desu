@@ -9,7 +9,6 @@ public class Account {
 	String atecoCode;
 	String legalAddress;
 	String category;
-	
 	String descriptor;
 	
 	Set<Contact> contacts;
@@ -22,6 +21,7 @@ public class Account {
 		this.atecoCode = atecoCode;
 		this.legalAddress = legalAddress;
 		this.category = category;
+		this.descriptor = descriptor;;
 		
 		trimAccountString();
 	}
@@ -57,6 +57,8 @@ public class Account {
 	private class Contact {
 		// TODO 
 	}
+
+
 
 	@Override
 	public int hashCode() {

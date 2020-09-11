@@ -27,7 +27,7 @@ public class RSPPtableElement {
 
 		this.jobEnd = new SimpleObjectProperty<LocalDate>(jobEnd);
 		this.accountName = new SimpleStringProperty(name);
-		this.accountName = new SimpleStringProperty(descriptor);
+		this.accountDescriptor = new SimpleStringProperty(descriptor);
 		this.note = new SimpleStringProperty(note);
 		this.category = new SimpleStringProperty(category);
 		this.invoiceID = new SimpleStringProperty(invoiceID);

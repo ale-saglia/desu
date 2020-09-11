@@ -137,6 +137,7 @@ public class ViewEditController {
 		categoryAccountCombo.setValue(model.getAccountCategories().get(rspp.getJob().getCustomer().getCategory()));
 		atecoCodeField.setText(rspp.getJob().getCustomer().getAtecoCode());
 		addressField.setText(rspp.getJob().getCustomer().getLegalAddress());
+		descriptorField.setText(rspp.getJob().getCustomer().getDescriptor());
 	}
 
 	private void setJobs() {
@@ -235,7 +236,7 @@ public class ViewEditController {
 		newInvoice = new Invoice(invoiceNumberField.getText(), invoiceEmissionDateField.getValue(), newAccount.getCategory(),
 				payedCheck.isSelected());
 
-		if (!newInvoice.equals(rspp.getInvoice())) {
+		if (!newInvoice.equals(rspp.getInvoice()) || (oldInvoiceID == null && !newInvoice.getId().isEmpty())) {
 			String error = FieldsValidator.isInvoiceValid(newInvoice);
 			if (error == null) {
 				error = FieldsValidator.isNewInvoiceDuplicate(model, newInvoice);

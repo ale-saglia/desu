@@ -138,10 +138,10 @@ public class MainController {
 		if(searchField.getText().isEmpty())
 			return true;
 		
-		if(rspp.getAccountName().toLowerCase().contains(searchField.getText().toLowerCase()))
+		if(rspp.getAccountName() != null && rspp.getAccountName().toLowerCase().contains(searchField.getText().toLowerCase()))
 			return true;
 		
-		if(rspp.getAccountDescriptor().toLowerCase().contains(searchField.getText().toLowerCase()))
+		if(rspp.getAccountDescriptor() != null && rspp.getAccountDescriptor().toLowerCase().contains(searchField.getText().toLowerCase()))
 			return true;
 		
 		return false;

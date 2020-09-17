@@ -1,33 +1,35 @@
 package dclient.model;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Collection;
+import java.util.Set;
 
 import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 
 public class RSPP {
 	Job job;
-	BiMap<String, Invoice> invoice;
+	Collection<Invoice> invoices;
 
 	LocalDate start;
 	LocalDate end;
 
-	public RSPP(Job job, LocalDate start, LocalDate end, BiMap<String, Invoice> invoice) {
+	public RSPP(Job job, LocalDate start, LocalDate end, Set<Invoice> invoices) {
 		this.job = job;
 		this.start = start;
 		this.end = end;
-		this.invoice = invoice;
+		this.invoices = invoices;
 	}
 	
 	public RSPP(Job job, LocalDate start, LocalDate end) {
 		this.job = job;
 		this.start = start;
 		this.end = end;
-		this.invoice = null;
+		this.invoices = null;
 	}
 	
-	public void setInvoice(BiMap<String, Invoice> invoice) {
-		this.invoice = invoice;
+	public void setInvoice(Collection<Invoice> invoices) {
+		this.invoices = invoices;
 	}
 
 	public Job getJob() {
@@ -42,8 +44,17 @@ public class RSPP {
 		return end;
 	}
 
-	public BiMap<String, Invoice> getInvoice() {
-		return invoice;
+	public Collection<Invoice> getInvoices() {
+		return invoices;
+	}
+	
+	public BiMap<String, Invoice> getInvoiceMap(){
+		BiMap<String, Invoice> invoiceMap = HashBiMap.create();
+		
+		for(Invoice invoice : invoices)
+			invoiceMap.put(invoice.getId(), invoice);
+		
+		return invoiceMap;
 	}
 
 	@Override
@@ -51,7 +62,6 @@ public class RSPP {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((end == null) ? 0 : end.hashCode());
-		result = prime * result + ((invoice == null) ? 0 : invoice.hashCode());
 		result = prime * result + ((job == null) ? 0 : job.hashCode());
 		result = prime * result + ((start == null) ? 0 : start.hashCode());
 		return result;
@@ -71,11 +81,6 @@ public class RSPP {
 				return false;
 		} else if (!end.equals(other.end))
 			return false;
-		if (invoice == null) {
-			if (other.invoice != null)
-				return false;
-		} else if (!invoice.equals(other.invoice))
-			return false;
 		if (job == null) {
 			if (other.job != null)
 				return false;
@@ -88,4 +93,6 @@ public class RSPP {
 			return false;
 		return true;
 	}
+
+	
 }

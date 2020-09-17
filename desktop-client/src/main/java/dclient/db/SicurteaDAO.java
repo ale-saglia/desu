@@ -8,9 +8,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.BiMap;
@@ -57,21 +61,50 @@ public class SicurteaDAO {
 		return message;
 	}
 
+	private List<Account> resToAccounts(ResultSet res){
+		List<Account> accountSet = new ArrayList<Account>();
+		try {
+			while (res.next()) {
+				accountSet.add(new Account(res.getString("fiscalcode"), res.getString("name"), res.getString("numbervat"),
+						res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"),
+						res.getString("descriptor")));
+			}
+			return accountSet;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	private Set<Invoice> resToInvoice(ResultSet res) {
+		Set<Invoice> invoiceList = new TreeSet<Invoice>();
+		try {
+			while (res.next()) {
+				invoiceList.add(new Invoice(res.getString("invoiceid"), res.getInt("number"),
+						res.getDate("emission").toLocalDate(), res.getString("type"), res.getBoolean("payed")));
+			}
+			return invoiceList;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	public BiMap<String, String> getAccountsCategories() {
 		String sql = "select * from accounts.accounts_categories ac ";
 		BiMap<String, String> categories = HashBiMap.create();
-	
+
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(sql);
-	
+
 			ResultSet res = st.executeQuery();
 			while (res.next()) {
 				categories.put(res.getString("categories"), res.getString("extended"));
 			}
-	
+
 			return categories;
-	
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");
@@ -82,18 +115,18 @@ public class SicurteaDAO {
 	public List<String> getJobCategories() {
 		String sql = "select * from jobs.jobs_categories jc";
 		List<String> categories = new LinkedList<String>();
-	
+
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(sql);
-	
+
 			ResultSet res = st.executeQuery();
 			while (res.next()) {
 				categories.add(res.getString("categories"));
 			}
-	
+
 			return categories;
-	
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");
@@ -104,18 +137,18 @@ public class SicurteaDAO {
 	public List<String> getJobTypes() {
 		String sql = "select * from jobs.job_types jt ";
 		List<String> types = new LinkedList<String>();
-	
+
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(sql);
-	
+
 			ResultSet res = st.executeQuery();
 			while (res.next()) {
 				types.add(res.getString("types"));
 			}
-	
+
 			return types;
-	
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");
@@ -141,12 +174,11 @@ public class SicurteaDAO {
 
 			ResultSet res = st.executeQuery();
 
-			while (res.next()) {
+			while (res.next())
 				tableElements.add(new RSPPtableElement(res.getString("name"), res.getString("descriptor"),
-						res.getString("category"), res.getDate("jobend").toLocalDate(), res.getString("invoiceid"),
+						res.getString("category"), res.getDate("jobend").toLocalDate(), res.getString("invoices"),
 						res.getBoolean("payed"), res.getString("notes"), res.getString("jobid"),
 						res.getDate("jobstart").toLocalDate()));
-			}
 
 			conn.close();
 
@@ -209,7 +241,7 @@ public class SicurteaDAO {
 		}
 	}
 
-	public List<RSPP> getRSPPList() {
+	public Collection<RSPP> getRSPPList() {
 		String sql = "select * from deadlines.rspp";
 		List<RSPP> rsppList = new LinkedList<RSPP>();
 
@@ -235,7 +267,7 @@ public class SicurteaDAO {
 		}
 	}
 
-	public List<RSPP> getRSPPList(Account account) {
+	public Collection<RSPP> getRSPPSet(Account account) {
 		String sql = "select * from deadlines.rspp r, jobs.jobs j where r.rspp_jobid = j.jobs_id and customer = ? ";
 		List<RSPP> rsppList = new LinkedList<RSPP>();
 
@@ -262,11 +294,11 @@ public class SicurteaDAO {
 			throw new RuntimeException("Error Connection Database");
 		}
 	}
-	
-	public BiMap<String, Invoice> getInvoiceRSPP(RSPP rspp) {
+
+	public Collection<Invoice> getInvoiceRSPP(RSPP rspp) {
 		String query = "select i.* from( select invoice_id from deadlines.rspp_invoices ri where rspp_id = ? and rspp_start = ?) as vi, invoices.invoices i where vi.invoice_id = i.invoiceid";
-		 BiMap<String, Invoice> invoicesMap = HashBiMap.create();
-		
+		Set<Invoice> invoicesMap = new TreeSet<Invoice>();
+
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(query);
@@ -275,7 +307,7 @@ public class SicurteaDAO {
 			st.setDate(2, Date.valueOf(rspp.getStart()));
 
 			invoicesMap = resToInvoice(st.executeQuery());
-			
+
 			conn.close();
 
 		} catch (SQLException e) {
@@ -283,7 +315,31 @@ public class SicurteaDAO {
 			System.out.println("Errore connessione al database");
 			throw new RuntimeException("Error Connection Database");
 		}
-		
+
+		return invoicesMap;
+	}
+
+	public Collection<Invoice> getInvoiceRSPP(String rspp_id, LocalDate rspp_start) {
+		String query = "select i.* from( select invoice_id from deadlines.rspp_invoices ri where rspp_id = ? and rspp_start = ?) as vi, invoices.invoices i where vi.invoice_id = i.invoiceid";
+		Set<Invoice> invoicesMap = new TreeSet<Invoice>();
+
+		try {
+			Connection conn = ConnectDB.getConnection(session, config);
+			PreparedStatement st = conn.prepareStatement(query);
+
+			st.setString(1, rspp_id);
+			st.setDate(2, Date.valueOf(rspp_start));
+
+			invoicesMap = resToInvoice(st.executeQuery());
+
+			conn.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+
 		return invoicesMap;
 	}
 
@@ -361,11 +417,8 @@ public class SicurteaDAO {
 			st.setString(1, fiscalCode);
 
 			ResultSet res = st.executeQuery();
-			if (res.next() == false)
-				return null;
-			account = new Account(res.getString("fiscalcode"), res.getString("name"), res.getString("numbervat"),
-					res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"),
-					res.getString("descriptor"));
+
+			account = resToAccounts(res).get(0);
 			return account;
 
 		} catch (SQLException e) {
@@ -386,11 +439,8 @@ public class SicurteaDAO {
 
 			ResultSet res = st.executeQuery();
 
-			if (res.next()) {
-				account = new Account(res.getString("fiscalcode"), res.getString("name"), res.getString("numbervat"),
-						res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"),
-						res.getString("descriptor"));
-			}
+			account = resToAccounts(res).get(0);
+			
 			return account;
 
 		} catch (SQLException e) {
@@ -439,24 +489,24 @@ public class SicurteaDAO {
 			st.setString(1, account.getFiscalCode());
 			st.setString(2, account.getName());
 			st.setString(3, account.getNumberVAT());
-			
+
 			if (account.getAtecoCode() == null || account.getAtecoCode().isEmpty())
 				st.setNull(4, Types.VARCHAR);
 			else
 				st.setString(4, account.getAtecoCode());
-			
+
 			if (account.getLegalAddress() == null || account.getLegalAddress().isEmpty())
 				st.setNull(5, Types.VARCHAR);
 			else
 				st.setString(5, account.getLegalAddress());
-			
+
 			st.setString(6, account.getCategory());
-			
+
 			if (account.getDescriptor() == null || account.getDescriptor().isEmpty())
 				st.setNull(7, Types.VARCHAR);
 			else
 				st.setString(7, account.getDescriptor());
-			
+
 			st.setString(8, oldFiscalCode);
 
 			rowsAffected = st.executeUpdate();
@@ -566,44 +616,22 @@ public class SicurteaDAO {
 		System.out.println("Rows updated RSPP => " + rowsAffected);
 	}
 
-	public void updateInvoice(String oldInvoiceID, Invoice invoice, RSPP rspp) {
+	public int updateInvoice(String oldInvoiceID, Invoice invoice) {
+		String query = "update invoices.invoices set invoiceid = ? , \"number\" = ? , emission = ? , \"type\" = ? , payed = ? where invoiceid = ? ";
 		int rowsAffected = 0;
 
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
-			PreparedStatement st;
+			PreparedStatement st = conn.prepareStatement(query);
 
-			if (oldInvoiceID == null || oldInvoiceID.isEmpty()) {
-				// Case add new invoice
-				st = conn.prepareStatement(
-						"insert into invoices.invoices (invoiceid, \"number\", emission, \"type\", payed) values ( ? , ? , ? , ? , ? )");
-				st.setString(1, invoice.getId());
-				st.setInt(2, invoice.getNumber());
-				st.setDate(3, Date.valueOf(invoice.getEmission()));
-				st.setString(4, invoice.getType());
-				st.setBoolean(5, invoice.getPayed());
-				rowsAffected = st.executeUpdate();
-
-			} else {
-				// Case edit invoice
-				st = conn.prepareStatement(
-						"update invoices.invoices set invoiceid = ? , \"number\" = ? , emission = ? , \"type\" = ? , payed = ? "
-								+ "where invoiceid = ? ");
-				st.setString(1, invoice.getId());
-				st.setInt(2, invoice.getNumber());
-				st.setDate(3, Date.valueOf(invoice.getEmission()));
-				st.setString(4, invoice.getType());
-				st.setBoolean(5, invoice.getPayed());
-				st.setString(6, oldInvoiceID);
-				rowsAffected = st.executeUpdate();
-			}
-
-			st = conn
-					.prepareStatement("update deadlines.rspp set invoiceid = ? where rspp_jobid = ? and jobstart = ? ");
 			st.setString(1, invoice.getId());
-			st.setString(2, rspp.getJob().getId());
-			st.setDate(3, Date.valueOf(rspp.getStart()));
-			rowsAffected += st.executeUpdate();
+			st.setInt(2, invoice.getNumber());
+			st.setDate(3, Date.valueOf(invoice.getEmission()));
+			st.setString(4, invoice.getType());
+			st.setBoolean(5, invoice.getPayed());
+			st.setString(6, oldInvoiceID);
+
+			rowsAffected = st.executeUpdate();
 
 			conn.close();
 		} catch (SQLException e) {
@@ -612,6 +640,61 @@ public class SicurteaDAO {
 			throw new RuntimeException("Error Connection Database");
 		}
 		System.out.println("Rows updated INVOICE => " + rowsAffected);
+		return rowsAffected;
+	}
+
+	public int newInvoice(Invoice invoice) {
+		String query = "insert into invoices.invoices (invoiceid, \"number\", emission, \"type\", payed) values ( ? , ? , ? , ? , ? ) ";
+		int rowsAffected = 0;
+
+		try {
+			Connection conn = ConnectDB.getConnection(session, config);
+			PreparedStatement st = conn.prepareStatement(query);
+
+			st.setString(1, invoice.getId());
+			st.setInt(2, invoice.getNumber());
+			st.setDate(3, Date.valueOf(invoice.getEmission()));
+			st.setString(4, invoice.getType());
+			st.setBoolean(5, invoice.getPayed());
+
+			rowsAffected = st.executeUpdate();
+
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+		System.out.println("Rows updated INVOICE => " + rowsAffected);
+		return rowsAffected;
+	}
+
+	public int matchRSPPInvoice(RSPP rspp, Invoice invoice, String description) {
+		String query = "insert into deadlines.rspp_invoices (rspp_id, rspp_start, invoice_id, description) values ( ? , ? , ? , ? ) ";
+		int rowsAffected = 0;
+
+		try {
+			Connection conn = ConnectDB.getConnection(session, config);
+			PreparedStatement st = conn.prepareStatement(query);
+
+			st.setString(1, rspp.getJob().getId());
+			st.setDate(2, Date.valueOf(rspp.getStart()));
+			st.setString(3, invoice.getId());
+			if (description == null || description.isEmpty())
+				st.setString(4, null);
+			else
+				st.setString(4, description);
+
+			rowsAffected = st.executeUpdate();
+
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+		System.out.println("Rows updated JOBS_INVOICE => " + rowsAffected);
+		return rowsAffected;
 	}
 
 	public int newAccount(Account account) {
@@ -648,7 +731,6 @@ public class SicurteaDAO {
 
 	public List<Account> getAllAccounts() {
 		String sql = "select * from accounts.accounts order by \"name\"";
-		List<Account> accounts = new LinkedList<Account>();
 
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
@@ -656,12 +738,7 @@ public class SicurteaDAO {
 
 			ResultSet res = st.executeQuery();
 
-			while (res.next()) {
-				accounts.add(new Account(res.getString("fiscalcode"), res.getString("name"), res.getString("numbervat"),
-						res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"),
-						res.getString("descriptor")));
-			}
-			return accounts;
+			return resToAccounts(res);
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -777,9 +854,7 @@ public class SicurteaDAO {
 			ResultSet res = st.executeQuery();
 			if (res.next() == false)
 				return null;
-			account = new Account(res.getString("fiscalcode"), res.getString("name"), res.getString("numbervat"),
-					res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"),
-					res.getString("descriptor"));
+			account = resToAccounts(res).get(0);
 			return account;
 
 		} catch (SQLException e) {
@@ -807,32 +882,13 @@ public class SicurteaDAO {
 			ResultSet res = st.executeQuery();
 			if (res.next() == false)
 				return null;
-			account = new Account(res.getString("fiscalcode"), res.getString("name"), res.getString("numbervat"),
-					res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"),
-					res.getString("descriptor"));
+			account = resToAccounts(res).get(0);
 			return account;
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");
 			throw new RuntimeException("Error Connection Database");
-		}
-	}
-	
-	private BiMap<String, Invoice> resToInvoice(ResultSet res) {
-		BiMap<String, Invoice> invoiceList = HashBiMap.create();
-		
-		try {
-			while (res.next()) {
-				invoiceList.put(res.getString("invoiceid"), new Invoice(res.getString("invoiceid"), res.getInt("number"),
-						res.getDate("emission").toLocalDate(), res.getString("type"), res.getBoolean("payed")));
-			}
-			
-			return invoiceList;
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
 		}
 	}
 }

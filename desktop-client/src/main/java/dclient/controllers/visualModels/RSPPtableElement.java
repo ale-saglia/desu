@@ -12,6 +12,7 @@ import javafx.beans.property.StringProperty;
 public class RSPPtableElement {
 	String jobID;
 	LocalDate jobStart;
+	
 	ObjectProperty<LocalDate> jobEnd;
 	StringProperty accountName;
 	StringProperty accountDescriptor;
@@ -24,7 +25,7 @@ public class RSPPtableElement {
 			String note, String jobID, LocalDate jobStart) {
 		this.jobID = jobID;
 		this.jobStart = jobStart;
-
+		
 		this.jobEnd = new SimpleObjectProperty<LocalDate>(jobEnd);
 		this.accountName = new SimpleStringProperty(name);
 		this.accountDescriptor = new SimpleStringProperty(descriptor);

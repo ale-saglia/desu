@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
@@ -93,8 +94,12 @@ public class Model {
 		dao.updateRSPP(jobCode, oldJobStart, rspp);
 	}
 
-	public void updateInvoice(String oldInvoiceID, Invoice invoice, RSPP rspp) {
-		dao.updateInvoice(oldInvoiceID, invoice, rspp);
+	public void newInvoice(Invoice invoice) {
+		dao.newInvoice(invoice);
+	}
+	
+	public void updateInvoice(String oldInvoiceID, Invoice invoice) {
+		dao.updateInvoice(oldInvoiceID, invoice);
 	}
 
 	public static String getConfigPath() {
@@ -129,8 +134,8 @@ public class Model {
 		return dao.getAccountFromVATNumber(vatNumber);
 	}
 	
-	public List<RSPP> getAllRSPP(Account account){
-		return dao.getRSPPList(account);
+	public Collection<RSPP> getRSPPSet(Account account){
+		return dao.getRSPPSet(account);
 	}
 	
 	public Account getAccountOfInvoice(Invoice invoice) {

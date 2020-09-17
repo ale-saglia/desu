@@ -18,10 +18,13 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class ViewEditController {
+	private final String DEFAULT_NEW_INVOICE_TEXT = "Nuova fattura...";	
+	
 	private Model model;
 	private RSPP rspp;
 	private String rsppNote;
@@ -48,8 +51,8 @@ public class ViewEditController {
 	@FXML
 	private TextField addressField;
 
-    @FXML
-    private TextField descriptorField;
+	@FXML
+	private TextField descriptorField;
 
 	@FXML
 	private TextField jobCodeField;
@@ -83,6 +86,12 @@ public class ViewEditController {
 
 	@FXML
 	private DatePicker jobEndField;
+
+    @FXML
+    private HBox invoiceComboParent;
+	
+	@FXML
+	private ComboBox<String> invoiceBox;
 
 	@FXML
 	private TextField invoiceNumberField;
@@ -121,7 +130,13 @@ public class ViewEditController {
 
 	public void setRSPP(String jobID, LocalDate jobStart) {
 		rspp = model.getRSPP(jobID, jobStart);
-
+		invoiceBox.getItems().add(DEFAULT_NEW_INVOICE_TEXT);
+		invoiceBox.getItems().addAll(rspp.getInvoice().keySet());
+		if(rspp.getInvoice().size() > 0)
+			invoiceBox.getSelectionModel().select(rspp.getInvoice().entrySet().stream().findFirst().get().getKey());
+		else
+			invoiceComboParent.getChildren().clear();
+		
 		setAnagrafica();
 		setJobs();
 		setRSPP();
@@ -160,14 +175,20 @@ public class ViewEditController {
 		jobStartField.setValue(rspp.getStart());
 		jobEndField.setValue(rspp.getEnd());
 	}
-
+	
+	@FXML
 	private void setInvoice() {
-		if (rspp.getInvoice() != null) {
-			invoiceNumberField.setText(Integer.toString(rspp.getInvoice().getNumber()));
-
-			invoiceEmissionDateField.setValue(rspp.getInvoice().getEmission());
-			invoiceTypeField.setText(model.getAccountCategories().get(rspp.getInvoice().getType()));
-			payedCheck.setSelected(rspp.getInvoice().getPayed());
+		Invoice invoice = rspp.getInvoice().get(invoiceBox.getSelectionModel().getSelectedItem());
+		if (invoice != null) {
+			invoiceNumberField.setText(Integer.toString(invoice.getNumber()));
+			invoiceEmissionDateField.setValue(invoice.getEmission());
+			invoiceTypeField.setText(model.getAccountCategories().get(invoice.getType()));
+			payedCheck.setSelected(invoice.getPayed());
+		} else {
+			invoiceNumberField.clear();
+			invoiceEmissionDateField.setValue(null);
+			invoiceTypeField.clear();
+			payedCheck.setSelected(false);
 		}
 	}
 
@@ -232,9 +253,9 @@ public class ViewEditController {
 		// Check if invoice needs to be updated
 		String oldInvoiceID = null;
 		if (rspp.getInvoice() != null)
-			oldInvoiceID = rspp.getInvoice().getId();
-		newInvoice = new Invoice(invoiceNumberField.getText(), invoiceEmissionDateField.getValue(), newAccount.getCategory(),
-				payedCheck.isSelected());
+			oldInvoiceID = rspp.getInvoice().get(invoiceBox.getSelectionModel().getSelectedItem()).getId();
+		newInvoice = new Invoice(invoiceNumberField.getText(), invoiceEmissionDateField.getValue(),
+				newAccount.getCategory(), payedCheck.isSelected());
 
 		if (!newInvoice.equals(rspp.getInvoice()) && !(oldInvoiceID == null && newInvoice.getId() == null)) {
 			String error = FieldsValidator.isInvoiceValid(newInvoice);
@@ -256,7 +277,7 @@ public class ViewEditController {
 		}
 
 		// Check if RSPP needs to be updated
-		newRSPP = new RSPP(newJob, jobStartField.getValue(), jobEndField.getValue(), newInvoice);
+		newRSPP = new RSPP(newJob, jobStartField.getValue(), jobEndField.getValue());
 		if (!newRSPP.equals(rspp)) {
 			String error = FieldsValidator.isRSPPChangeValid(newRSPP);
 			if (error == null) {

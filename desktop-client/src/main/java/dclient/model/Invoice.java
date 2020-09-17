@@ -2,7 +2,7 @@ package dclient.model;
 
 import java.time.LocalDate;
 
-public class Invoice {
+public class Invoice implements Comparable<Invoice> {
 
 	String id;
 	Integer number;
@@ -126,5 +126,18 @@ public class Invoice {
 		} else if (!type.equals(other.type))
 			return false;
 		return true;
+	}
+
+	@Override
+	public int compareTo(Invoice o) {
+		if (this.getEmission().getYear() == o.getEmission().getYear()) {
+			if(this.getType().compareTo(o.getType()) == 0) {
+				return (this.getNumber() - o.getNumber());
+			} else
+				return this.getType().compareTo(o.getType());
+		} else if (this.getEmission().getYear() < o.getEmission().getYear())
+			return -1;
+		else
+			return 1;
 	}
 }

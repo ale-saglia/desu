@@ -1,18 +1,32 @@
 package dclient.model;
 
 import java.time.LocalDate;
+import java.util.List;
+
+import com.google.common.collect.BiMap;
 
 public class RSPP {
 	Job job;
-	Invoice invoice;
+	BiMap<String, Invoice> invoice;
 
 	LocalDate start;
 	LocalDate end;
 
-	public RSPP(Job job, LocalDate start, LocalDate end, Invoice invoice) {
+	public RSPP(Job job, LocalDate start, LocalDate end, BiMap<String, Invoice> invoice) {
 		this.job = job;
 		this.start = start;
 		this.end = end;
+		this.invoice = invoice;
+	}
+	
+	public RSPP(Job job, LocalDate start, LocalDate end) {
+		this.job = job;
+		this.start = start;
+		this.end = end;
+		this.invoice = null;
+	}
+	
+	public void setInvoice(BiMap<String, Invoice> invoice) {
 		this.invoice = invoice;
 	}
 
@@ -28,7 +42,7 @@ public class RSPP {
 		return end;
 	}
 
-	public Invoice getInvoice() {
+	public BiMap<String, Invoice> getInvoice() {
 		return invoice;
 	}
 

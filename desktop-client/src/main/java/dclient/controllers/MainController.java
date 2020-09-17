@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Predicate;
 
+import dclient.App;
 import dclient.controllers.visualModels.RSPPtableElement;
 import dclient.model.Model;
 import javafx.beans.binding.Bindings;
@@ -27,6 +28,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -198,6 +200,8 @@ public class MainController {
 				final Scene scene = new Scene(root);
 				scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 				stage.setScene(scene);
+				stage.setTitle("Visualizza e/o modifica " + selectedItems.getAccountName());
+				stage.getIcons().add(new Image(App.class.getResourceAsStream("logo.png")));
 				stage.show();
 
 			} catch (final Exception e) {
@@ -228,6 +232,8 @@ public class MainController {
 			final Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			stage.setScene(scene);
+			stage.setTitle("Crea un nuovo RSPP");
+			stage.getIcons().add(new Image(App.class.getResourceAsStream("logo.png")));
 			stage.show();
 
 		} catch (final Exception e) {

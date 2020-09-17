@@ -5,6 +5,7 @@ import java.time.Period;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
+import dclient.App;
 import dclient.controllers.validator.FieldsValidator;
 import dclient.model.Account;
 import dclient.model.Job;
@@ -19,6 +20,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
@@ -154,6 +156,8 @@ public class NewRSPPController {
 			final Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			stage.setScene(scene);
+			stage.setTitle("Crea campo anagrafica");
+			stage.getIcons().add(new Image(App.class.getResourceAsStream("logo.png")));
 			stage.show();
 
 		} catch (final Exception e) {

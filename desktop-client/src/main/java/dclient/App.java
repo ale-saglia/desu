@@ -4,6 +4,7 @@ import dclient.controllers.PasswordController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
@@ -23,7 +24,8 @@ public class App extends Application {
 			
 			scene.getStylesheets().add(PasswordController.class.getResource("application.css").toExternalForm());
 			stage.setScene(scene);
-			stage.setTitle("Inserisci la password");
+			stage.setTitle("Accedi");
+			stage.getIcons().add(new Image(App.class.getResourceAsStream("logo.png")));
 			stage.show();
 
 		} catch (Exception e) {

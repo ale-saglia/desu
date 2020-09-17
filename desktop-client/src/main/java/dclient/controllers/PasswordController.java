@@ -2,6 +2,7 @@ package dclient.controllers;
 
 import java.io.IOException;
 
+import dclient.App;
 import dclient.model.Model;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -9,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.PasswordField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -60,6 +62,7 @@ public class PasswordController {
 			scene.getStylesheets().add(MainController.class.getResource("application.css").toExternalForm());
 			stage.setScene(scene);
 			stage.setTitle("Scadenziario RSPP");
+			stage.getIcons().add(new Image(App.class.getResourceAsStream("logo.png")));
 			stage.show();
 			stage.setOnCloseRequest((EventHandler<WindowEvent>) new EventHandler<WindowEvent>() {
 				public void handle(WindowEvent we) {

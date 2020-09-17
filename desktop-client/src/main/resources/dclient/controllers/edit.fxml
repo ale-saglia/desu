@@ -291,17 +291,26 @@
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="490.0">
                <children>
-                  <Label text="Numero fattura">
+                  <Label minWidth="-Infinity" text="Numero fattura">
                      <HBox.margin>
                         <Insets right="10.0" />
                      </HBox.margin>
                   </Label>
-                  <TextField fx:id="invoiceNumberField" HBox.hgrow="ALWAYS" />
-                  <Label text="Data fattura">
+                  <TextField fx:id="invoiceNumberField" minWidth="-Infinity">
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin></TextField>
+                  <Label minWidth="-Infinity" text="Data fattura">
                      <padding>
                         <Insets left="15.0" right="7.0" />
                      </padding></Label>
-                  <DatePicker fx:id="invoiceEmissionDateField" HBox.hgrow="ALWAYS" />
+                  <DatePicker fx:id="invoiceEmissionDateField" minWidth="-Infinity" />
+                  <Label minWidth="-Infinity" text="Tipologia fattura ">
+                     <padding>
+                        <Insets left="7.0" />
+                     </padding>
+                  </Label>
+                  <TextField fx:id="invoiceTypeField" editable="false" minWidth="-Infinity" />
                </children>
                <VBox.margin>
                   <Insets />
@@ -312,17 +321,20 @@
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="490.0">
                <children>
-                  <Label text="Tipologia fattura ">
-                     <HBox.margin>
-                        <Insets right="10.0" />
-                     </HBox.margin>
+                  <Label minWidth="-Infinity" text="Descrizione">
+                     <padding>
+                        <Insets right="5.0" />
+                     </padding>
                   </Label>
-                  <TextField fx:id="invoiceTypeField" editable="false" />
+                  <TextField fx:id="invoiceDescription" HBox.hgrow="ALWAYS" />
                   <CheckBox fx:id="payedCheck" mnemonicParsing="false" text="Pagato" HBox.hgrow="ALWAYS">
                      <padding>
                         <Insets left="15.0" right="7.0" />
                      </padding></CheckBox>
                </children>
+               <padding>
+                  <Insets top="5.0" />
+               </padding>
             </HBox>
          </children>
       </VBox>

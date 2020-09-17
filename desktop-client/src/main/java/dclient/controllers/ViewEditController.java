@@ -29,7 +29,6 @@ public class ViewEditController {
 
 	private Model model;
 	private RSPP rspp;
-	private String rsppNote;
 
 	MainController mainController;
 
@@ -107,6 +106,9 @@ public class ViewEditController {
 	private TextField invoiceTypeField;
 
 	@FXML
+	private TextField invoiceDescription;
+
+	@FXML
 	private CheckBox payedCheck;
 
 	@FXML
@@ -146,6 +148,7 @@ public class ViewEditController {
 		setAnagrafica();
 		setJobs();
 		setRSPP();
+		
 		setInvoice();
 
 		isChanged = false;
@@ -166,7 +169,7 @@ public class ViewEditController {
 		categoryJobCombo.setValue(rspp.getJob().getJobCategory());
 		categoryTypeCombo.setValue(rspp.getJob().getJobType());
 		jobdDescriptionField.setText(rspp.getJob().getDescription());
-		rsppNote = model.getRSPPnote(rspp.getJob().getCustomer().getFiscalCode());
+		noteField.setText(model.getRSPPnote(rspp.getJob().getCustomer().getFiscalCode()));
 
 		if (rspp.getJob() instanceof JobPA) {
 			JobPA jobPA = (JobPA) rspp.getJob();
@@ -190,11 +193,13 @@ public class ViewEditController {
 			invoiceEmissionDateField.setValue(invoice.getEmission());
 			invoiceTypeField.setText(model.getAccountCategories().get(invoice.getType()));
 			payedCheck.setSelected(invoice.getPayed());
+			invoiceDescription.setText(invoice.getDescription());
 		} else {
 			invoiceNumberField.clear();
 			invoiceEmissionDateField.setValue(null);
 			invoiceTypeField.clear();
 			payedCheck.setSelected(false);
+			invoiceDescription.clear();
 		}
 	}
 
@@ -207,13 +212,15 @@ public class ViewEditController {
 		Job newJob;
 		RSPP newRSPP;
 		Invoice newInvoice;
+		
+		String error;
 
 		// Check if account needs to be update
 		newAccount = new Account(fiscalCodeText.getText(), nameField.getText(), numberVATField.getText(),
 				atecoCodeField.getText(), addressField.getText(),
 				model.getAccountCategories().inverse().get(categoryAccountCombo.getValue()), descriptorField.getText());
 		if (!newAccount.equals(rspp.getJob().getCustomer())) {
-			String error = FieldsValidator.isAccountValid(newAccount);
+			error = FieldsValidator.isAccountValid(newAccount);
 			if (error == null) {
 				model.updateAccount(rspp.getJob().getCustomer().getFiscalCode(), newAccount);
 				isChanged = true;
@@ -232,7 +239,7 @@ public class ViewEditController {
 					decreeDateField.getValue());
 		}
 		if (!newJob.equals(rspp.getJob())) {
-			String error = FieldsValidator.isJobValid(newJob);
+			error = FieldsValidator.isJobValid(newJob);
 			if (error == null) {
 				model.updateJob(rspp.getJob().getId(), newJob);
 				isChanged = true;
@@ -244,8 +251,8 @@ public class ViewEditController {
 		}
 
 		// Check if rspp note needs to be updated
-		if (noteField.getText() != null && !noteField.getText().trim().equals(rsppNote)) {
-			String error = FieldsValidator.isRSPPNoteValid(rsppNote);
+		if (noteField.getText() != null && !noteField.getText().trim().equals(model.getRSPPnote(rspp.getJob().getCustomer().getFiscalCode()))) {
+			error = FieldsValidator.isRSPPNoteValid(model.getRSPPnote(rspp.getJob().getCustomer().getFiscalCode()));
 			if (error == null) {
 				model.updateNote(fiscalCodeText.getText(), noteField.getText());
 				isChanged = true;
@@ -255,50 +262,48 @@ public class ViewEditController {
 			}
 
 		}
+		
+		// Check if RSPP needs to be updated
+				newRSPP = new RSPP(newJob, jobStartField.getValue(), jobEndField.getValue());
+				if (!newRSPP.equals(rspp)) {
+					error = FieldsValidator.isRSPPChangeValid(newRSPP);
+					if (error == null) {
+						model.updateRSPP(rspp.getJob().getId(), rspp.getStart(), newRSPP);
+						isChanged = true;
+					} else {
+						warningWindows(error);
+						return;
+					}
 
-		// Check if invoice needs to be updated
-		String oldInvoiceID = null;
-		if (invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()) != null)
-			oldInvoiceID = invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()).getId();
-
-		newInvoice = new Invoice(invoiceNumberField.getText(), invoiceEmissionDateField.getValue(),
-				newAccount.getCategory(), payedCheck.isSelected());
-		System.out.println("Ciao");
-		if (!newInvoice.equals(invoiceMap.get(oldInvoiceID)) && !(oldInvoiceID == null && newInvoice.getId() == null)) {
-			String error = FieldsValidator.isInvoiceValid(newInvoice);
-			if (error == null) {
-				error = FieldsValidator.isNewInvoiceDuplicate(model, newInvoice);
-				if (error == null) {
-					if (oldInvoiceID != null)
-						System.out.println("Placeholder");
-					else
-						model.updateInvoice(oldInvoiceID, newInvoice);
-					isChanged = true;
-				} else {
-					warningWindows(error);
-					return;
 				}
 
-			} else {
+		// Check if invoice needs to be updated
+		newInvoice = new Invoice(invoiceNumberField.getText(), invoiceEmissionDateField.getValue(),
+				newAccount.getCategory(), payedCheck.isSelected(), invoiceDescription.getText());
+
+		if(!(newInvoice.getId() == null && invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()) == null)){
+			error = FieldsValidator.isInvoiceValid(newInvoice);
+			if (error != null) {
+				warningWindows(error);
+				return;
+			} else if ((error = FieldsValidator.isNewInvoiceDuplicate(model, newInvoice)) != null) {
 				warningWindows(error);
 				return;
 			}
 
-		}
-
-		// Check if RSPP needs to be updated
-		newRSPP = new RSPP(newJob, jobStartField.getValue(), jobEndField.getValue());
-		if (!newRSPP.equals(rspp)) {
-			String error = FieldsValidator.isRSPPChangeValid(newRSPP);
-			if (error == null) {
-				model.updateRSPP(rspp.getJob().getId(), rspp.getStart(), newRSPP);
+			if (invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()) == null) {
+				model.newInvoice(newInvoice);
+				model.matchRSPPInvoice(newRSPP, newInvoice);
 				isChanged = true;
-			} else {
-				warningWindows(error);
-				return;
+			} else if (!newInvoice.equals(invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()))) {
+				model.updateInvoice(invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()).getId(), newInvoice);
+				isChanged = true;
 			}
 
 		}
+		
+		
+		
 
 		if (isChanged) {
 			System.out.println("Some elements were modified");

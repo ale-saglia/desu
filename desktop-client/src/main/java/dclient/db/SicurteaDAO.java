@@ -61,13 +61,13 @@ public class SicurteaDAO {
 		return message;
 	}
 
-	private List<Account> resToAccounts(ResultSet res){
+	private List<Account> resToAccounts(ResultSet res) {
 		List<Account> accountSet = new ArrayList<Account>();
 		try {
 			while (res.next()) {
-				accountSet.add(new Account(res.getString("fiscalcode"), res.getString("name"), res.getString("numbervat"),
-						res.getString("atecocode"), res.getString("legal_address"), res.getString("customer_category"),
-						res.getString("descriptor")));
+				accountSet.add(new Account(res.getString("fiscalcode"), res.getString("name"),
+						res.getString("numbervat"), res.getString("atecocode"), res.getString("legal_address"),
+						res.getString("customer_category"), res.getString("descriptor")));
 			}
 			return accountSet;
 		} catch (SQLException e) {
@@ -81,7 +81,8 @@ public class SicurteaDAO {
 		try {
 			while (res.next()) {
 				invoiceList.add(new Invoice(res.getString("invoiceid"), res.getInt("number"),
-						res.getDate("emission").toLocalDate(), res.getString("type"), res.getBoolean("payed")));
+						res.getDate("emission").toLocalDate(), res.getString("type"), res.getBoolean("payed"),
+						res.getString("description")));
 			}
 			return invoiceList;
 		} catch (SQLException e) {
@@ -440,7 +441,7 @@ public class SicurteaDAO {
 			ResultSet res = st.executeQuery();
 
 			account = resToAccounts(res).get(0);
-			
+
 			return account;
 
 		} catch (SQLException e) {
@@ -617,7 +618,7 @@ public class SicurteaDAO {
 	}
 
 	public int updateInvoice(String oldInvoiceID, Invoice invoice) {
-		String query = "update invoices.invoices set invoiceid = ? , \"number\" = ? , emission = ? , \"type\" = ? , payed = ? where invoiceid = ? ";
+		String query = "update invoices.invoices set invoiceid = ? , \"number\" = ? , emission = ? , \"type\" = ? , payed = ?, description = ? where invoiceid = ? ";
 		int rowsAffected = 0;
 
 		try {
@@ -629,7 +630,8 @@ public class SicurteaDAO {
 			st.setDate(3, Date.valueOf(invoice.getEmission()));
 			st.setString(4, invoice.getType());
 			st.setBoolean(5, invoice.getPayed());
-			st.setString(6, oldInvoiceID);
+			st.setString(6, invoice.getDescription());
+			st.setString(7, oldInvoiceID);
 
 			rowsAffected = st.executeUpdate();
 
@@ -644,7 +646,7 @@ public class SicurteaDAO {
 	}
 
 	public int newInvoice(Invoice invoice) {
-		String query = "insert into invoices.invoices (invoiceid, \"number\", emission, \"type\", payed) values ( ? , ? , ? , ? , ? ) ";
+		String query = "insert into invoices.invoices (invoiceid, \"number\", emission, \"type\", payed, description) values ( ? , ? , ? , ? , ? , ? ) ";
 		int rowsAffected = 0;
 
 		try {
@@ -656,6 +658,7 @@ public class SicurteaDAO {
 			st.setDate(3, Date.valueOf(invoice.getEmission()));
 			st.setString(4, invoice.getType());
 			st.setBoolean(5, invoice.getPayed());
+			st.setString(6, invoice.getDescription());
 
 			rowsAffected = st.executeUpdate();
 
@@ -669,8 +672,8 @@ public class SicurteaDAO {
 		return rowsAffected;
 	}
 
-	public int matchRSPPInvoice(RSPP rspp, Invoice invoice, String description) {
-		String query = "insert into deadlines.rspp_invoices (rspp_id, rspp_start, invoice_id, description) values ( ? , ? , ? , ? ) ";
+	public int matchRSPPInvoice(RSPP rspp, Invoice invoice) {
+		String query = "insert into deadlines.rspp_invoices (rspp_id, rspp_start, invoice_id) values ( ? , ? , ? ) ";
 		int rowsAffected = 0;
 
 		try {
@@ -680,10 +683,6 @@ public class SicurteaDAO {
 			st.setString(1, rspp.getJob().getId());
 			st.setDate(2, Date.valueOf(rspp.getStart()));
 			st.setString(3, invoice.getId());
-			if (description == null || description.isEmpty())
-				st.setString(4, null);
-			else
-				st.setString(4, description);
 
 			rowsAffected = st.executeUpdate();
 

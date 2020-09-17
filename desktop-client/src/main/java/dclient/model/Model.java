@@ -101,6 +101,10 @@ public class Model {
 	public void updateInvoice(String oldInvoiceID, Invoice invoice) {
 		dao.updateInvoice(oldInvoiceID, invoice);
 	}
+	
+	public void matchRSPPInvoice(RSPP rspp, Invoice invoice) {
+		dao.matchRSPPInvoice(rspp, invoice);
+	}
 
 	public static String getConfigPath() {
 		return CONFIG_PATH;

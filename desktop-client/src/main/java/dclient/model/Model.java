@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
@@ -61,7 +62,7 @@ public class Model {
 	}
 
 	public List<RSPPtableElement> getDataForTable() {
-		return dao.getDataForTable();
+		return dao.getDataForTable(config);
 	}
 
 	public void refreshSession() {
@@ -93,8 +94,16 @@ public class Model {
 		dao.updateRSPP(jobCode, oldJobStart, rspp);
 	}
 
-	public void updateInvoice(String oldInvoiceID, Invoice invoice, RSPP rspp) {
-		dao.updateInvoice(oldInvoiceID, invoice, rspp);
+	public void newInvoice(Invoice invoice) {
+		dao.newInvoice(invoice);
+	}
+	
+	public void updateInvoice(String oldInvoiceID, Invoice invoice) {
+		dao.updateInvoice(oldInvoiceID, invoice);
+	}
+	
+	public void matchRSPPInvoice(RSPP rspp, Invoice invoice) {
+		dao.matchRSPPInvoice(rspp, invoice);
 	}
 
 	public static String getConfigPath() {
@@ -129,8 +138,8 @@ public class Model {
 		return dao.getAccountFromVATNumber(vatNumber);
 	}
 	
-	public List<RSPP> getAllRSPP(Account account){
-		return dao.getRSPPList(account);
+	public Collection<RSPP> getRSPPSet(Account account){
+		return dao.getRSPPSet(account);
 	}
 	
 	public Account getAccountOfInvoice(Invoice invoice) {
@@ -143,5 +152,9 @@ public class Model {
 	
 	public int addJobPAInfos(JobPA jobPA) {
 		return dao.addJobPAInfos(jobPA);
+	}
+	
+	public RSPP getRSPPfromInvoice(Invoice invoice) {
+		return dao.getRSPPfromInvoice(invoice);
 	}
 }

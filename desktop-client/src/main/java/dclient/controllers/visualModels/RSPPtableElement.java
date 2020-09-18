@@ -12,6 +12,9 @@ import javafx.beans.property.StringProperty;
 public class RSPPtableElement {
 	String jobID;
 	LocalDate jobStart;
+
+	DateTimeFormatter formatter;
+
 	ObjectProperty<LocalDate> jobEnd;
 	StringProperty accountName;
 	StringProperty accountDescriptor;
@@ -20,8 +23,8 @@ public class RSPPtableElement {
 	BooleanProperty payed;
 	StringProperty note;
 
-	public RSPPtableElement(String name, String descriptor, String category, LocalDate jobEnd, String invoiceID, Boolean payed,
-			String note, String jobID, LocalDate jobStart) {
+	public RSPPtableElement(String name, String descriptor, String category, LocalDate jobEnd, String invoiceID,
+			Boolean payed, String note, String jobID, LocalDate jobStart, String dateFormat) {
 		this.jobID = jobID;
 		this.jobStart = jobStart;
 
@@ -32,6 +35,11 @@ public class RSPPtableElement {
 		this.category = new SimpleStringProperty(category);
 		this.invoiceID = new SimpleStringProperty(invoiceID);
 		this.payed = new SimpleBooleanProperty(payed);
+
+		if (dateFormat != null)
+			this.formatter = DateTimeFormatter.ofPattern(dateFormat);
+		else
+			this.formatter = DateTimeFormatter.ISO_DATE;
 	}
 
 	public StringProperty accountNameProperty() {
@@ -48,8 +56,8 @@ public class RSPPtableElement {
 
 	public String getAccountDescriptor() {
 		return accountDescriptor.get();
-	}	
-	
+	}
+
 	public StringProperty categoryProperty() {
 		return category;
 	}
@@ -63,7 +71,7 @@ public class RSPPtableElement {
 	}
 
 	public String getJobEnd() {
-		return (jobEnd.get().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+		return (jobEnd.get().format(formatter));
 	}
 
 	public LocalDate jobEndDate() {

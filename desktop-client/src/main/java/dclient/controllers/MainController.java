@@ -89,9 +89,7 @@ public class MainController {
 						setText(null);
 						setStyle("");
 					} else {
-						// Format date.
-						setText(DateTimeFormatter.ofPattern(model.getConfig().getProperty("rsppTable.dateFormat"))
-								.format(item));
+						setText(DateTimeFormatter.ofPattern(model.getConfig().getProperty("dateFormat")).format(item));
 					}
 				}
 			};
@@ -137,15 +135,17 @@ public class MainController {
 	}
 
 	private boolean textFilter(final RSPPtableElement rspp) {
-		if(searchField.getText().isEmpty())
+		if (searchField.getText().isEmpty())
 			return true;
-		
-		if(rspp.getAccountName() != null && rspp.getAccountName().toLowerCase().contains(searchField.getText().toLowerCase()))
+
+		if (rspp.getAccountName() != null
+				&& rspp.getAccountName().toLowerCase().contains(searchField.getText().toLowerCase()))
 			return true;
-		
-		if(rspp.getAccountDescriptor() != null && rspp.getAccountDescriptor().toLowerCase().contains(searchField.getText().toLowerCase()))
+
+		if (rspp.getAccountDescriptor() != null
+				&& rspp.getAccountDescriptor().toLowerCase().contains(searchField.getText().toLowerCase()))
 			return true;
-		
+
 		return false;
 	}
 

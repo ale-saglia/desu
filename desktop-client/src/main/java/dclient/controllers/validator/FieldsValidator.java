@@ -1,5 +1,7 @@
 package dclient.controllers.validator;
 
+import java.time.format.DateTimeFormatter;
+
 import dclient.model.*;
 
 public class FieldsValidator {
@@ -7,15 +9,13 @@ public class FieldsValidator {
 	public static String isNewAccountDuplicate(Model model, Account account) {
 		String error = "";
 
-		Account foundAccount =  model.getAccount(account.getFiscalCode());
+		Account foundAccount = model.getAccount(account.getFiscalCode());
 		if (foundAccount != null)
-			error += "- Il codice fiscale è già presente nel database per "
-					+ foundAccount.getName() + "\n";
+			error += "- Il codice fiscale è già presente nel database per " + foundAccount.getName() + "\n";
 
 		foundAccount = model.getAccountFromVATNumber(account.getNumberVAT());
 		if (foundAccount != null)
-			error += "- La partita IVA è già presente nel database per "
-					+ foundAccount.getName() + "\n";
+			error += "- La partita IVA è già presente nel database per " + foundAccount.getName() + "\n";
 
 		if (error.isEmpty())
 			return null;
@@ -29,6 +29,13 @@ public class FieldsValidator {
 		Account account = model.getAccountOfInvoice(invoice);
 		if (account != null)
 			error += "- La fattura è già presente nel database per " + account.getName();
+
+		RSPP rspp = model.getRSPPfromInvoice(invoice);
+		if (rspp != null)
+			error += "- La fattura inserita è gia presente per la pratica " + rspp.getJob().getId()
+					+ " con l'incarico tra il "
+					+ rspp.getStart().format(DateTimeFormatter.ofPattern(model.getConfig().getProperty("dateFormat")))
+					+ " e il " + rspp.getEnd().format(DateTimeFormatter.ofPattern(model.getConfig().getProperty("dateFormat")));
 
 		if (error.isEmpty())
 			return null;
@@ -90,12 +97,12 @@ public class FieldsValidator {
 				|| job.getJobType().isEmpty())
 			error += "- La categoria e/o la sottocategoria non sono state inserite\n";
 
-		if(job instanceof JobPA) {
+		if (job instanceof JobPA) {
 			String paError = isJobPAValid((JobPA) job);
 			if (paError != null)
 				error += paError;
 		}
-		
+
 		if (error.isEmpty())
 			return null;
 		else
@@ -126,13 +133,11 @@ public class FieldsValidator {
 	public static String isInvoiceValid(Invoice invoice) {
 		String error = "";
 
-		if(invoice.getNumber() != null) {
+		if (invoice.getNumber() != null) {
 			if (invoice.getNumber() <= 0)
-			error += "- La fattura deve essere un numero maggiore di 0\n";
-		}
-		else
+				error += "- La fattura deve essere un numero maggiore di 0\n";
+		} else
 			error += "- La fattura non è un numero valido\n";
-		
 
 		if (error.isEmpty())
 			return null;
@@ -143,12 +148,11 @@ public class FieldsValidator {
 	private static String isJobPAValid(JobPA job) {
 		String error = "";
 
-		if(job.getDecreeNumber() != null) {
+		if (job.getDecreeNumber() != null) {
 			if (job.getDecreeNumber() < 0)
 				error += "- Il numero deve essere un numero maggiore di 0\n";
 		} else
 			error += "- Il numero di determina non è in un formato valido\n";
-		
 
 		if (!job.getCig().matches("^[a-zA-Z0-9]{10,}$"))
 			error += "- Il CIG non è in un formato valido\n";

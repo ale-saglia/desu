@@ -62,7 +62,7 @@ public class Model {
 	}
 
 	public List<RSPPtableElement> getDataForTable() {
-		return dao.getDataForTable();
+		return dao.getDataForTable(config);
 	}
 
 	public void refreshSession() {
@@ -152,5 +152,9 @@ public class Model {
 	
 	public int addJobPAInfos(JobPA jobPA) {
 		return dao.addJobPAInfos(jobPA);
+	}
+	
+	public RSPP getRSPPfromInvoice(Invoice invoice) {
+		return dao.getRSPPfromInvoice(invoice);
 	}
 }

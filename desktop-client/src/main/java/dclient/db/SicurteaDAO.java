@@ -157,7 +157,7 @@ public class SicurteaDAO {
 		}
 	}
 
-	public List<RSPPtableElement> getDataForTable() {
+	public List<RSPPtableElement> getDataForTable(Properties config) {
 		String sql;
 
 		try {
@@ -179,7 +179,7 @@ public class SicurteaDAO {
 				tableElements.add(new RSPPtableElement(res.getString("name"), res.getString("descriptor"),
 						res.getString("category"), res.getDate("jobend").toLocalDate(), res.getString("invoices"),
 						res.getBoolean("payed"), res.getString("notes"), res.getString("jobid"),
-						res.getDate("jobstart").toLocalDate()));
+						res.getDate("jobstart").toLocalDate(), config.getProperty("dateFormat")));
 
 			conn.close();
 
@@ -882,12 +882,39 @@ public class SicurteaDAO {
 			if (res.next() == false)
 				return null;
 			account = resToAccounts(res).get(0);
+			conn.close();
 			return account;
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");
 			throw new RuntimeException("Error Connection Database");
 		}
+	}
+
+	public RSPP getRSPPfromInvoice(Invoice invoice) {
+		String query = "select r.rspp_jobid, r.jobstart, r.jobend from deadlines.rspp r, deadlines.rspp_invoices ri where r.rspp_jobid = ri.rspp_id and r.jobstart = ri.rspp_start and ri.invoice_id = ? ";
+		RSPP rspp = null;
+
+		try {
+			Connection conn = ConnectDB.getConnection(session, config);
+			PreparedStatement st = conn.prepareStatement(query);
+
+			st.setInt(1, invoice.getNumber());
+			st.setString(2, invoice.getType());
+			st.setInt(3, invoice.getEmission().getYear());
+
+			ResultSet res = st.executeQuery();
+			conn.close();
+			if (res.next() == false)
+				return null;
+			rspp = new RSPP(getJob(res.getString("rspp_jobid"), conn), res.getDate("jobstart").toLocalDate(),
+					res.getDate("jobend").toLocalDate());
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+
+		return rspp;
 	}
 }

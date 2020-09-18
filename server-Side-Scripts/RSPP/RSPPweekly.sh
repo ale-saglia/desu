@@ -1,4 +1,4 @@
-##!/bin/bash
+#!/bin/bash
 cd ~/gest-Sicurtea/server-Side-Scripts/RSPP
 git pull
 echo

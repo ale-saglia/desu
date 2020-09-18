@@ -39,12 +39,17 @@ def getJobInDealine(conn):
             return
         cursor = conn.cursor()
 
-        query = ("select tab.\"name\", tab.jobend, tab.invoiceid, tab.notes from (select a.\"name\" as name, a.fiscalcode as fiscalcode , r.jobend as jobend, rn.notes as notes, r.invoiceid from accounts.accounts a, jobs.jobs j, deadlines.rspp r, deadlines.rspp_notes rn where r.rspp_jobid = j.jobs_id and j.customer = a.fiscalcode and r.jobend between current_date and current_date + interval '" +
-                 str(cfg["General"]["daysAdvance"]) + "' and r.invoiceid is null ) as tab left join deadlines.rspp_notes rn on rn.fiscalcode = tab.fiscalcode")
+        query = (
+            "select uni.\"name\", uni.jobend, uni.invoice_id, rn.notes from(select * from ( select r.rspp_jobid, r.jobstart, r.jobend, string_agg(ri.invoice_id, ', ') as invoice_id from deadlines.rspp_invoices ri right outer join deadlines.rspp r on r.rspp_jobid = ri.rspp_id and r.jobstart = ri.rspp_start group by r.rspp_jobid, r.jobstart) as inv_data, accounts.accounts a, jobs.jobs j where a.fiscalcode = j.customer and j.jobs_id = inv_data.rspp_jobid and jobend between current_date and current_date + interval '"
+            + str(cfg["General"]["daysAdvance"]) +
+            " DAYS') as uni left join deadlines.rspp_notes rn on rn.fiscalcode = uni.fiscalcode "
+        )
         cursor.execute(query)
 
         # Row 0 should contain account name and row 1 should contains the deadline
         results = list(cursor.fetchall())
+
+        print(results)
 
         if results is not None:
             return results
@@ -61,11 +66,15 @@ def getJobExpiredWithoutInvoice(conn):
             return
         cursor = conn.cursor()
 
-        query = ("select tab.\"name\", tab.jobend, tab.notes from (select a.\"name\" as name, a.fiscalcode as fiscalcode , r.jobend as jobend, rn.notes as notes from accounts.accounts a, jobs.jobs j, deadlines.rspp r, deadlines.rspp_notes rn where r.rspp_jobid = j.jobs_id and j.customer = a.fiscalcode and r.jobend < current_date and r.invoiceid is null ) as tab left join deadlines.rspp_notes rn on rn.fiscalcode = tab.fiscalcode ")
+        query = (
+            "select uni.\"name\", uni.jobend, rn.notes from( select * from ( select r.rspp_jobid, r.jobstart, r.jobend, string_agg(ri.invoice_id, ', ') as invoice_id from deadlines.rspp_invoices ri right outer join deadlines.rspp r on r.rspp_jobid = ri.rspp_id and r.jobstart = ri.rspp_start group by r.rspp_jobid, r.jobstart) as inv_data, accounts.accounts a, jobs.jobs j where a.fiscalcode = j.customer and j.jobs_id = inv_data.rspp_jobid and jobend < current_date and invoice_id isnull) as uni left join deadlines.rspp_notes rn on rn.fiscalcode = uni.fiscalcode "
+        )
         cursor.execute(query)
 
         # Row 0 should contain account name and row 1 should contains the deadline
         results = list(cursor.fetchall())
+
+        print(results)
 
         if results is not None:
             return results
@@ -83,7 +92,7 @@ def mailComposer():
     resultSet = getJobInDealine(conn)
     if resultSet:
         msg += "Ecco gli incarichi in scadenza nei prossimi " + \
-            str(cfg["General"]["daysAdvance"]) + " giorni"
+            str(cfg["General"]["daysAdvance"]) + " giorni\n"
         for row in resultSet:
             msg += "Ragione sociale: " + row[0]
             msg += "\n"
@@ -91,7 +100,10 @@ def mailComposer():
             msg += "\n"
             msg += "Codice fattura: " + row[2]
             msg += "\n"
-            msg += "Note: " + row[3]
+            if (row[3] != None):
+                msg += "Note: " + row[3]
+            else:
+                msg += "Note: " + ""
             msg += "\n\n"
     msg = msg.strip()
 
@@ -99,14 +111,19 @@ def mailComposer():
     if resultSet:
         if (msg != ""):
             msg += "\n\n"
+        else:
+            msg += "Non sono stati trovati incarichi in scadenza nel periodo in questione\n\n"
 
-        msg += "Sono stati trovati i seguenti incarichi scaduti e privi di indicazioni sulla fattura\n\n"
+        msg += "Sono stati trovati i seguenti incarichi scaduti e privi di indicazioni sulla fattura\n"
         for row in resultSet:
             msg += "Ragione sociale: " + row[0]
             msg += "\n"
             msg += "Scaduto il " + row[1].strftime('%d/%m/%Y')
             msg += "\n"
-            msg += "Note: " + row[2]
+            if (row[2] != None):
+                msg += "Note: " + row[2]
+            else:
+                msg += "Note: " + ""
             msg += "\n\n"
     msg = msg.strip()
 
@@ -127,9 +144,13 @@ def mailComposer():
 
 
 def mailSender(message):
+    print(message)
     try:
-        server = smtplib.SMTP_SSL(
-            cfg["Email"]["smtpServer"], cfg["Email"]["smtpPort"])
+        server = smtplib.SMTP(cfg["Email"]["smtpServer"],
+                                  cfg["Email"]["smtpPort"])
+        server.ehlo()
+        server.starttls()
+        server.ehlo                         
         server.login(cfg["Email"]["user"], cfg["Email"]["password"])
 
         message['From'] = cfg["Email"]["mailFrom"]

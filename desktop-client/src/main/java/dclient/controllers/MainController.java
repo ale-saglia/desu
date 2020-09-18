@@ -89,7 +89,6 @@ public class MainController {
 						setText(null);
 						setStyle("");
 					} else {
-						// Format date.
 						setText(DateTimeFormatter.ofPattern(model.getConfig().getProperty("dateFormat")).format(item));
 					}
 				}

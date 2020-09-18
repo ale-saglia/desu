@@ -102,7 +102,7 @@ public class NewRSPPController {
 		rsppInfo.setDisable(true);
 
 		accountList = FXCollections.observableArrayList(model.getAllAccounts());
-		filteredAccountList = new FilteredList<Account>(accountList);
+		filteredAccountList = new FilteredList<Account>(accountList, s -> true);
 		accountListView.setItems(filteredAccountList);
 
 		paHbox.managedProperty().bind(paHbox.visibleProperty());
@@ -122,15 +122,14 @@ public class NewRSPPController {
 				}
 			}
 		});
-
+		
 		filteredAccountList.predicateProperty().bind(javafx.beans.binding.Bindings.createObjectBinding(() -> {
 			//TODO search in both account name and descriptor
 			String text = accountSearch.getText();
 			if (text == null || text.isEmpty()) {
 				return null;
 			} else {
-				final String lowercase = text.toLowerCase();
-				return (account) -> account.getName().toLowerCase().contains(lowercase);
+				return ((account) -> account.getName().toLowerCase().contains(text.toLowerCase()));
 			}
 		}, accountSearch.textProperty()));
 
@@ -244,8 +243,11 @@ public class NewRSPPController {
 				setJobFieldsEditable(true);
 			}
 		}
-		else
+		else {
 			setJobFieldsEditable(true);
+			paHbox.setVisible(accountListView.getSelectionModel().getSelectedItem().getCategory().contains("pa"));
+		}
+			
 	}
 
 	private void clearFields() {

@@ -101,7 +101,6 @@ public class MainController {
 
 		noteColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("note"));
 
-		System.out.println(searchField.getText());
 
 		final ObjectProperty<Predicate<RSPPtableElement>> textFilter = new SimpleObjectProperty<>();
 		final ObjectProperty<Predicate<RSPPtableElement>> dateFilter = new SimpleObjectProperty<>();

@@ -184,7 +184,7 @@ public class KeyEncrypt {
 		Properties installProperties = new Properties();
 
 		installProperties.setProperty("rsppTable.daysAdvance", config.getProperty("rsppTable.daysAdvance"));
-		installProperties.setProperty("rsppTable.dateFormat", config.getProperty("rsppTable.dateFormat"));
+		installProperties.setProperty("dateFormat", config.getProperty("dateFormat"));
 
 		installProperties.setProperty("db.host", "localhost");
 		installProperties.setProperty("db.port", config.getProperty("db.port", "5432"));

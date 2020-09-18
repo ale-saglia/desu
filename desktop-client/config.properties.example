@@ -1,6 +1,6 @@
 # Program variables
 rsppTable.daysAdvance =
-rsppTable.dateFormat =
+dateFormat =
 
 # Database configuration
 db.host =

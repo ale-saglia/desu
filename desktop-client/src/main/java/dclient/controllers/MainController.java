@@ -89,7 +89,7 @@ public class MainController {
 						setText(null);
 						setStyle("");
 					} else {
-						setText(DateTimeFormatter.ofPattern(model.getConfig().getProperty("dateFormat")).format(item));
+						setText(DateTimeFormatter.ofPattern(model.getConfig().getProperty("dateFormat", "dd/MM/yyyy")).format(item));
 					}
 				}
 			};
@@ -151,7 +151,7 @@ public class MainController {
 	private boolean dateFilter(final RSPPtableElement rspp) {
 		if (checkBoxDeadline.isSelected()) {
 			if (rspp.jobEndDate().isAfter(LocalDate.now()) && rspp.jobEndDate().isBefore(
-					LocalDate.now().plusDays(Integer.parseInt(model.getConfig().getProperty("rsppTable.daysAdvance")))))
+					LocalDate.now().plusDays(Integer.parseInt(model.getConfig().getProperty("rsppTable.daysAdvance", "14")))))
 				return true;
 			else
 				return false;

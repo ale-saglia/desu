@@ -138,6 +138,7 @@ public class ViewEditController {
 		rspp = model.getRSPP(jobID, jobStart);
 		invoiceMap = rspp.getInvoiceMap();
 
+		invoiceBox.getItems().clear();
 		invoiceBox.getItems().add(DEFAULT_NEW_INVOICE_TEXT);
 		invoiceBox.getItems().addAll(invoiceMap.keySet());
 		if (rspp.getInvoices().size() > 0)
@@ -212,7 +213,6 @@ public class ViewEditController {
 		Job newJob;
 		RSPP newRSPP;
 		Invoice newInvoice;
-		
 		String error;
 
 		// Check if account needs to be update
@@ -303,8 +303,6 @@ public class ViewEditController {
 		}
 		
 		
-		
-
 		if (isChanged) {
 			System.out.println("Some elements were modified");
 			mainController.refresh();
@@ -318,7 +316,13 @@ public class ViewEditController {
 		alert.setHeaderText("Sono stati rilevati i seguenti campi non validi:");
 		alert.setContentText(message);
 
-		// TODO refresh changed fields
+		String invoiceTemp;		
+		if(invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()) == null)
+			invoiceTemp = DEFAULT_NEW_INVOICE_TEXT;
+		else
+			invoiceTemp = invoiceBox.getSelectionModel().getSelectedItem();
+		setRSPP();
+		invoiceBox.getSelectionModel().select(invoiceTemp);
 		alert.showAndWait();
 	}
 }

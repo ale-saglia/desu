@@ -302,11 +302,11 @@ public class NewRSPPController {
 				if (!accountListView.getSelectionModel().getSelectedItem().getCategory().contains("pa"))
 					model.newJob(job);
 				else {					
-					JobPA jobPA = new JobPA(job, cigField.getText(), decreeNumberField.getText(),
+					job = new JobPA(job, cigField.getText(), decreeNumberField.getText(),
 							decreeDateField.getValue());
-					error = FieldsValidator.isJobValid(jobPA);
+					error = FieldsValidator.isJobValid(job);
 					if (error == null)
-						model.newJob(jobPA);
+						model.newJob(job);
 					else {
 						warningWindows(error);
 						return;
@@ -322,7 +322,7 @@ public class NewRSPPController {
 
 		}
 
-		RSPP rspp = new RSPP(job, rsppStart.getValue(), rsppEnd.getValue(), null);
+		RSPP rspp = new RSPP(job, rsppStart.getValue(), rsppEnd.getValue());
 		String error = FieldsValidator.isRSPPChangeValid(rspp);
 		if (error == null) {
 			model.newRSPP(rspp);

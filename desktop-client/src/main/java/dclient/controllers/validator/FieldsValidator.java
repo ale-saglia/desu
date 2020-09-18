@@ -26,7 +26,7 @@ public class FieldsValidator {
 	public static String isNewInvoiceDuplicate(Model model, Invoice invoice) {
 		String error = "";
 
-		Account account = model.getAccountOfInvoice(invoice);
+		Account account = model.getAccount(invoice);
 		if (account != null)
 			error += "- La fattura è già presente nel database per " + account.getName();
 

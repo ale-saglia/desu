@@ -62,12 +62,12 @@ public class Model {
 	}
 
 	public List<RSPPtableElement> getDataForTable() {
-		return dao.getDataForTable(config);
+		return dao.getRSPPTable(config);
 	}
 
 	public void refreshSession() {
 		if (!dao.getSession().isConnected())
-			dao.getNewSession();
+			dao.newSession();
 	}
 
 	public String closeSession() {
@@ -119,11 +119,11 @@ public class Model {
 	}
 
 	public List<Account> getAllAccounts() {
-		return dao.getAllAccounts();
+		return dao.getAccounts();
 	}
 	
 	public List<Job> getAllJobOfAccount(Account account){
-		return dao.getAllJobOfAccount(account);
+		return dao.getJobs(account);
 	}
 	
 	public int newJob(Job job) {
@@ -139,11 +139,11 @@ public class Model {
 	}
 	
 	public Collection<RSPP> getRSPPSet(Account account){
-		return dao.getRSPPSet(account);
+		return dao.getRSPPs(account);
 	}
 	
-	public Account getAccountOfInvoice(Invoice invoice) {
-		return dao.getAccountOfInvoice(invoice);
+	public Account getAccount(Invoice invoice) {
+		return dao.getAccount(invoice);
 	}
 	
 	public RSPP getLastRSPP(Account account){
@@ -155,6 +155,6 @@ public class Model {
 	}
 	
 	public RSPP getRSPPfromInvoice(Invoice invoice) {
-		return dao.getRSPPfromInvoice(invoice);
+		return dao.getRSPP(invoice);
 	}
 }

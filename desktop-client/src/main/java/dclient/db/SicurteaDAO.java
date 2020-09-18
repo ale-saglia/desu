@@ -104,6 +104,7 @@ public class SicurteaDAO {
 				categories.put(res.getString("categories"), res.getString("extended"));
 			}
 
+			conn.close();
 			return categories;
 
 		} catch (SQLException e) {
@@ -126,6 +127,7 @@ public class SicurteaDAO {
 				categories.add(res.getString("categories"));
 			}
 
+			conn.close();
 			return categories;
 
 		} catch (SQLException e) {
@@ -148,6 +150,7 @@ public class SicurteaDAO {
 				types.add(res.getString("types"));
 			}
 
+			conn.close();
 			return types;
 
 		} catch (SQLException e) {
@@ -400,6 +403,7 @@ public class SicurteaDAO {
 						res.getDate("decree_date").toLocalDate());
 			}
 
+			conn.close();
 			return job;
 
 		} catch (SQLException e) {
@@ -420,6 +424,8 @@ public class SicurteaDAO {
 			ResultSet res = st.executeQuery();
 
 			account = resToAccounts(res).get(0);
+			
+			conn.close();
 			return account;
 
 		} catch (SQLException e) {
@@ -442,6 +448,7 @@ public class SicurteaDAO {
 
 			account = resToAccounts(res).get(0);
 
+			conn.close();
 			return account;
 
 		} catch (SQLException e) {
@@ -737,6 +744,7 @@ public class SicurteaDAO {
 
 			ResultSet res = st.executeQuery();
 
+			conn.close();
 			return resToAccounts(res);
 
 		} catch (SQLException e) {
@@ -769,6 +777,7 @@ public class SicurteaDAO {
 				}
 				jobs.add(job);
 			}
+			conn.close();
 			return jobs;
 
 		} catch (SQLException e) {
@@ -854,6 +863,8 @@ public class SicurteaDAO {
 			if (res.next() == false)
 				return null;
 			account = resToAccounts(res).get(0);
+			
+			conn.close();
 			return account;
 
 		} catch (SQLException e) {

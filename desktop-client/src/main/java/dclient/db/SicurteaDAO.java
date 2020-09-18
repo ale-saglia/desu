@@ -31,14 +31,11 @@ import dclient.model.JobPA;
 import dclient.model.RSPP;
 
 public class SicurteaDAO {
-	int daysAdvance;
-
 	Properties config;
 	Session session;
 
 	public SicurteaDAO(Properties config) {
 		this.config = config;
-		daysAdvance = Integer.parseInt(config.getProperty("rsppTable.daysAdvance", "14"));
 		this.session = ConnectSSH.getSession(config);
 	}
 

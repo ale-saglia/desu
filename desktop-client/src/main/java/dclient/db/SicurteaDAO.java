@@ -678,9 +678,7 @@ public class SicurteaDAO {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(query);
 	
-			st.setInt(1, invoice.getNumber());
-			st.setString(2, invoice.getType());
-			st.setInt(3, invoice.getEmission().getYear());
+			st.setString(1, invoice.getId());
 	
 			ResultSet res = st.executeQuery();
 			conn.close();

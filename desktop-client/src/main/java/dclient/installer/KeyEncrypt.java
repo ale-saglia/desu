@@ -10,12 +10,17 @@ import java.io.InputStreamReader;
 import java.lang.ProcessBuilder.Redirect;
 import java.net.InetAddress;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import dclient.Key;
 
@@ -115,13 +120,11 @@ public class KeyEncrypt {
 	private void nukeConfigDirectory() {
 		try {
 			Files.createDirectories(Paths.get(installationFolder));
+			for (File sub : new File(installationFolder).listFiles())
+				sub.delete();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		for (File sub : new File(installationFolder).listFiles())
-			sub.delete();
-
 	}
 
 	private void setEnvVar() {
@@ -129,11 +132,22 @@ public class KeyEncrypt {
 		try {
 			// Detect if Windows is running and set ENV variable for current user
 			if (System.getProperty("os.name").toLowerCase().contains("win")) {
-				Runtime.getRuntime().exec("setx " + envName + " " + envPassword);
+				Runtime.getRuntime().exec("setx " + envName + " \"" + envPassword + "\"");
 			}
 			// Detect if a better OS is running and set ENV variable for current user
 			else {
 				// Detect common bash profile in home folder and add export for variable.
+				Path testPath = Paths.get(System.getProperty("user.home"));
+				Stream<Path> stream = Files.find(testPath, 1, (path, basicFileAttributes) -> {
+					File file = path.toFile();
+					return !file.isDirectory() && file.getName().substring(file.getName().length() - 4).equals("rc");
+				});
+
+				for (Path file : stream.collect(Collectors.toList())) {
+					Runtime.getRuntime().exec("sed \"/" + envName + "/c\\export " + envName + " = " + envPassword + "\" " + file.toString());
+				}
+
+				stream.close();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -149,7 +163,7 @@ public class KeyEncrypt {
 		sshPassword = passwordGenerator();
 		logger.info("Generated password for ssh:" + sshPassword);
 		String command = ("ssh-keygen -f " + installationFolder + sshFileName + " -t rsa  -b 4096 -C "
-				+ sshNameIdentifier + " -N " + sshPassword);
+				+ sshNameIdentifier + " -N \"" + sshPassword + "\"");
 
 		ProcessBuilder sshCreationBuilder = new ProcessBuilder("cmd.exe", "/c", command);
 		sshCreationBuilder.redirectOutput(Redirect.INHERIT);

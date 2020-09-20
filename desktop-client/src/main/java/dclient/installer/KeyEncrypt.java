@@ -144,7 +144,8 @@ public class KeyEncrypt {
 				});
 
 				for (Path file : stream.collect(Collectors.toList())) {
-					Runtime.getRuntime().exec("sed \"/" + envName + "/c\\export " + envName + " = " + envPassword + "\" " + file.toString());
+					Runtime.getRuntime().exec("sed \"/" + envName + "/c\\export " + envName + " = " + envPassword + "\" " + file.toString() + 
+					"&& grep -qF 'export " + envName + "' " + file.toString() + " || echo 'export " + envName + " = " + envPassword + "' >> " + file.toString());
 				}
 
 				stream.close();

@@ -5,7 +5,7 @@
 -- Dumped from database version 12.4 (Ubuntu 12.4-0ubuntu0.20.04.1)
 -- Dumped by pg_dump version 12.2
 
--- Started on 2020-09-18 09:21:52
+-- Started on 2020-09-21 12:00:56
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -163,6 +163,19 @@ CREATE TABLE deadlines.rspp_invoices (
 ALTER TABLE deadlines.rspp_invoices OWNER TO admin;
 
 --
+-- TOC entry 219 (class 1259 OID 16766)
+-- Name: rspp_invoices_months; Type: TABLE; Schema: deadlines; Owner: admin
+--
+
+CREATE TABLE deadlines.rspp_invoices_months (
+    customer character varying NOT NULL,
+    months integer[]
+);
+
+
+ALTER TABLE deadlines.rspp_invoices_months OWNER TO admin;
+
+--
 -- TOC entry 215 (class 1259 OID 16653)
 -- Name: rspp_notes; Type: TABLE; Schema: deadlines; Owner: admin
 --
@@ -268,7 +281,7 @@ CREATE TABLE jobs.jobs_categories (
 ALTER TABLE jobs.jobs_categories OWNER TO admin;
 
 --
--- TOC entry 2869 (class 2606 OID 16546)
+-- TOC entry 2874 (class 2606 OID 16546)
 -- Name: accounts_categories accounts_categories_pk; Type: CONSTRAINT; Schema: accounts; Owner: admin
 --
 
@@ -277,7 +290,7 @@ ALTER TABLE ONLY accounts.accounts_categories
 
 
 --
--- TOC entry 2873 (class 2606 OID 16565)
+-- TOC entry 2878 (class 2606 OID 16565)
 -- Name: accounts_contact_categories accounts_contact_categories_pk; Type: CONSTRAINT; Schema: accounts; Owner: admin
 --
 
@@ -286,7 +299,7 @@ ALTER TABLE ONLY accounts.accounts_contact_categories
 
 
 --
--- TOC entry 2871 (class 2606 OID 16572)
+-- TOC entry 2876 (class 2606 OID 16572)
 -- Name: accounts_contact accounts_contact_pk; Type: CONSTRAINT; Schema: accounts; Owner: admin
 --
 
@@ -295,7 +308,7 @@ ALTER TABLE ONLY accounts.accounts_contact
 
 
 --
--- TOC entry 2875 (class 2606 OID 16586)
+-- TOC entry 2880 (class 2606 OID 16586)
 -- Name: accounts_fiscaldata accounts_fiscaldata_pk; Type: CONSTRAINT; Schema: accounts; Owner: admin
 --
 
@@ -304,7 +317,7 @@ ALTER TABLE ONLY accounts.accounts_fiscaldata
 
 
 --
--- TOC entry 2863 (class 2606 OID 16434)
+-- TOC entry 2868 (class 2606 OID 16434)
 -- Name: accounts accounts_pk; Type: CONSTRAINT; Schema: accounts; Owner: admin
 --
 
@@ -313,7 +326,16 @@ ALTER TABLE ONLY accounts.accounts
 
 
 --
--- TOC entry 2887 (class 2606 OID 16761)
+-- TOC entry 2896 (class 2606 OID 16782)
+-- Name: rspp_invoices_months rspp_invoices_months_pk; Type: CONSTRAINT; Schema: deadlines; Owner: admin
+--
+
+ALTER TABLE ONLY deadlines.rspp_invoices_months
+    ADD CONSTRAINT rspp_invoices_months_pk PRIMARY KEY (customer);
+
+
+--
+-- TOC entry 2892 (class 2606 OID 16761)
 -- Name: rspp_invoices rspp_invoices_pk; Type: CONSTRAINT; Schema: deadlines; Owner: admin
 --
 
@@ -322,7 +344,7 @@ ALTER TABLE ONLY deadlines.rspp_invoices
 
 
 --
--- TOC entry 2889 (class 2606 OID 16765)
+-- TOC entry 2894 (class 2606 OID 16765)
 -- Name: rspp_invoices rspp_invoices_un; Type: CONSTRAINT; Schema: deadlines; Owner: admin
 --
 
@@ -331,7 +353,7 @@ ALTER TABLE ONLY deadlines.rspp_invoices
 
 
 --
--- TOC entry 2883 (class 2606 OID 16665)
+-- TOC entry 2888 (class 2606 OID 16665)
 -- Name: rspp_notes rspp_notes_pk; Type: CONSTRAINT; Schema: deadlines; Owner: admin
 --
 
@@ -340,7 +362,7 @@ ALTER TABLE ONLY deadlines.rspp_notes
 
 
 --
--- TOC entry 2865 (class 2606 OID 16668)
+-- TOC entry 2870 (class 2606 OID 16668)
 -- Name: rspp rspp_pk; Type: CONSTRAINT; Schema: deadlines; Owner: admin
 --
 
@@ -349,7 +371,7 @@ ALTER TABLE ONLY deadlines.rspp
 
 
 --
--- TOC entry 2867 (class 2606 OID 16673)
+-- TOC entry 2872 (class 2606 OID 16673)
 -- Name: invoices invoices_pk; Type: CONSTRAINT; Schema: invoices; Owner: admin
 --
 
@@ -358,7 +380,7 @@ ALTER TABLE ONLY invoices.invoices
 
 
 --
--- TOC entry 2879 (class 2606 OID 16612)
+-- TOC entry 2884 (class 2606 OID 16612)
 -- Name: job_types job_type_pk; Type: CONSTRAINT; Schema: jobs; Owner: admin
 --
 
@@ -367,7 +389,7 @@ ALTER TABLE ONLY jobs.job_types
 
 
 --
--- TOC entry 2877 (class 2606 OID 16599)
+-- TOC entry 2882 (class 2606 OID 16599)
 -- Name: jobs_categories jobs_categories_pk; Type: CONSTRAINT; Schema: jobs; Owner: admin
 --
 
@@ -376,7 +398,7 @@ ALTER TABLE ONLY jobs.jobs_categories
 
 
 --
--- TOC entry 2885 (class 2606 OID 16718)
+-- TOC entry 2890 (class 2606 OID 16718)
 -- Name: jobs_pa jobs_pa_pk; Type: CONSTRAINT; Schema: jobs; Owner: admin
 --
 
@@ -385,7 +407,7 @@ ALTER TABLE ONLY jobs.jobs_pa
 
 
 --
--- TOC entry 2881 (class 2606 OID 16625)
+-- TOC entry 2886 (class 2606 OID 16625)
 -- Name: jobs jobs_pk; Type: CONSTRAINT; Schema: jobs; Owner: admin
 --
 
@@ -394,7 +416,7 @@ ALTER TABLE ONLY jobs.jobs
 
 
 --
--- TOC entry 2894 (class 2606 OID 16566)
+-- TOC entry 2901 (class 2606 OID 16566)
 -- Name: accounts_contact accounts_contact_fk; Type: FK CONSTRAINT; Schema: accounts; Owner: admin
 --
 
@@ -403,7 +425,7 @@ ALTER TABLE ONLY accounts.accounts_contact
 
 
 --
--- TOC entry 2895 (class 2606 OID 16587)
+-- TOC entry 2902 (class 2606 OID 16587)
 -- Name: accounts_fiscaldata accounts_fiscaldata_fk; Type: FK CONSTRAINT; Schema: accounts; Owner: admin
 --
 
@@ -412,7 +434,7 @@ ALTER TABLE ONLY accounts.accounts_fiscaldata
 
 
 --
--- TOC entry 2890 (class 2606 OID 16547)
+-- TOC entry 2897 (class 2606 OID 16547)
 -- Name: accounts accounts_fk; Type: FK CONSTRAINT; Schema: accounts; Owner: admin
 --
 
@@ -421,7 +443,7 @@ ALTER TABLE ONLY accounts.accounts
 
 
 --
--- TOC entry 2892 (class 2606 OID 16684)
+-- TOC entry 2899 (class 2606 OID 16684)
 -- Name: rspp invoice_fk; Type: FK CONSTRAINT; Schema: deadlines; Owner: admin
 --
 
@@ -430,7 +452,7 @@ ALTER TABLE ONLY deadlines.rspp
 
 
 --
--- TOC entry 2891 (class 2606 OID 16646)
+-- TOC entry 2898 (class 2606 OID 16646)
 -- Name: rspp rspp_fk; Type: FK CONSTRAINT; Schema: deadlines; Owner: admin
 --
 
@@ -439,7 +461,7 @@ ALTER TABLE ONLY deadlines.rspp
 
 
 --
--- TOC entry 2902 (class 2606 OID 16750)
+-- TOC entry 2909 (class 2606 OID 16750)
 -- Name: rspp_invoices rspp_invoices_fk; Type: FK CONSTRAINT; Schema: deadlines; Owner: admin
 --
 
@@ -448,7 +470,7 @@ ALTER TABLE ONLY deadlines.rspp_invoices
 
 
 --
--- TOC entry 2903 (class 2606 OID 16755)
+-- TOC entry 2910 (class 2606 OID 16755)
 -- Name: rspp_invoices rspp_invoices_fk_1; Type: FK CONSTRAINT; Schema: deadlines; Owner: admin
 --
 
@@ -457,7 +479,16 @@ ALTER TABLE ONLY deadlines.rspp_invoices
 
 
 --
--- TOC entry 2900 (class 2606 OID 16659)
+-- TOC entry 2911 (class 2606 OID 16774)
+-- Name: rspp_invoices_months rspp_invoices_months_fk; Type: FK CONSTRAINT; Schema: deadlines; Owner: admin
+--
+
+ALTER TABLE ONLY deadlines.rspp_invoices_months
+    ADD CONSTRAINT rspp_invoices_months_fk FOREIGN KEY (customer) REFERENCES accounts.accounts(fiscalcode) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 2907 (class 2606 OID 16659)
 -- Name: rspp_notes rspp_notes_fk; Type: FK CONSTRAINT; Schema: deadlines; Owner: admin
 --
 
@@ -466,7 +497,7 @@ ALTER TABLE ONLY deadlines.rspp_notes
 
 
 --
--- TOC entry 2893 (class 2606 OID 16701)
+-- TOC entry 2900 (class 2606 OID 16701)
 -- Name: invoices invoices_fk; Type: FK CONSTRAINT; Schema: invoices; Owner: admin
 --
 
@@ -475,7 +506,7 @@ ALTER TABLE ONLY invoices.invoices
 
 
 --
--- TOC entry 2897 (class 2606 OID 16631)
+-- TOC entry 2904 (class 2606 OID 16631)
 -- Name: jobs accounts_fk; Type: FK CONSTRAINT; Schema: jobs; Owner: admin
 --
 
@@ -484,7 +515,7 @@ ALTER TABLE ONLY jobs.jobs
 
 
 --
--- TOC entry 2898 (class 2606 OID 16636)
+-- TOC entry 2905 (class 2606 OID 16636)
 -- Name: jobs categories_fk; Type: FK CONSTRAINT; Schema: jobs; Owner: admin
 --
 
@@ -493,7 +524,7 @@ ALTER TABLE ONLY jobs.jobs
 
 
 --
--- TOC entry 2896 (class 2606 OID 16606)
+-- TOC entry 2903 (class 2606 OID 16606)
 -- Name: job_types job_type_fk; Type: FK CONSTRAINT; Schema: jobs; Owner: admin
 --
 
@@ -502,7 +533,7 @@ ALTER TABLE ONLY jobs.job_types
 
 
 --
--- TOC entry 2901 (class 2606 OID 16712)
+-- TOC entry 2908 (class 2606 OID 16712)
 -- Name: jobs_pa jobs_pa_fk; Type: FK CONSTRAINT; Schema: jobs; Owner: admin
 --
 
@@ -511,7 +542,7 @@ ALTER TABLE ONLY jobs.jobs_pa
 
 
 --
--- TOC entry 2899 (class 2606 OID 16641)
+-- TOC entry 2906 (class 2606 OID 16641)
 -- Name: jobs type_fk; Type: FK CONSTRAINT; Schema: jobs; Owner: admin
 --
 
@@ -520,7 +551,7 @@ ALTER TABLE ONLY jobs.jobs
 
 
 --
--- TOC entry 3036 (class 0 OID 0)
+-- TOC entry 3044 (class 0 OID 0)
 -- Dependencies: 5
 -- Name: SCHEMA accounts; Type: ACL; Schema: -; Owner: admin
 --
@@ -530,7 +561,7 @@ GRANT USAGE ON SCHEMA accounts TO script;
 
 
 --
--- TOC entry 3037 (class 0 OID 0)
+-- TOC entry 3045 (class 0 OID 0)
 -- Dependencies: 6
 -- Name: SCHEMA deadlines; Type: ACL; Schema: -; Owner: admin
 --
@@ -540,7 +571,7 @@ GRANT USAGE ON SCHEMA deadlines TO script;
 
 
 --
--- TOC entry 3038 (class 0 OID 0)
+-- TOC entry 3046 (class 0 OID 0)
 -- Dependencies: 9
 -- Name: SCHEMA invoices; Type: ACL; Schema: -; Owner: admin
 --
@@ -550,7 +581,7 @@ GRANT USAGE ON SCHEMA invoices TO script;
 
 
 --
--- TOC entry 3039 (class 0 OID 0)
+-- TOC entry 3047 (class 0 OID 0)
 -- Dependencies: 10
 -- Name: SCHEMA jobs; Type: ACL; Schema: -; Owner: admin
 --
@@ -560,7 +591,7 @@ GRANT USAGE ON SCHEMA jobs TO script;
 
 
 --
--- TOC entry 3040 (class 0 OID 0)
+-- TOC entry 3048 (class 0 OID 0)
 -- Dependencies: 205
 -- Name: TABLE accounts; Type: ACL; Schema: accounts; Owner: admin
 --
@@ -570,7 +601,7 @@ GRANT SELECT ON TABLE accounts.accounts TO script;
 
 
 --
--- TOC entry 3041 (class 0 OID 0)
+-- TOC entry 3049 (class 0 OID 0)
 -- Dependencies: 208
 -- Name: TABLE accounts_categories; Type: ACL; Schema: accounts; Owner: admin
 --
@@ -580,7 +611,7 @@ GRANT SELECT ON TABLE accounts.accounts_categories TO script;
 
 
 --
--- TOC entry 3042 (class 0 OID 0)
+-- TOC entry 3050 (class 0 OID 0)
 -- Dependencies: 209
 -- Name: TABLE accounts_contact; Type: ACL; Schema: accounts; Owner: admin
 --
@@ -590,7 +621,7 @@ GRANT SELECT ON TABLE accounts.accounts_contact TO script;
 
 
 --
--- TOC entry 3043 (class 0 OID 0)
+-- TOC entry 3051 (class 0 OID 0)
 -- Dependencies: 210
 -- Name: TABLE accounts_contact_categories; Type: ACL; Schema: accounts; Owner: admin
 --
@@ -600,7 +631,7 @@ GRANT SELECT ON TABLE accounts.accounts_contact_categories TO script;
 
 
 --
--- TOC entry 3044 (class 0 OID 0)
+-- TOC entry 3052 (class 0 OID 0)
 -- Dependencies: 211
 -- Name: TABLE accounts_fiscaldata; Type: ACL; Schema: accounts; Owner: admin
 --
@@ -610,7 +641,7 @@ GRANT SELECT ON TABLE accounts.accounts_fiscaldata TO script;
 
 
 --
--- TOC entry 3045 (class 0 OID 0)
+-- TOC entry 3053 (class 0 OID 0)
 -- Dependencies: 206
 -- Name: TABLE rspp; Type: ACL; Schema: deadlines; Owner: admin
 --
@@ -620,7 +651,7 @@ GRANT SELECT ON TABLE deadlines.rspp TO script;
 
 
 --
--- TOC entry 3046 (class 0 OID 0)
+-- TOC entry 3054 (class 0 OID 0)
 -- Dependencies: 218
 -- Name: TABLE rspp_invoices; Type: ACL; Schema: deadlines; Owner: admin
 --
@@ -629,7 +660,16 @@ GRANT SELECT,INSERT,UPDATE ON TABLE deadlines.rspp_invoices TO dclient;
 
 
 --
--- TOC entry 3047 (class 0 OID 0)
+-- TOC entry 3055 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: TABLE rspp_invoices_months; Type: ACL; Schema: deadlines; Owner: admin
+--
+
+GRANT SELECT,INSERT,UPDATE ON TABLE deadlines.rspp_invoices_months TO dclient;
+
+
+--
+-- TOC entry 3056 (class 0 OID 0)
 -- Dependencies: 215
 -- Name: TABLE rspp_notes; Type: ACL; Schema: deadlines; Owner: admin
 --
@@ -639,7 +679,7 @@ GRANT SELECT ON TABLE deadlines.rspp_notes TO script;
 
 
 --
--- TOC entry 3048 (class 0 OID 0)
+-- TOC entry 3057 (class 0 OID 0)
 -- Dependencies: 207
 -- Name: TABLE invoices; Type: ACL; Schema: invoices; Owner: admin
 --
@@ -649,7 +689,7 @@ GRANT SELECT ON TABLE invoices.invoices TO script;
 
 
 --
--- TOC entry 3049 (class 0 OID 0)
+-- TOC entry 3058 (class 0 OID 0)
 -- Dependencies: 214
 -- Name: TABLE jobs; Type: ACL; Schema: jobs; Owner: admin
 --
@@ -659,7 +699,7 @@ GRANT SELECT ON TABLE jobs.jobs TO script;
 
 
 --
--- TOC entry 3050 (class 0 OID 0)
+-- TOC entry 3059 (class 0 OID 0)
 -- Dependencies: 216
 -- Name: TABLE jobs_pa; Type: ACL; Schema: jobs; Owner: admin
 --
@@ -669,7 +709,7 @@ GRANT SELECT ON TABLE jobs.jobs_pa TO script;
 
 
 --
--- TOC entry 3051 (class 0 OID 0)
+-- TOC entry 3060 (class 0 OID 0)
 -- Dependencies: 213
 -- Name: TABLE job_types; Type: ACL; Schema: jobs; Owner: admin
 --
@@ -679,7 +719,7 @@ GRANT SELECT ON TABLE jobs.job_types TO script;
 
 
 --
--- TOC entry 3052 (class 0 OID 0)
+-- TOC entry 3061 (class 0 OID 0)
 -- Dependencies: 212
 -- Name: TABLE jobs_categories; Type: ACL; Schema: jobs; Owner: admin
 --
@@ -688,7 +728,7 @@ GRANT SELECT ON TABLE jobs.jobs_categories TO dclient;
 GRANT SELECT ON TABLE jobs.jobs_categories TO script;
 
 
--- Completed on 2020-09-18 09:21:53
+-- Completed on 2020-09-21 12:00:57
 
 --
 -- PostgreSQL database dump complete

@@ -11,7 +11,7 @@ import dclient.model.Account;
 import dclient.model.Job;
 import dclient.model.JobPA;
 import dclient.model.Model;
-import dclient.model.RSPP;
+import dclient.model.Rspp;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -34,7 +34,7 @@ import javafx.stage.Stage;
 
 public class NewRSPPController {
 	Model model;
-	RSPP rspp;
+	Rspp rspp;
 	
 	boolean safeExit;
 
@@ -230,7 +230,7 @@ public class NewRSPPController {
 				decreeDateField.setValue(jobPA.getDecreeDate());
 			}
 
-			RSPP lastRSPP = model.getLastRSPP(accountListView.getSelectionModel().getSelectedItem());
+			Rspp lastRSPP = model.getLastRSPP(accountListView.getSelectionModel().getSelectedItem());
 			if (lastRSPP != null) {
 				rsppStart.setValue(lastRSPP.getEnd().plusDays(1));
 				rsppEnd.setValue(rsppStart.getValue()
@@ -324,7 +324,7 @@ public class NewRSPPController {
 
 		}
 
-		RSPP rspp = new RSPP(job, rsppStart.getValue(), rsppEnd.getValue());
+		Rspp rspp = new Rspp(job, rsppStart.getValue(), rsppEnd.getValue());
 		String error = FieldsValidator.isRSPPChangeValid(rspp);
 		if (error == null) {
 			model.newRSPP(rspp);

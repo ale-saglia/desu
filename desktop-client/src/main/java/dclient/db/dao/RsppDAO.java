@@ -1,4 +1,4 @@
-package dclient.db;
+package dclient.db.dao;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -25,17 +25,19 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
 import dclient.controllers.visualModels.RSPPtableElement;
+import dclient.db.ConnectDB;
+import dclient.db.ConnectSSH;
 import dclient.model.Account;
 import dclient.model.Invoice;
 import dclient.model.Job;
 import dclient.model.JobPA;
-import dclient.model.RSPP;
+import dclient.model.Rspp;
 
-public class SicurteaDAO {
+public class RsppDAO {
 	Properties config;
 	Session session;
 
-	public SicurteaDAO(Properties config) {
+	public RsppDAO(Properties config) {
 		this.config = config;
 		this.session = ConnectSSH.getSession(config);
 	}
@@ -558,7 +560,7 @@ public class SicurteaDAO {
 		return rowsAffected;
 	}
 
-	public int newRSPP(RSPP rspp) {
+	public int newRSPP(Rspp rspp) {
 		String query = "insert into deadlines.rspp (rspp_jobid, jobstart, jobend) values (?, ?, ?)";
 	
 		int rowsAffected = 0;
@@ -584,7 +586,7 @@ public class SicurteaDAO {
 		return 0;
 	}
 
-	public void updateRSPP(String jobCode, LocalDate oldJobStart, RSPP rspp) {
+	public void updateRSPP(String jobCode, LocalDate oldJobStart, Rspp rspp) {
 		String query = "update deadlines.rspp set jobstart = ? , jobend = ? "
 				+ "where rspp_jobid = ? and jobstart = ? ";
 	
@@ -611,9 +613,9 @@ public class SicurteaDAO {
 		System.out.println("Rows updated RSPP => " + rowsAffected);
 	}
 
-	public Collection<RSPP> getRSPPs() {
+	public Collection<Rspp> getRSPPs() {
 		String sql = "select * from deadlines.rspp";
-		List<RSPP> rsppList = new LinkedList<RSPP>();
+		List<Rspp> rsppList = new LinkedList<Rspp>();
 	
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
@@ -622,7 +624,7 @@ public class SicurteaDAO {
 			ResultSet res = st.executeQuery();
 	
 			while (res.next()) {
-				RSPP rspp = new RSPP(getJob(res.getString("rspp_jobid"), conn), res.getDate("jobstart").toLocalDate(),
+				Rspp rspp = new Rspp(getJob(res.getString("rspp_jobid"), conn), res.getDate("jobstart").toLocalDate(),
 						res.getDate("jobend").toLocalDate());
 				rspp.setInvoice(getInvoices(rspp));
 				rsppList.add(rspp);
@@ -637,9 +639,9 @@ public class SicurteaDAO {
 		}
 	}
 
-	public Collection<RSPP> getRSPPs(Account account) {
+	public Collection<Rspp> getRSPPs(Account account) {
 		String sql = "select * from deadlines.rspp r, jobs.jobs j where r.rspp_jobid = j.jobs_id and customer = ? ";
-		List<RSPP> rsppList = new LinkedList<RSPP>();
+		List<Rspp> rsppList = new LinkedList<Rspp>();
 	
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
@@ -650,7 +652,7 @@ public class SicurteaDAO {
 			ResultSet res = st.executeQuery();
 	
 			while (res.next()) {
-				RSPP rspp = new RSPP(getJob(res.getString("rspp_jobid"), conn), res.getDate("jobstart").toLocalDate(),
+				Rspp rspp = new Rspp(getJob(res.getString("rspp_jobid"), conn), res.getDate("jobstart").toLocalDate(),
 						res.getDate("jobend").toLocalDate());
 				rspp.setInvoice(getInvoices(rspp));
 				rsppList.add(rspp);
@@ -665,9 +667,9 @@ public class SicurteaDAO {
 		}
 	}
 
-	public RSPP getRSPP(Invoice invoice) {
+	public Rspp getRSPP(Invoice invoice) {
 		String query = "select r.rspp_jobid, r.jobstart, r.jobend from deadlines.rspp r, deadlines.rspp_invoices ri where r.rspp_jobid = ri.rspp_id and r.jobstart = ri.rspp_start and ri.invoice_id = ? ";
-		RSPP rspp = null;
+		Rspp rspp = null;
 	
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
@@ -678,7 +680,7 @@ public class SicurteaDAO {
 			ResultSet res = st.executeQuery();
 			if (res.next() == false)
 				return null;
-			rspp = new RSPP(getJob(res.getString("rspp_jobid"), conn), res.getDate("jobstart").toLocalDate(),
+			rspp = new Rspp(getJob(res.getString("rspp_jobid"), conn), res.getDate("jobstart").toLocalDate(),
 					res.getDate("jobend").toLocalDate());
 			conn.close();
 		} catch (SQLException e) {
@@ -690,9 +692,9 @@ public class SicurteaDAO {
 		return rspp;
 	}
 
-	public RSPP getRSPP(String jobID, LocalDate startJob) {
+	public Rspp getRSPP(String jobID, LocalDate startJob) {
 		String sql = "select * from deadlines.rspp r where r.rspp_jobid = ? and r.jobstart = ? ";
-		RSPP rspp;
+		Rspp rspp;
 
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
@@ -702,7 +704,7 @@ public class SicurteaDAO {
 
 			ResultSet res = st.executeQuery();
 			res.next();
-			rspp = new RSPP(getJob(res.getString("rspp_jobid"), conn), res.getDate("jobstart").toLocalDate(),
+			rspp = new Rspp(getJob(res.getString("rspp_jobid"), conn), res.getDate("jobstart").toLocalDate(),
 					res.getDate("jobend").toLocalDate());
 			rspp.setInvoice(getInvoices(rspp));
 			conn.close();
@@ -715,9 +717,9 @@ public class SicurteaDAO {
 		}
 	}
 
-	public RSPP getLastRSPP(Account account) {
+	public Rspp getLastRSPP(Account account) {
 		String sql = "select * from deadlines.rspp r, jobs.jobs j where r.rspp_jobid = j.jobs_id and customer = ? order by jobend desc LIMIT 1 ";
-		RSPP rspp = null;
+		Rspp rspp = null;
 
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
@@ -727,7 +729,7 @@ public class SicurteaDAO {
 			ResultSet res = st.executeQuery();
 			if (res.next() == false)
 				return null;
-			rspp = new RSPP(getJob(res.getString("rspp_jobid"), conn), res.getDate("jobstart").toLocalDate(),
+			rspp = new Rspp(getJob(res.getString("rspp_jobid"), conn), res.getDate("jobstart").toLocalDate(),
 					res.getDate("jobend").toLocalDate());
 			rspp.setInvoice(getInvoices(rspp));
 			conn.close();
@@ -844,7 +846,7 @@ public class SicurteaDAO {
 		return rowsAffected;
 	}
 
-	public Collection<Invoice> getInvoices(RSPP rspp) {
+	public Collection<Invoice> getInvoices(Rspp rspp) {
 		String query = "select i.* from( select invoice_id from deadlines.rspp_invoices ri where rspp_id = ? and rspp_start = ?) as vi, invoices.invoices i where vi.invoice_id = i.invoiceid";
 		Set<Invoice> invoicesMap = new TreeSet<Invoice>();
 	
@@ -868,7 +870,7 @@ public class SicurteaDAO {
 		return invoicesMap;
 	}
 
-	public int matchRSPPInvoice(RSPP rspp, Invoice invoice) {
+	public int matchRSPPInvoice(Rspp rspp, Invoice invoice) {
 		String query = "insert into deadlines.rspp_invoices (rspp_id, rspp_start, invoice_id) values ( ? , ? , ? ) ";
 		int rowsAffected = 0;
 
@@ -892,7 +894,7 @@ public class SicurteaDAO {
 		return rowsAffected;
 	}
 
-	public int updateInvoiceMonths(RSPP rspp, Set<Integer> invoiceMonths) {
+	public int updateInvoiceMonths(Rspp rspp, Set<Integer> invoiceMonths) {
 		String query = "INSERT INTO deadlines.rspp_invoices_months (customer, months) VALUES ( ? , ? ) ON CONFLICT (customer) DO UPDATE SET months = ? ";
 		int rowsAffected = 0;
 		
@@ -916,7 +918,7 @@ public class SicurteaDAO {
 		return rowsAffected;
 	}
 
-	public Set<Integer> getInvoiceMonths(RSPP rspp){
+	public Set<Integer> getInvoiceMonths(Rspp rspp){
 		String sql = "select * from deadlines.rspp_invoices_months rim where customer = ? ";
 		Set<Integer> invoiceMonths = null;
 		

@@ -15,7 +15,7 @@ import dclient.model.Invoice;
 import dclient.model.Job;
 import dclient.model.JobPA;
 import dclient.model.Model;
-import dclient.model.RSPP;
+import dclient.model.Rspp;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -33,7 +33,7 @@ public class ViewEditController {
 	private final String DEFAULT_NEW_INVOICE_TEXT = "Nuova fattura...";
 
 	private Model model;
-	private RSPP rspp;
+	private Rspp rspp;
 
 	MainController mainController;
 
@@ -238,7 +238,7 @@ public class ViewEditController {
 	public void updateCheck() {
 		Account newAccount;
 		Job newJob;
-		RSPP newRSPP;
+		Rspp newRSPP;
 		Set<Integer> newInvoiceMonths;
 		Invoice newInvoice;
 		String error;
@@ -293,7 +293,7 @@ public class ViewEditController {
 		}
 
 		// Check if RSPP needs to be updated
-		newRSPP = new RSPP(newJob, jobStartField.getValue(), jobEndField.getValue());
+		newRSPP = new Rspp(newJob, jobStartField.getValue(), jobEndField.getValue());
 		if (!newRSPP.equals(rspp)) {
 			error = FieldsValidator.isRSPPChangeValid(newRSPP);
 			if (error == null) {

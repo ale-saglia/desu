@@ -15,14 +15,14 @@ import com.google.common.collect.BiMap;
 
 import dclient.Key;
 import dclient.controllers.visualModels.RSPPtableElement;
-import dclient.db.SicurteaDAO;
+import dclient.db.dao.RsppDAO;
 
 public class Model {
 	InputStream cfg;
 	public final static String CONFIG_PATH = System.getProperty("user.home") + "/.dclient/";
 	Properties config;
 
-	SicurteaDAO dao;
+	RsppDAO dao;
 
 	BiMap<String, String> accountCategories;
 
@@ -35,14 +35,14 @@ public class Model {
 		config = new EncryptableProperties((new Key(userPassword, config)).getEnc());
 		config.load(new FileInputStream(CONFIG_PATH + "config.properties"));
 
-		this.dao = new SicurteaDAO(config);
+		this.dao = new RsppDAO(config);
 
 		accountCategories = dao.getAccountsCategories();
 		jobCategories = dao.getJobCategories();
 		jobTypes = dao.getJobTypes();
 	}
 
-	public RSPP getRSPP(String jobID, LocalDate jobStart) {
+	public Rspp getRSPP(String jobID, LocalDate jobStart) {
 		return dao.getRSPP(jobID, jobStart);
 	}
 
@@ -91,7 +91,7 @@ public class Model {
 		dao.updateNote(accountID, note);
 	}
 
-	public void updateRSPP(String jobCode, LocalDate oldJobStart, RSPP rspp) {
+	public void updateRSPP(String jobCode, LocalDate oldJobStart, Rspp rspp) {
 		dao.updateRSPP(jobCode, oldJobStart, rspp);
 	}
 
@@ -103,7 +103,7 @@ public class Model {
 		dao.updateInvoice(oldInvoiceID, invoice);
 	}
 
-	public void matchRSPPInvoice(RSPP rspp, Invoice invoice) {
+	public void matchRSPPInvoice(Rspp rspp, Invoice invoice) {
 		dao.matchRSPPInvoice(rspp, invoice);
 	}
 
@@ -131,7 +131,7 @@ public class Model {
 		return dao.newJob(job);
 	}
 
-	public int newRSPP(RSPP rspp) {
+	public int newRSPP(Rspp rspp) {
 		return dao.newRSPP(rspp);
 	}
 
@@ -139,7 +139,7 @@ public class Model {
 		return dao.getAccountFromVATNumber(vatNumber);
 	}
 
-	public Collection<RSPP> getRSPPSet(Account account) {
+	public Collection<Rspp> getRSPPSet(Account account) {
 		return dao.getRSPPs(account);
 	}
 
@@ -147,7 +147,7 @@ public class Model {
 		return dao.getAccount(invoice);
 	}
 
-	public RSPP getLastRSPP(Account account) {
+	public Rspp getLastRSPP(Account account) {
 		return dao.getLastRSPP(account);
 	}
 
@@ -155,15 +155,15 @@ public class Model {
 		return dao.addJobPAInfos(jobPA);
 	}
 
-	public RSPP getRSPPfromInvoice(Invoice invoice) {
+	public Rspp getRSPPfromInvoice(Invoice invoice) {
 		return dao.getRSPP(invoice);
 	}
 
-	public int updateInvoiceMonths(RSPP rspp, Set<Integer> invoiceMonths) {
+	public int updateInvoiceMonths(Rspp rspp, Set<Integer> invoiceMonths) {
 		return dao.updateInvoiceMonths(rspp, invoiceMonths);
 	}
 
-	public Set<Integer> getInvoiceMonths(RSPP rspp) {
+	public Set<Integer> getInvoiceMonths(Rspp rspp) {
 		return dao.getInvoiceMonths(rspp);
 	}
 }

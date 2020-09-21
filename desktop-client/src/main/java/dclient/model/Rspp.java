@@ -7,21 +7,21 @@ import java.util.Set;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
-public class RSPP {
+public class Rspp {
 	Job job;
 	Collection<Invoice> invoices;
 
 	LocalDate start;
 	LocalDate end;
 
-	public RSPP(Job job, LocalDate start, LocalDate end, Set<Invoice> invoices) {
+	public Rspp(Job job, LocalDate start, LocalDate end, Set<Invoice> invoices) {
 		this.job = job;
 		this.start = start;
 		this.end = end;
 		this.invoices = invoices;
 	}
 	
-	public RSPP(Job job, LocalDate start, LocalDate end) {
+	public Rspp(Job job, LocalDate start, LocalDate end) {
 		this.job = job;
 		this.start = start;
 		this.end = end;
@@ -75,7 +75,7 @@ public class RSPP {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		RSPP other = (RSPP) obj;
+		Rspp other = (Rspp) obj;
 		if (end == null) {
 			if (other.end != null)
 				return false;

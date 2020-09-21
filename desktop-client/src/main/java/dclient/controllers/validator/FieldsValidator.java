@@ -23,14 +23,14 @@ public class FieldsValidator {
 			return error.trim();
 	}
 
-	public static String isNewInvoiceDuplicate(Model model, Invoice invoice, RSPP rspp) {
+	public static String isNewInvoiceDuplicate(Model model, Invoice invoice, Rspp rspp) {
 		String error = "";
 
 		Account account = model.getAccount(invoice);
 		if (account != null)
 			error += "- La fattura è già presente nel database per " + account.getName();
 
-		RSPP fetchedRSPP= model.getRSPPfromInvoice(invoice);
+		Rspp fetchedRSPP= model.getRSPPfromInvoice(invoice);
 		if (fetchedRSPP != null && !rspp.equals(fetchedRSPP))
 			error += "- La fattura inserita è gia presente per la pratica " + fetchedRSPP.getJob().getId()
 					+ " con l'incarico tra il "
@@ -114,7 +114,7 @@ public class FieldsValidator {
 		return null;
 	}
 
-	public static String isRSPPChangeValid(RSPP rspp) {
+	public static String isRSPPChangeValid(Rspp rspp) {
 		String error = "";
 
 		if (rspp.getStart() == null || rspp.getEnd() == null)

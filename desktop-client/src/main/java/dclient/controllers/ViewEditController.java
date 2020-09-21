@@ -161,7 +161,7 @@ public class ViewEditController {
 			invoiceComboParent.getChildren().clear();
 
 		invoiceMonthCombo.getItems().setAll(MONTH_MAP.keySet());
-		
+
 		setAnagrafica();
 		setJobs();
 		setRSPP();
@@ -220,13 +220,13 @@ public class ViewEditController {
 			invoiceDescription.clear();
 		}
 	}
-	
+
 	private void setInvoiceMonth() {
 		invoiceMonthsSet = model.getInvoiceMonths(rspp);
-		if(invoiceMonthsSet == null)
+		if (invoiceMonthsSet == null)
 			invoiceMonthsSet = new HashSet<Integer>();
-		
-		for(Integer month : invoiceMonthsSet) {
+
+		for (Integer month : invoiceMonthsSet) {
 			invoiceMonthCombo.getCheckModel().check(MONTH_MAP.inverse().get(month));
 		}
 	}
@@ -239,6 +239,7 @@ public class ViewEditController {
 		Account newAccount;
 		Job newJob;
 		RSPP newRSPP;
+		Set<Integer> newInvoiceMonths;
 		Invoice newInvoice;
 		String error;
 
@@ -305,25 +306,30 @@ public class ViewEditController {
 
 		}
 
-		//Check if invoice months need to be updated
-		Set<Integer> newInvoiceMonths = new HashSet<Integer>();
-		for(int i = 1; i <= 12; i++) {
-			if(invoiceMonthCombo.getCheckModel().isChecked(MONTH_MAP.inverse().get(i)))
+		// Check if invoice months need to be updated
+		newInvoiceMonths = new HashSet<Integer>();
+		for (int i = 1; i <= 12; i++) {
+			if (invoiceMonthCombo.getCheckModel().isChecked(MONTH_MAP.inverse().get(i)))
 				newInvoiceMonths.add(i);
 		}
-		if(!newInvoiceMonths.equals(invoiceMonthsSet))
+		if (!newInvoiceMonths.equals(invoiceMonthsSet))
 			model.updateInvoiceMonths(newRSPP, newInvoiceMonths);
-		
+
 		// Check if invoice needs to be updated
 		newInvoice = new Invoice(invoiceNumberField.getText(), invoiceEmissionDateField.getValue(),
 				newAccount.getCategory(), payedCheck.isSelected(), invoiceDescription.getText());
 
-		if (!(newInvoice.getId() == null && invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()) == null)) {
+		System.out.println(invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()));
+		System.out.println(newInvoice.getId());
+
+		//TODO fix bug when saving in empty invoice without changing
+		if ((invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()) == null && newInvoice.getId() != null)
+				|| !(newInvoice.equals(invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem())))) {
 			error = FieldsValidator.isInvoiceValid(newInvoice);
 			if (error != null) {
 				warningWindows(error);
 				return;
-			} else if ((error = FieldsValidator.isNewInvoiceDuplicate(model, newInvoice)) != null) {
+			} else if ((error = FieldsValidator.isNewInvoiceDuplicate(model, newInvoice, newRSPP)) != null) {
 				warningWindows(error);
 				return;
 			}

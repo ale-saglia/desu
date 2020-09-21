@@ -34,21 +34,17 @@ public class Invoice implements Comparable<Invoice> {
 	}
 	
 	public Invoice(String number, LocalDate emission, String type, Boolean payed, String description) {
-		
-		this.emission = emission;
-		this.type = type;
-		this.payed = payed;
-		this.description = description;
-		
 		try {
 			this.number = Integer.parseInt(number.trim());
 		} catch (NumberFormatException e) {
 			this.number = null;
 		}
-	
 		this.id = createID(this.number, type, emission);
+		this.emission = emission;
+		this.type = type;
+		this.payed = payed;
+		this.description = description;
 		
-		trimInvoice();
 	}
 	
 	private void trimInvoice() {

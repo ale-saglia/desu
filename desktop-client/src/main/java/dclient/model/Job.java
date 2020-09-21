@@ -38,6 +38,8 @@ public class Job {
 		return jobType;
 	}
 
+	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

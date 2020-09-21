@@ -45,13 +45,14 @@ public class JobPA extends Job {
 		return decreeDate;
 	}
 
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result + ((cig == null) ? 0 : cig.hashCode());
 		result = prime * result + ((decreeDate == null) ? 0 : decreeDate.hashCode());
-		result = prime * result + decreeNumber;
+		result = prime * result + ((decreeNumber == null) ? 0 : decreeNumber.hashCode());
 		return result;
 	}
 
@@ -74,7 +75,10 @@ public class JobPA extends Job {
 				return false;
 		} else if (!decreeDate.equals(other.decreeDate))
 			return false;
-		if (decreeNumber != other.decreeNumber)
+		if (decreeNumber == null) {
+			if (other.decreeNumber != null)
+				return false;
+		} else if (!decreeNumber.equals(other.decreeNumber))
 			return false;
 		return true;
 	}

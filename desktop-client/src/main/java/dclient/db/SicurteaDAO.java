@@ -385,8 +385,6 @@ public class SicurteaDAO {
 			st.setInt(3, invoice.getEmission().getYear());
 	
 			ResultSet res = st.executeQuery();
-			if (res.next() == false)
-				return null;
 			account = resToAccounts(res).get(0);
 			conn.close();
 			return account;

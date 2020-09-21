@@ -23,19 +23,19 @@ public class FieldsValidator {
 			return error.trim();
 	}
 
-	public static String isNewInvoiceDuplicate(Model model, Invoice invoice) {
+	public static String isNewInvoiceDuplicate(Model model, Invoice invoice, RSPP rspp) {
 		String error = "";
 
 		Account account = model.getAccount(invoice);
 		if (account != null)
 			error += "- La fattura è già presente nel database per " + account.getName();
 
-		RSPP rspp = model.getRSPPfromInvoice(invoice);
-		if (rspp != null)
-			error += "- La fattura inserita è gia presente per la pratica " + rspp.getJob().getId()
+		RSPP fetchedRSPP= model.getRSPPfromInvoice(invoice);
+		if (fetchedRSPP != null && !rspp.equals(fetchedRSPP))
+			error += "- La fattura inserita è gia presente per la pratica " + fetchedRSPP.getJob().getId()
 					+ " con l'incarico tra il "
-					+ rspp.getStart().format(DateTimeFormatter.ofPattern(model.getConfig().getProperty("dateFormat")))
-					+ " e il " + rspp.getEnd().format(DateTimeFormatter.ofPattern(model.getConfig().getProperty("dateFormat")));
+					+ fetchedRSPP.getStart().format(DateTimeFormatter.ofPattern(model.getConfig().getProperty("dateFormat")))
+					+ " e il " + fetchedRSPP.getEnd().format(DateTimeFormatter.ofPattern(model.getConfig().getProperty("dateFormat")));
 
 		if (error.isEmpty())
 			return null;

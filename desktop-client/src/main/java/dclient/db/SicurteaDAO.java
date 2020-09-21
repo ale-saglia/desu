@@ -80,10 +80,6 @@ public class SicurteaDAO {
 				Job job = new Job(res.getString("jobs_id"), res.getString("jobs_category"), res.getString("jobs_type"),
 						res.getString("jobs_description"), getAccount(res.getString("customer")));
 				if (job.getCustomer().getCategory().contains("pa")) {
-					PreparedStatement st = conn.prepareStatement("select * from jobs.jobs_pa where jobs_id = ? ");
-					st.setString(1, job.getId());
-					res = st.executeQuery();
-					res.next();
 					job = new JobPA(job, res.getString("cig"), res.getInt("decree_number"),
 							res.getDate("decree_date").toLocalDate());
 				}
@@ -494,7 +490,7 @@ public class SicurteaDAO {
 	}
 
 	public Job getJob(String job_id, Connection conn) {
-		String sql = "select * from jobs.jobs j where j.jobs_id = ? ";
+		String sql = "select * from jobs.jobs j left join jobs.jobs_pa jp on j.jobs_id = jp.jobs_id where j.jobs_id = ? ";
 		Job job;
 	
 		try {
@@ -517,7 +513,7 @@ public class SicurteaDAO {
 		try {
 			Connection conn = ConnectDB.getConnection(session, config);
 			PreparedStatement st = conn.prepareStatement(
-					"select j.jobs_id, jobs_category, jobs_type, jobs_description, cig, decree_number, decree_date from jobs.jobs j left join jobs.jobs_pa jp on j.jobs_id = jp.jobs_id where customer = ? ");
+					"select j.jobs_id, jobs_category, jobs_type, jobs_description, customer, cig, decree_number, decree_date from jobs.jobs j left join jobs.jobs_pa jp on j.jobs_id = jp.jobs_id where customer = ? ");
 	
 			st.setString(1, account.getFiscalCode());
 			ResultSet res = st.executeQuery();

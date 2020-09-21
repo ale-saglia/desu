@@ -15,6 +15,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import org.controlsfx.control.CheckComboBox?>
 
 <VBox alignment="CENTER" prefHeight="263.0" prefWidth="680.0" spacing="20.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dclient.controllers.ViewEditController">
     <children>
@@ -279,7 +280,7 @@
                      </font>
                   </Label>
                   <HBox prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
-                  <HBox fx:id="invoiceComboParent" layoutX="110.0" layoutY="10.0">
+                  <HBox fx:id="invoiceComboParent" alignment="CENTER_LEFT" layoutX="110.0" layoutY="10.0">
                      <children>
                         <ComboBox fx:id="invoiceBox" minWidth="-Infinity" onAction="#setInvoice" />
                      </children>
@@ -321,13 +322,19 @@
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="490.0">
                <children>
+                  <Label minWidth="-Infinity" text="Mese fatturazione">
+                     <HBox.margin>
+                        <Insets right="5.0" />
+                     </HBox.margin>
+                  </Label>
+                  <CheckComboBox fx:id="invoiceMonthCombo" maxWidth="75.0" minWidth="-Infinity" />
                   <Label minWidth="-Infinity" text="Descrizione">
                      <padding>
-                        <Insets right="5.0" />
+                        <Insets left="15.0" right="5.0" />
                      </padding>
                   </Label>
-                  <TextField fx:id="invoiceDescription" HBox.hgrow="ALWAYS" />
-                  <CheckBox fx:id="payedCheck" mnemonicParsing="false" text="Pagato" HBox.hgrow="ALWAYS">
+                  <TextField fx:id="invoiceDescription" minWidth="-Infinity" HBox.hgrow="ALWAYS" />
+                  <CheckBox fx:id="payedCheck" minWidth="-Infinity" mnemonicParsing="false" text="Pagato" HBox.hgrow="ALWAYS">
                      <padding>
                         <Insets left="15.0" right="7.0" />
                      </padding></CheckBox>

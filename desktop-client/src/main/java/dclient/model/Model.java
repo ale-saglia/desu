@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import org.jasypt.properties.EncryptableProperties;
 
@@ -97,11 +98,11 @@ public class Model {
 	public void newInvoice(Invoice invoice) {
 		dao.newInvoice(invoice);
 	}
-	
+
 	public void updateInvoice(String oldInvoiceID, Invoice invoice) {
 		dao.updateInvoice(oldInvoiceID, invoice);
 	}
-	
+
 	public void matchRSPPInvoice(RSPP rspp, Invoice invoice) {
 		dao.matchRSPPInvoice(rspp, invoice);
 	}
@@ -121,40 +122,48 @@ public class Model {
 	public List<Account> getAllAccounts() {
 		return dao.getAccounts();
 	}
-	
-	public List<Job> getAllJobOfAccount(Account account){
+
+	public List<Job> getAllJobOfAccount(Account account) {
 		return dao.getJobs(account);
 	}
-	
+
 	public int newJob(Job job) {
 		return dao.newJob(job);
 	}
-	
+
 	public int newRSPP(RSPP rspp) {
-		return dao.newRSPP(rspp);		
+		return dao.newRSPP(rspp);
 	}
-	
+
 	public Account getAccountFromVATNumber(String vatNumber) {
 		return dao.getAccountFromVATNumber(vatNumber);
 	}
-	
-	public Collection<RSPP> getRSPPSet(Account account){
+
+	public Collection<RSPP> getRSPPSet(Account account) {
 		return dao.getRSPPs(account);
 	}
-	
+
 	public Account getAccount(Invoice invoice) {
 		return dao.getAccount(invoice);
 	}
-	
-	public RSPP getLastRSPP(Account account){
+
+	public RSPP getLastRSPP(Account account) {
 		return dao.getLastRSPP(account);
 	}
-	
+
 	public int addJobPAInfos(JobPA jobPA) {
 		return dao.addJobPAInfos(jobPA);
 	}
-	
+
 	public RSPP getRSPPfromInvoice(Invoice invoice) {
 		return dao.getRSPP(invoice);
+	}
+
+	public int updateInvoiceMonths(RSPP rspp, Set<Integer> invoiceMonths) {
+		return dao.updateInvoiceMonths(rspp, invoiceMonths);
+	}
+
+	public Set<Integer> getInvoiceMonths(RSPP rspp) {
+		return dao.getInvoiceMonths(rspp);
 	}
 }

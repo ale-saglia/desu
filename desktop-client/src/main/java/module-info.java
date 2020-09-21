@@ -10,6 +10,7 @@ module dclient {
 	requires com.google.common;
 	requires java.logging;
 	requires javafx.base;
+	requires org.controlsfx.controls;
 
 	opens dclient.controllers to javafx.fxml, javafx.base;
 	opens dclient.controllers.visualModels to javafx.fxml, javafx.base;

@@ -1,8 +1,13 @@
 package dclient.controllers;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.controlsfx.control.CheckComboBox;
 
 import com.google.common.collect.BiMap;
+import com.google.common.collect.ImmutableBiMap;
 
 import dclient.controllers.validator.FieldsValidator;
 import dclient.model.Account;
@@ -33,6 +38,12 @@ public class ViewEditController {
 	MainController mainController;
 
 	private BiMap<String, Invoice> invoiceMap;
+
+	private Set<Integer> invoiceMonthsSet;
+	static final ImmutableBiMap<String, Integer> MONTH_MAP = new ImmutableBiMap.Builder<String, Integer>()
+			.put("Gennaio", 1).put("Febbraio", 2).put("Marzo", 3).put("Aprile", 4).put("Maggio", 5).put("Giugno", 6)
+			.put("Luglio", 7).put("Agosto", 8).put("Settembre", 9).put("Ottobre", 10).put("Novembre", 11)
+			.put("Dicembre", 12).build();
 
 	boolean isChanged;
 
@@ -106,6 +117,9 @@ public class ViewEditController {
 	private TextField invoiceTypeField;
 
 	@FXML
+	private CheckComboBox<String> invoiceMonthCombo;
+
+	@FXML
 	private TextField invoiceDescription;
 
 	@FXML
@@ -146,10 +160,13 @@ public class ViewEditController {
 		else
 			invoiceComboParent.getChildren().clear();
 
+		invoiceMonthCombo.getItems().setAll(MONTH_MAP.keySet());
+		
 		setAnagrafica();
 		setJobs();
 		setRSPP();
-		
+
+		setInvoiceMonth();
 		setInvoice();
 
 		isChanged = false;
@@ -203,6 +220,16 @@ public class ViewEditController {
 			invoiceDescription.clear();
 		}
 	}
+	
+	private void setInvoiceMonth() {
+		invoiceMonthsSet = model.getInvoiceMonths(rspp);
+		if(invoiceMonthsSet == null)
+			invoiceMonthsSet = new HashSet<Integer>();
+		
+		for(Integer month : invoiceMonthsSet) {
+			invoiceMonthCombo.getCheckModel().check(MONTH_MAP.inverse().get(month));
+		}
+	}
 
 	/**
 	 * Check if fields has been edited, than check if fields are valid and finally
@@ -251,7 +278,8 @@ public class ViewEditController {
 		}
 
 		// Check if rspp note needs to be updated
-		if (noteField.getText() != null && !noteField.getText().trim().equals(model.getRSPPnote(rspp.getJob().getCustomer().getFiscalCode()))) {
+		if (noteField.getText() != null
+				&& !noteField.getText().trim().equals(model.getRSPPnote(rspp.getJob().getCustomer().getFiscalCode()))) {
 			error = FieldsValidator.isRSPPNoteValid(model.getRSPPnote(rspp.getJob().getCustomer().getFiscalCode()));
 			if (error == null) {
 				model.updateNote(fiscalCodeText.getText(), noteField.getText());
@@ -262,26 +290,35 @@ public class ViewEditController {
 			}
 
 		}
-		
+
 		// Check if RSPP needs to be updated
-				newRSPP = new RSPP(newJob, jobStartField.getValue(), jobEndField.getValue());
-				if (!newRSPP.equals(rspp)) {
-					error = FieldsValidator.isRSPPChangeValid(newRSPP);
-					if (error == null) {
-						model.updateRSPP(rspp.getJob().getId(), rspp.getStart(), newRSPP);
-						isChanged = true;
-					} else {
-						warningWindows(error);
-						return;
-					}
+		newRSPP = new RSPP(newJob, jobStartField.getValue(), jobEndField.getValue());
+		if (!newRSPP.equals(rspp)) {
+			error = FieldsValidator.isRSPPChangeValid(newRSPP);
+			if (error == null) {
+				model.updateRSPP(rspp.getJob().getId(), rspp.getStart(), newRSPP);
+				isChanged = true;
+			} else {
+				warningWindows(error);
+				return;
+			}
 
-				}
+		}
 
+		//Check if invoice months need to be updated
+		Set<Integer> newInvoiceMonths = new HashSet<Integer>();
+		for(int i = 1; i <= 12; i++) {
+			if(invoiceMonthCombo.getCheckModel().isChecked(MONTH_MAP.inverse().get(i)))
+				newInvoiceMonths.add(i);
+		}
+		if(!newInvoiceMonths.equals(invoiceMonthsSet))
+			model.updateInvoiceMonths(newRSPP, newInvoiceMonths);
+		
 		// Check if invoice needs to be updated
 		newInvoice = new Invoice(invoiceNumberField.getText(), invoiceEmissionDateField.getValue(),
 				newAccount.getCategory(), payedCheck.isSelected(), invoiceDescription.getText());
 
-		if(!(newInvoice.getId() == null && invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()) == null)){
+		if (!(newInvoice.getId() == null && invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()) == null)) {
 			error = FieldsValidator.isInvoiceValid(newInvoice);
 			if (error != null) {
 				warningWindows(error);
@@ -296,13 +333,13 @@ public class ViewEditController {
 				model.matchRSPPInvoice(newRSPP, newInvoice);
 				isChanged = true;
 			} else if (!newInvoice.equals(invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()))) {
-				model.updateInvoice(invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()).getId(), newInvoice);
+				model.updateInvoice(invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()).getId(),
+						newInvoice);
 				isChanged = true;
 			}
 
 		}
-		
-		
+
 		if (isChanged) {
 			System.out.println("Some elements were modified");
 			mainController.refresh();
@@ -316,8 +353,8 @@ public class ViewEditController {
 		alert.setHeaderText("Sono stati rilevati i seguenti campi non validi:");
 		alert.setContentText(message);
 
-		String invoiceTemp;		
-		if(invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()) == null)
+		String invoiceTemp;
+		if (invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()) == null)
 			invoiceTemp = DEFAULT_NEW_INVOICE_TEXT;
 		else
 			invoiceTemp = invoiceBox.getSelectionModel().getSelectedItem();

@@ -19,6 +19,7 @@ import java.util.TreeSet;
 import com.google.common.base.Charsets;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Sets;
 import com.google.common.io.Resources;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
@@ -677,11 +678,11 @@ public class SicurteaDAO {
 			st.setString(1, invoice.getId());
 	
 			ResultSet res = st.executeQuery();
-			conn.close();
 			if (res.next() == false)
 				return null;
 			rspp = new RSPP(getJob(res.getString("rspp_jobid"), conn), res.getDate("jobstart").toLocalDate(),
 					res.getDate("jobend").toLocalDate());
+			conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");
@@ -742,8 +743,7 @@ public class SicurteaDAO {
 	}
 
 	public void updateNote(String accountID, String note) {
-		String query = "INSERT INTO deadlines.rspp_notes " + "(fiscalcode, notes) VALUES ( ? , ? ) "
-				+ "ON CONFLICT (fiscalcode) DO UPDATE SET notes = ? ";
+		String query = "INSERT INTO deadlines.rspp_notes (fiscalcode, notes) VALUES ( ? , ? ) ON CONFLICT (fiscalcode) DO UPDATE SET notes = ? ";
 	
 		int rowsAffected = 0;
 	
@@ -765,7 +765,7 @@ public class SicurteaDAO {
 		}
 		System.out.println("Rows updated NOTES => " + rowsAffected);
 	}
-
+	
 	public String getRSPPnote(String fiscalCode) {
 		String sql = "select * from deadlines.rspp_notes r where r.fiscalcode = ? ";
 		String notes;
@@ -892,5 +892,58 @@ public class SicurteaDAO {
 		}
 		System.out.println("Rows updated JOBS_INVOICE => " + rowsAffected);
 		return rowsAffected;
+	}
+
+	public int updateInvoiceMonths(RSPP rspp, Set<Integer> invoiceMonths) {
+		String query = "INSERT INTO deadlines.rspp_invoices_months (customer, months) VALUES ( ? , ? ) ON CONFLICT (customer) DO UPDATE SET months = ? ";
+		int rowsAffected = 0;
+		
+		try {
+			Connection conn = ConnectDB.getConnection(session, config);
+			PreparedStatement st = conn.prepareStatement(query);
+	
+			st.setString(1, rspp.getJob().getCustomer().getFiscalCode());
+			st.setArray(2, conn.createArrayOf("INTEGER", invoiceMonths.toArray()));
+			st.setArray(3, conn.createArrayOf("INTEGER", invoiceMonths.toArray()));
+	
+			rowsAffected = st.executeUpdate();
+	
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+		
+		return rowsAffected;
+	}
+
+	public Set<Integer> getInvoiceMonths(RSPP rspp){
+		String sql = "select * from deadlines.rspp_invoices_months rim where customer = ? ";
+		Set<Integer> invoiceMonths = null;
+		
+		try {
+			Connection conn = ConnectDB.getConnection(session, config);
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setString(1, rspp.getJob().getCustomer().getFiscalCode());
+	
+			ResultSet res = st.executeQuery();
+			conn.close();
+			if (res.next() == false)
+				return null;
+			else {
+				invoiceMonths = Sets.newHashSet(((Integer[]) res.getArray("months").getArray()));
+			}
+	
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+		
+		if(invoiceMonths == null || invoiceMonths.size() <= 0)
+			return null;
+		else
+			return invoiceMonths;
 	}
 }

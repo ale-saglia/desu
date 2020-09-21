@@ -319,12 +319,9 @@ public class ViewEditController {
 		newInvoice = new Invoice(invoiceNumberField.getText(), invoiceEmissionDateField.getValue(),
 				newAccount.getCategory(), payedCheck.isSelected(), invoiceDescription.getText());
 
-		System.out.println(invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()));
-		System.out.println(newInvoice.getId());
-
-		//TODO fix bug when saving in empty invoice without changing
-		if ((invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()) == null && newInvoice.getId() != null)
-				|| !(newInvoice.equals(invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem())))) {
+		if (!(newInvoice.equals(invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem())))
+				&& !((invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()) == null
+						&& newInvoice.getId() == null))) {
 			error = FieldsValidator.isInvoiceValid(newInvoice);
 			if (error != null) {
 				warningWindows(error);

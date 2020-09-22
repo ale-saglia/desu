@@ -20,19 +20,16 @@ public class ConMan {
 
 	public ConMan(Properties config) {
 		this.config = config;
-		this.session = ConMan.getSSHSession(config);
-		this.tempConnection = ConMan.getDBConnection(session, config);
+		this.session = getSSHConnection();
 	}
 
-	public Session getSession() {
+	public Session getSSHConnection() {
+		if(session == null || !session.isConnected())
+			session = ConMan.getSSHSession(config);
 		return session;
 	}
 
-	public void newSession() {
-		this.session = ConMan.getSSHSession(config);
-	}
-
-	public String closeSession() {
+	public String closeSSHConnection() {
 		closeDBConnection();
 		
 		String message = null;
@@ -47,7 +44,7 @@ public class ConMan {
 	
 	public Connection getDBConnection() {
 		try {
-			if(tempConnection.isClosed())
+			if(tempConnection == null || tempConnection.isClosed())
 				tempConnection = ConMan.getDBConnection(session, config);
 			return tempConnection;
 		} catch (SQLException e) {

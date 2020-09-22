@@ -57,12 +57,12 @@ public class Model {
 	}
 
 	public void refreshSession() {
-		if (!conMan.getSession().isConnected())
-			conMan.newSession();
+		if (!conMan.getSSHConnection().isConnected())
+			conMan.getSSHConnection();
 	}
 
 	public String closeSession() {
-		return conMan.closeSession();
+		return conMan.closeSSHConnection();
 	}
 
 	public Properties getConfig() {

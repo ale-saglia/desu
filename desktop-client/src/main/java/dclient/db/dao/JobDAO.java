@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import dclient.model.Job;
 import dclient.model.JobPA;
 
 public class JobDAO {
-	public static List<String> getJobCategories(Connection conn) {
+	public static Collection<String> getJobCategories(Connection conn) {
 		String sql = "select * from jobs.jobs_categories jc";
 		List<String> categories = new ArrayList<String>();
 
@@ -35,7 +36,7 @@ public class JobDAO {
 			return null;
 	}
 
-	public static List<String> getJobTypes(Connection conn) {
+	public static Collection<String> getJobTypes(Connection conn) {
 		String sql = "select * from jobs.job_types jt ";
 		List<String> types = new ArrayList<String>();
 
@@ -145,7 +146,7 @@ public class JobDAO {
 		return job;
 	}
 
-	public static List<Job> getJobs(Connection conn, Account account) {
+	public static Collection<Job> getJobs(Connection conn, Account account) {
 		List<Job> jobs = new LinkedList<Job>();
 		try {
 			PreparedStatement st = conn.prepareStatement(

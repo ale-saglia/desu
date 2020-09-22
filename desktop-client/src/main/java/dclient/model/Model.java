@@ -3,7 +3,7 @@ package dclient.model;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
+import java.util.Collection;
 import java.util.Properties;
 import org.jasypt.properties.EncryptableProperties;
 
@@ -22,8 +22,8 @@ public class Model {
 	ConMan conMan;
 
 	BiMap<String, String> accountCategories;
-	List<String> jobCategories;
-	List<String> jobTypes;
+	Collection<String> jobCategories;
+	Collection<String> jobTypes;
 
 	public Model(String userPassword) throws IOException {
 		config = new Properties();
@@ -48,11 +48,11 @@ public class Model {
 		return accountCategories;
 	}
 
-	public List<String> getJobCategories() {
+	public Collection<String> getJobCategories() {
 		return jobCategories;
 	}
 
-	public List<String> getJobTypes() {
+	public Collection<String> getJobTypes() {
 		return jobTypes;
 	}
 

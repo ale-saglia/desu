@@ -227,7 +227,7 @@ public class NewRSPPController {
 
 			jobDescriptionField.setText(job.getDescription());
 
-			rsppNotes.setText(RsppDAO.getRSPPnote(model.getConMan().getDBConnection(), job.getCustomer().getFiscalCode()));
+			rsppNotes.setText(RsppDAO.getRSPPnote(model.getConMan().getDBConnection(), job.getCustomer()));
 
 			if (job instanceof JobPA) {
 				JobPA jobPA = (JobPA) job;

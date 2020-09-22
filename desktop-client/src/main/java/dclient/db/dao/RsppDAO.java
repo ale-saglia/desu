@@ -19,14 +19,14 @@ import com.google.common.collect.Sets;
 import com.google.common.io.Resources;
 
 import dclient.controllers.visualModels.RSPPtableElement;
-import dclient.db.ConnectDB;
+import dclient.db.ConMan;
 import dclient.model.Account;
 import dclient.model.Invoice;
 import dclient.model.Rspp;
 
 /**
  * This class contains various static method that are specifically related to
- * the RSPP feature ot the program
+ * the RSPP feature of the program
  * 
  * @author Alessandro Saglia
  *
@@ -46,7 +46,7 @@ public class RsppDAO {
 		String sql;
 		List<RSPPtableElement> tableElements = new LinkedList<RSPPtableElement>();
 		try {
-			sql = Resources.toString(ConnectDB.class.getResource("dclient/db/mainViewQuery.sql"), Charsets.UTF_8);
+			sql = Resources.toString(ConMan.class.getResource("mainViewQuery.sql"), Charsets.UTF_8);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
@@ -253,6 +253,15 @@ public class RsppDAO {
 		}
 	}
 
+	/**
+	 * This function retrieve the Rspp of a given Account with the most further end
+	 * date
+	 * 
+	 * @param conn    the Connection object to the DB
+	 * @param account the Account for which you want the Rspp
+	 * @return the Rspp of a given account with the farthest end date or null if
+	 *         none has been found
+	 */
 	public static Rspp getLastRSPP(Connection conn, Account account) {
 		String sql = "select * from deadlines.rspp r, jobs.jobs j where r.rspp_jobid = j.jobs_id and customer = ? order by jobend desc LIMIT 1 ";
 		Rspp rspp = null;
@@ -275,7 +284,16 @@ public class RsppDAO {
 
 	}
 
-	public static int updateNote(Connection conn, String accountID, String note) {
+	/**
+	 * This function update the Rspp note of a given Account and update or create
+	 * (if not exist) the Rspp in the dedicated table
+	 * 
+	 * @param conn    the Connection object to the DB
+	 * @param account the Account for which you want the note to be linked to
+	 * @param note    a String contains the note you want to be on the DB
+	 * @return
+	 */
+	public static int updateNote(Connection conn, Account account, String note) {
 		String query = "INSERT INTO deadlines.rspp_notes (fiscalcode, notes) VALUES ( ? , ? ) ON CONFLICT (fiscalcode) DO UPDATE SET notes = ? ";
 
 		int rowsAffected = 0;
@@ -283,7 +301,7 @@ public class RsppDAO {
 		try {
 			PreparedStatement st = conn.prepareStatement(query);
 
-			st.setString(1, accountID);
+			st.setString(1, account.getFiscalCode());
 			st.setString(2, note);
 			st.setString(3, note);
 
@@ -297,13 +315,20 @@ public class RsppDAO {
 		return rowsAffected;
 	}
 
-	public static String getRSPPnote(Connection conn, String fiscalCode) {
+	/**
+	 * This function retrieve the Rspp note of a given Account
+	 * 
+	 * @param conn    the Connection object to the DB
+	 * @param account the Account for which you want the Rspp note
+	 * @return a String containing the Rspp note of the given account
+	 */
+	public static String getRSPPnote(Connection conn, Account account) {
 		String sql = "select * from deadlines.rspp_notes r where r.fiscalcode = ? ";
 		String notes;
 
 		try {
 			PreparedStatement st = conn.prepareStatement(sql);
-			st.setString(1, fiscalCode);
+			st.setString(1, account.getFiscalCode());
 
 			ResultSet res = st.executeQuery();
 			if (res.next() == false)
@@ -320,6 +345,12 @@ public class RsppDAO {
 		}
 	}
 
+	/**
+	 * @param conn    the Connection object to the DB
+	 * @param rspp
+	 * @param invoice
+	 * @return
+	 */
 	public static int matchRSPPInvoice(Connection conn, Rspp rspp, Invoice invoice) {
 		String query = "insert into deadlines.rspp_invoices (rspp_id, rspp_start, invoice_id) values ( ? , ? , ? ) ";
 		int rowsAffected = 0;
@@ -342,6 +373,12 @@ public class RsppDAO {
 		return rowsAffected;
 	}
 
+	/**
+	 * @param conn          the Connection object to the DB
+	 * @param rspp
+	 * @param invoiceMonths
+	 * @return
+	 */
 	public static int updateInvoiceMonths(Connection conn, Rspp rspp, Set<Integer> invoiceMonths) {
 		String query = "INSERT INTO deadlines.rspp_invoices_months (customer, months) VALUES ( ? , ? ) ON CONFLICT (customer) DO UPDATE SET months = ? ";
 		int rowsAffected = 0;
@@ -364,6 +401,11 @@ public class RsppDAO {
 		return rowsAffected;
 	}
 
+	/**
+	 * @param conn the Connection object to the DB
+	 * @param rspp
+	 * @return
+	 */
 	public static Collection<Integer> getInvoiceMonths(Connection conn, Rspp rspp) {
 		String sql = "select * from deadlines.rspp_invoices_months rim where customer = ? ";
 		Set<Integer> invoiceMonths = null;
@@ -394,7 +436,7 @@ public class RsppDAO {
 	/**
 	 * This function retrieve all Invoice object related to a specific RSPP
 	 * 
-	 * @param conn
+	 * @param conn the Connection object to the DB
 	 * @param rspp
 	 * @return
 	 */

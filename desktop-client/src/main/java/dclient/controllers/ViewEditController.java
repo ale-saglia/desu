@@ -156,7 +156,7 @@ public class ViewEditController {
 
 	public void setRSPP(String jobID, LocalDate jobStart) {
 		rspp = RsppDAO.getRSPP(model.getConMan().getDBConnection(), jobID, jobStart);
-		rsppNote = RsppDAO.getRSPPnote(model.getConMan().getDBConnection(), rspp.getJob().getCustomer().getFiscalCode());
+		rsppNote = RsppDAO.getRSPPnote(model.getConMan().getDBConnection(), rspp.getJob().getCustomer());
 		invoiceMap = rspp.getInvoiceMap();
 
 		invoiceBox.getItems().clear();
@@ -292,7 +292,7 @@ public class ViewEditController {
 				&& !noteField.getText().trim().equals(rsppNote)) {
 			error = FieldsValidator.isRSPPNoteValid(rsppNote);
 			if (error == null) {
-				RsppDAO.updateNote(model.getConMan().getDBConnection(), fiscalCodeText.getText(), noteField.getText());
+				RsppDAO.updateNote(model.getConMan().getDBConnection(), newAccount, noteField.getText());
 				isChanged = true;
 			} else {
 				warningWindows(error);

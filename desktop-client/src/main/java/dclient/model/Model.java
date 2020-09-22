@@ -3,29 +3,25 @@ package dclient.model;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
-
 import org.jasypt.properties.EncryptableProperties;
 
 import com.google.common.collect.BiMap;
 
 import dclient.Key;
-import dclient.controllers.visualModels.RSPPtableElement;
-import dclient.db.dao.RsppDAO;
+import dclient.db.dao.AccountDAO;
+import dclient.db.dao.JobDAO;
+import dclient.db.dao.MainDAO;
 
 public class Model {
 	InputStream cfg;
 	public final static String CONFIG_PATH = System.getProperty("user.home") + "/.dclient/";
 	Properties config;
 
-	RsppDAO dao;
+	MainDAO dao;
 
 	BiMap<String, String> accountCategories;
-
 	List<String> jobCategories;
 	List<String> jobTypes;
 
@@ -35,15 +31,17 @@ public class Model {
 		config = new EncryptableProperties((new Key(userPassword, config)).getEnc());
 		config.load(new FileInputStream(CONFIG_PATH + "config.properties"));
 
-		this.dao = new RsppDAO(config);
+		this.dao = new MainDAO(config);
 
-		accountCategories = dao.getAccountsCategories();
-		jobCategories = dao.getJobCategories();
-		jobTypes = dao.getJobTypes();
+		accountCategories = AccountDAO.getAccountCategories(dao.getDBConnection());
+		jobCategories = JobDAO.getJobCategories(dao.getDBConnection());
+		jobTypes = JobDAO.getJobTypes(dao.getDBConnection());
+		
+		this.dao.closeDBConnection();
 	}
-
-	public Rspp getRSPP(String jobID, LocalDate jobStart) {
-		return dao.getRSPP(jobID, jobStart);
+	
+	public MainDAO getDAO() {
+		return dao;
 	}
 
 	public BiMap<String, String> getAccountCategories() {
@@ -56,14 +54,6 @@ public class Model {
 
 	public List<String> getJobTypes() {
 		return jobTypes;
-	}
-
-	public String getRSPPnote(String fiscalCode) {
-		return dao.getRSPPnote(fiscalCode);
-	}
-
-	public List<RSPPtableElement> getDataForTable() {
-		return dao.getRSPPTable(config);
 	}
 
 	public void refreshSession() {
@@ -79,91 +69,7 @@ public class Model {
 		return config;
 	}
 
-	public void updateAccount(String oldFiscalCode, Account account) {
-		dao.updateAccount(oldFiscalCode, account);
-	}
-
-	public void updateJob(String oldJobCode, Job job) {
-		dao.updateJob(oldJobCode, job);
-	}
-
-	public void updateNote(String accountID, String note) {
-		dao.updateNote(accountID, note);
-	}
-
-	public void updateRSPP(String jobCode, LocalDate oldJobStart, Rspp rspp) {
-		dao.updateRSPP(jobCode, oldJobStart, rspp);
-	}
-
-	public void newInvoice(Invoice invoice) {
-		dao.newInvoice(invoice);
-	}
-
-	public void updateInvoice(String oldInvoiceID, Invoice invoice) {
-		dao.updateInvoice(oldInvoiceID, invoice);
-	}
-
-	public void matchRSPPInvoice(Rspp rspp, Invoice invoice) {
-		dao.matchRSPPInvoice(rspp, invoice);
-	}
-
 	public static String getConfigPath() {
 		return CONFIG_PATH;
-	}
-
-	public int newAccount(Account account) {
-		return dao.newAccount(account);
-	}
-
-	public Account getAccount(String fiscalCode) {
-		return dao.getAccount(fiscalCode);
-	}
-
-	public List<Account> getAllAccounts() {
-		return dao.getAccounts();
-	}
-
-	public List<Job> getAllJobOfAccount(Account account) {
-		return dao.getJobs(account);
-	}
-
-	public int newJob(Job job) {
-		return dao.newJob(job);
-	}
-
-	public int newRSPP(Rspp rspp) {
-		return dao.newRSPP(rspp);
-	}
-
-	public Account getAccountFromVATNumber(String vatNumber) {
-		return dao.getAccountFromVATNumber(vatNumber);
-	}
-
-	public Collection<Rspp> getRSPPSet(Account account) {
-		return dao.getRSPPs(account);
-	}
-
-	public Account getAccount(Invoice invoice) {
-		return dao.getAccount(invoice);
-	}
-
-	public Rspp getLastRSPP(Account account) {
-		return dao.getLastRSPP(account);
-	}
-
-	public int addJobPAInfos(JobPA jobPA) {
-		return dao.addJobPAInfos(jobPA);
-	}
-
-	public Rspp getRSPPfromInvoice(Invoice invoice) {
-		return dao.getRSPP(invoice);
-	}
-
-	public int updateInvoiceMonths(Rspp rspp, Set<Integer> invoiceMonths) {
-		return dao.updateInvoiceMonths(rspp, invoiceMonths);
-	}
-
-	public Set<Integer> getInvoiceMonths(Rspp rspp) {
-		return dao.getInvoiceMonths(rspp);
 	}
 }

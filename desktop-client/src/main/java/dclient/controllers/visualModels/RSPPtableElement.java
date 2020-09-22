@@ -1,5 +1,7 @@
 package dclient.controllers.visualModels;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javafx.beans.property.BooleanProperty;
@@ -40,6 +42,30 @@ public class RSPPtableElement {
 			this.formatter = DateTimeFormatter.ofPattern(dateFormat);
 		else
 			this.formatter = DateTimeFormatter.ISO_DATE;
+	}
+
+	public RSPPtableElement(ResultSet res, String dateFormat) {
+		try {
+			this.jobID = res.getString("jobid");
+			this.jobStart = res.getDate("jobstart").toLocalDate();
+
+			this.jobEnd = new SimpleObjectProperty<LocalDate>(res.getDate("jobend").toLocalDate());
+			this.accountName = new SimpleStringProperty(res.getString("name"));
+			this.accountDescriptor = new SimpleStringProperty(res.getString("descriptor"));
+			this.note = new SimpleStringProperty(res.getString("notes"));
+			this.category = new SimpleStringProperty(res.getString("category"));
+			this.invoiceID = new SimpleStringProperty(res.getString("invoices"));
+			this.payed = new SimpleBooleanProperty(res.getBoolean("payed"));
+
+			if (dateFormat != null)
+				this.formatter = DateTimeFormatter.ofPattern(dateFormat);
+			else
+				this.formatter = DateTimeFormatter.ISO_DATE;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
 	}
 
 	public StringProperty accountNameProperty() {

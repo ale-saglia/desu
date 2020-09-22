@@ -1,11 +1,17 @@
 package dclient.model;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Set;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+
+import dclient.db.dao.InvoiceDAO;
+import dclient.db.dao.JobDAO;
 
 public class Rspp {
 	Job job;
@@ -20,16 +26,23 @@ public class Rspp {
 		this.end = end;
 		this.invoices = invoices;
 	}
-	
+
 	public Rspp(Job job, LocalDate start, LocalDate end) {
 		this.job = job;
 		this.start = start;
 		this.end = end;
 		this.invoices = null;
 	}
-	
-	public void setInvoice(Collection<Invoice> invoices) {
-		this.invoices = invoices;
+
+	public Rspp(Connection conn, ResultSet res) {
+		try {
+			this.job = JobDAO.getJob(conn, res.getString("rspp_jobid"));
+			this.start = res.getDate("jobstart").toLocalDate();
+			this.end = res.getDate("jobend").toLocalDate();
+			this.invoices = InvoiceDAO.getInvoices(conn, this);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public Job getJob() {
@@ -47,13 +60,13 @@ public class Rspp {
 	public Collection<Invoice> getInvoices() {
 		return invoices;
 	}
-	
-	public BiMap<String, Invoice> getInvoiceMap(){
+
+	public BiMap<String, Invoice> getInvoiceMap() {
 		BiMap<String, Invoice> invoiceMap = HashBiMap.create();
-		
-		for(Invoice invoice : invoices)
+
+		for (Invoice invoice : invoices)
 			invoiceMap.put(invoice.getId(), invoice);
-		
+
 		return invoiceMap;
 	}
 
@@ -94,5 +107,4 @@ public class Rspp {
 		return true;
 	}
 
-	
 }

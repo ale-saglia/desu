@@ -1,5 +1,7 @@
 package dclient.model;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 
 public class Invoice implements Comparable<Invoice> {
@@ -18,7 +20,7 @@ public class Invoice implements Comparable<Invoice> {
 		this.type = type;
 		this.payed = payed;
 		this.description = description;
-		
+
 		trimInvoice();
 	}
 
@@ -29,10 +31,10 @@ public class Invoice implements Comparable<Invoice> {
 		this.type = type;
 		this.payed = payed;
 		this.description = description;
-		
+
 		trimInvoice();
 	}
-	
+
 	public Invoice(String number, LocalDate emission, String type, Boolean payed, String description) {
 		try {
 			this.number = Integer.parseInt(number.trim());
@@ -44,14 +46,28 @@ public class Invoice implements Comparable<Invoice> {
 		this.type = type;
 		this.payed = payed;
 		this.description = description;
-		
+
 	}
-	
+
+	public Invoice(ResultSet res) {
+		try {
+			this.id = res.getString("invoiceid");
+			this.number = res.getInt("number");
+			this.emission = res.getDate("emission").toLocalDate();
+			this.type = res.getString("type");
+			this.payed = res.getBoolean("payed");
+			this.description = res.getString("description");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+	}
+
 	private void trimInvoice() {
-		if(id != null)
+		if (id != null)
 			id = id.trim();
-		
-		if(description != null)
+
+		if (description != null)
 			description = description.trim();
 	}
 
@@ -89,7 +105,7 @@ public class Invoice implements Comparable<Invoice> {
 	@Override
 	public int compareTo(Invoice o) {
 		if (this.getEmission().getYear() == o.getEmission().getYear()) {
-			if(this.getType().compareTo(o.getType()) == 0) {
+			if (this.getType().compareTo(o.getType()) == 0) {
 				return (this.getNumber() - o.getNumber());
 			} else
 				return this.getType().compareTo(o.getType());
@@ -153,6 +169,5 @@ public class Invoice implements Comparable<Invoice> {
 			return false;
 		return true;
 	}
-	
-	
+
 }

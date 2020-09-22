@@ -1,5 +1,8 @@
 package dclient.model;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 
 public class JobPA extends Job {
@@ -9,7 +12,7 @@ public class JobPA extends Job {
 
 	public JobPA(String id, String jobCategory, String jobType, String description, Account customer) {
 		super(id, jobCategory, jobType, description, customer);
-		
+
 		trimAccountString();
 	}
 
@@ -18,8 +21,19 @@ public class JobPA extends Job {
 		this.cig = cig;
 		this.decreeNumber = decreeNumber;
 		this.decreeDate = decreeDate;
-		
+
 		trimAccountString();
+	}
+
+	public JobPA(Connection conn, Job job, ResultSet res) {
+		super(conn, res);
+		try {
+			this.cig = res.getString("cig");
+			this.decreeNumber = res.getInt("decree_number");
+			this.decreeDate = res.getDate("decree_date").toLocalDate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public JobPA(Job job, String cig, String decreeNumber, LocalDate decreeDate) {
@@ -44,7 +58,6 @@ public class JobPA extends Job {
 	public LocalDate getDecreeDate() {
 		return decreeDate;
 	}
-
 
 	@Override
 	public int hashCode() {
@@ -84,13 +97,13 @@ public class JobPA extends Job {
 	}
 
 	private void trimAccountString() {
-		if(id != null)
+		if (id != null)
 			id = id.trim();
-		
-		if(description != null)
+
+		if (description != null)
 			description = description.trim();
-		
-		if(cig != null)
+
+		if (cig != null)
 			cig = cig.trim();
 	}
 }

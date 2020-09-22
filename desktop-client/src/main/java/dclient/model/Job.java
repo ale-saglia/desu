@@ -1,5 +1,11 @@
 package dclient.model;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import dclient.db.dao.AccountDAO;
+
 public class Job {
 	String id;
 
@@ -14,8 +20,27 @@ public class Job {
 		this.jobCategory = jobCategory;
 		this.jobType = jobType;
 		this.customer = customer;
-		
+
 		trimAccountString();
+	}
+
+	public Job(Connection conn, ResultSet res) {
+		try {
+			this.id = res.getString("jobs_id");
+			this.description = res.getString("jobs_category");
+			this.jobCategory = res.getString("jobs_type");
+			this.description = res.getString("jobs_description");
+			this.customer = AccountDAO.getAccount(conn, res.getString("customer"));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public boolean isJobCustomerPA() {
+		if(customer.getCategory() == "pa")
+			return true;
+		else
+			return false;
 	}
 
 	public String getId() {
@@ -37,8 +62,6 @@ public class Job {
 	public String getJobType() {
 		return jobType;
 	}
-
-	
 
 	@Override
 	public int hashCode() {
@@ -93,12 +116,12 @@ public class Job {
 	public String toString() {
 		return id;
 	}
-	
+
 	private void trimAccountString() {
-		if(id != null)
+		if (id != null)
 			id = id.trim();
-		
-		if(description != null)
+
+		if (description != null)
 			description = description.trim();
 
 	}

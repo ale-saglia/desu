@@ -22,7 +22,6 @@ public class ConnectDB {
 			e.printStackTrace();
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}
-		System.out.println("Opened database successfully");
 		return conn;
 	}
 }

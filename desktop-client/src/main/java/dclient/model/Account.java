@@ -1,5 +1,7 @@
 package dclient.model;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Set;
 
 public class Account {
@@ -10,7 +12,7 @@ public class Account {
 	String legalAddress;
 	String category;
 	String descriptor;
-	
+
 	Set<Contact> contacts;
 
 	public Account(String fiscalCode, String name, String numberVAT, String atecoCode, String legalAddress,
@@ -21,9 +23,23 @@ public class Account {
 		this.atecoCode = atecoCode;
 		this.legalAddress = legalAddress;
 		this.category = category;
-		this.descriptor = descriptor;;
-		
+		this.descriptor = descriptor;
+
 		trimAccountString();
+	}
+
+	public Account(ResultSet res) {
+		try {
+			this.fiscalCode = res.getString("fiscalcode");
+			this.name = res.getString("name");
+			this.numberVAT = res.getString("numbervat");
+			this.atecoCode = res.getString("atecocode");
+			this.legalAddress = res.getString("legal_address");
+			this.category = res.getString("customer_category");
+			this.descriptor = res.getString("descriptor");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public String getFiscalCode() {
@@ -55,10 +71,8 @@ public class Account {
 	}
 
 	private class Contact {
-		// TODO 
+		// TODO
 	}
-
-
 
 	@Override
 	public int hashCode() {
@@ -131,24 +145,24 @@ public class Account {
 	public String toString() {
 		return "Account [name=" + name + "]";
 	}
-	
+
 	private void trimAccountString() {
-		if(fiscalCode != null)
+		if (fiscalCode != null)
 			fiscalCode = fiscalCode.trim();
-		
-		if(name != null)
+
+		if (name != null)
 			name = name.trim();
-		
-		if(numberVAT != null)
+
+		if (numberVAT != null)
 			numberVAT = numberVAT.trim();
-		
-		if(atecoCode != null)
+
+		if (atecoCode != null)
 			atecoCode = atecoCode.trim();
 
-		if(legalAddress != null)
+		if (legalAddress != null)
 			legalAddress = legalAddress.trim();
-		
-		if(descriptor != null)
+
+		if (descriptor != null)
 			descriptor = descriptor.trim();
 	}
 }

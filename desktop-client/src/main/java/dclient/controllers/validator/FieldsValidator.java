@@ -2,6 +2,8 @@ package dclient.controllers.validator;
 
 import java.time.format.DateTimeFormatter;
 
+import dclient.db.dao.AccountDAO;
+import dclient.db.dao.RsppDAO;
 import dclient.model.*;
 
 public class FieldsValidator {
@@ -9,11 +11,11 @@ public class FieldsValidator {
 	public static String isNewAccountDuplicate(Model model, Account account) {
 		String error = "";
 
-		Account foundAccount = model.getAccount(account.getFiscalCode());
+		Account foundAccount = AccountDAO.getAccount(model.getDAO().getDBConnection(), account.getFiscalCode());
 		if (foundAccount != null)
 			error += "- Il codice fiscale è già presente nel database per " + foundAccount.getName() + "\n";
 
-		foundAccount = model.getAccountFromVATNumber(account.getNumberVAT());
+		foundAccount = AccountDAO.getAccountFromVATNumber(model.getDAO().getDBConnection(), account.getNumberVAT());
 		if (foundAccount != null)
 			error += "- La partita IVA è già presente nel database per " + foundAccount.getName() + "\n";
 
@@ -26,11 +28,11 @@ public class FieldsValidator {
 	public static String isNewInvoiceDuplicate(Model model, Invoice invoice, Rspp rspp) {
 		String error = "";
 
-		Account account = model.getAccount(invoice);
+		Account account = AccountDAO.getAccount(model.getDAO().getDBConnection(), invoice);
 		if (account != null)
 			error += "- La fattura è già presente nel database per " + account.getName();
 
-		Rspp fetchedRSPP= model.getRSPPfromInvoice(invoice);
+		Rspp fetchedRSPP= RsppDAO.getRSPP(model.getDAO().getDBConnection(), invoice);
 		if (fetchedRSPP != null && !rspp.equals(fetchedRSPP))
 			error += "- La fattura inserita è gia presente per la pratica " + fetchedRSPP.getJob().getId()
 					+ " con l'incarico tra il "

@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 
 import dclient.App;
 import dclient.controllers.visualModels.RSPPtableElement;
+import dclient.db.dao.RsppDAO;
 import dclient.model.Model;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
@@ -73,7 +74,8 @@ public class MainController {
 	Model model;
 
 	public void createTable() {
-		rsppElements = FXCollections.observableArrayList(model.getDataForTable());
+		rsppElements = FXCollections.observableArrayList(RsppDAO.getRSPPTable(model.getDAO().getDBConnection(), model.getConfig()));
+		model.getDAO().closeDBConnection();
 		filteredrsppElements = new FilteredList<RSPPtableElement>(rsppElements);
 
 		nameColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("accountName"));

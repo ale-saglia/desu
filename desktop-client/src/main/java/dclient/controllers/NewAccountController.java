@@ -1,6 +1,7 @@
 package dclient.controllers;
 
 import dclient.controllers.validator.FieldsValidator;
+import dclient.db.dao.AccountDAO;
 import dclient.model.Account;
 import dclient.model.Model;
 import javafx.fxml.FXML;
@@ -80,8 +81,8 @@ public class NewAccountController {
 			return;
 		}
 
-		int result = model.newAccount(account);
-
+		int result = AccountDAO.newAccount(model.getDAO().getDBConnection(), account);
+		
 		if (result >= 0) {
 			parent.refreshList();
 			parent.selectAccount(account);

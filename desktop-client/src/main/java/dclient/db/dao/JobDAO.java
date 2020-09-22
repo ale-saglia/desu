@@ -9,33 +9,49 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import dclient.model.Account;
 import dclient.model.Job;
 import dclient.model.JobPA;
 
 public class JobDAO {
-	public static Collection<String> getJobCategories(Connection conn) {
-		String sql = "select * from jobs.jobs_categories jc";
-		List<String> categories = new ArrayList<String>();
+	public static Map<String, Set<String>> getJobCategories(Connection conn) {
+		String sql = "select * from jobs.job_types";
+		Map<String, Set<String>> cat = new TreeMap<String, Set<String>>();
 
 		try {
 			PreparedStatement st = conn.prepareStatement(sql);
 			ResultSet res = st.executeQuery();
-			while (res.next())
-				categories.add(res.getString("categories"));
+			while (res.next()) {
+				if (!cat.containsKey(res.getString("category"))) {
+					cat.put(res.getString("category"), new TreeSet<String>());
+				}
+				cat.get(res.getString("category")).add(res.getString("types"));
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");
 			throw new RuntimeException("Error Connection Database");
 		}
-
-		if (categories.size() > 0)
-			return categories;
-		else
-			return null;
+		return cat;
 	}
 
+	/**
+	 * This function retrieves the categories than can be associated to a Job
+	 * 
+	 * @param conn the Connection object to the DB
+	 * @return a Collection<String> containing all the categories a Job can be
+	 *         categorized of.
+	 */
+
+	/**
+	 * @param conn
+	 * @return
+	 */
 	public static Collection<String> getJobTypes(Connection conn) {
 		String sql = "select * from jobs.job_types jt ";
 		List<String> types = new ArrayList<String>();
@@ -57,6 +73,11 @@ public class JobDAO {
 			return null;
 	}
 
+	/**
+	 * @param conn
+	 * @param job
+	 * @return
+	 */
 	public static int newJob(Connection conn, Job job) {
 		String query = "insert into jobs.jobs (jobs_id, jobs_category, jobs_type, jobs_description, customer) values ( ? , ? , ? , ? , ? ) ";
 		int rowsAffected = 0;
@@ -87,6 +108,12 @@ public class JobDAO {
 		return rowsAffected;
 	}
 
+	/**
+	 * @param conn
+	 * @param job
+	 * @param oldJobCode
+	 * @return
+	 */
 	public static int updateJob(Connection conn, Job job, String oldJobCode) {
 		String query = "update jobs.jobs " + "set jobs_id = ?, jobs_category = ?, jobs_type = ?, jobs_description = ? "
 				+ "where jobs_id = ? ";
@@ -124,6 +151,11 @@ public class JobDAO {
 		return rowsAffected;
 	}
 
+	/**
+	 * @param conn
+	 * @param job_id
+	 * @return
+	 */
 	public static Job getJob(Connection conn, String job_id) {
 		String sql = "select * from jobs.jobs j left join jobs.jobs_pa jp on j.jobs_id = jp.jobs_id where j.jobs_id = ? ";
 		Job job;
@@ -146,6 +178,11 @@ public class JobDAO {
 		return job;
 	}
 
+	/**
+	 * @param conn
+	 * @param account
+	 * @return
+	 */
 	public static Collection<Job> getJobs(Connection conn, Account account) {
 		List<Job> jobs = new LinkedList<Job>();
 		try {
@@ -163,6 +200,11 @@ public class JobDAO {
 		return jobs;
 	}
 
+	/**
+	 * @param conn
+	 * @param jobPA
+	 * @return
+	 */
 	public static int addJobPAInfos(Connection conn, JobPA jobPA) {
 		String query = "insert into jobs.jobs_pa (jobs_id, cig, decree_number, decree_date) values( ? , ? , ? , ? ) "
 				+ "on conflict (jobs_id) do update set cig = ? , decree_number= ? , decree_date= ? ";

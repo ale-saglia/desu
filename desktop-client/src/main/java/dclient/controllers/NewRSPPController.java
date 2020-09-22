@@ -110,8 +110,6 @@ public class NewRSPPController {
 
 		paHbox.managedProperty().bind(paHbox.visibleProperty());
 
-		System.out.println(filteredAccountList);
-
 		accountListView.setItems(filteredAccountList);
 		accountListView.setCellFactory(param -> new ListCell<Account>() {
 			@Override
@@ -138,10 +136,20 @@ public class NewRSPPController {
 
 		jobMap = HashBiMap.create();
 
-		jobCategory.getItems().setAll(model.getJobCategories());
-		jobType.getItems().setAll(model.getJobTypes());
+		jobCategory.getItems().setAll(model.getJobCat().keySet());
+		updateJobCombo();
 
 		model.getConMan().closeDBConnection();
+	}
+
+	@FXML
+	public void updateJobCombo() {
+		if (jobCategory.getSelectionModel().getSelectedItem() == null || model.getJobCat().get(jobCategory.getSelectionModel().getSelectedItem()) == null)
+			jobType.setDisable(true);
+		else {
+			jobType.setDisable(false);
+			jobType.getItems().setAll(model.getJobCat().get(jobCategory.getSelectionModel().getSelectedItem()));
+		}
 	}
 
 	public void addNewAccount() {
@@ -213,16 +221,15 @@ public class NewRSPPController {
 	@FXML
 	public void setFields() {
 		clearFields();
-		System.out.println(jobMap.get(jobCombo.getSelectionModel().getSelectedItem()));
 		if (jobMap.get(jobCombo.getSelectionModel().getSelectedItem()) != null) {
 			Job job = jobMap.get(jobCombo.getSelectionModel().getSelectedItem());
 			setJobFieldsEditable(false);
 			paHbox.setVisible(job instanceof JobPA);
 
 			jobNumber.setText(job.getId());
-			jobCategory.getItems().setAll(model.getJobCategories());
+			jobCategory.getItems().setAll(model.getJobCat().keySet());
 			jobCategory.getSelectionModel().select(job.getJobCategory());
-			jobType.getItems().setAll(model.getJobTypes());
+			updateJobCombo();
 			jobType.getSelectionModel().select(job.getJobType());
 
 			jobDescriptionField.setText(job.getDescription());

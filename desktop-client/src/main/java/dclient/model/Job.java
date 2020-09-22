@@ -27,9 +27,9 @@ public class Job {
 	public Job(Connection conn, ResultSet res) {
 		try {
 			this.id = res.getString("jobs_id");
-			this.description = res.getString("jobs_category");
-			this.jobCategory = res.getString("jobs_type");
 			this.description = res.getString("jobs_description");
+			this.jobCategory = res.getString("jobs_category");
+			this.jobType = res.getString("jobs_type");
 			this.customer = AccountDAO.getAccount(conn, res.getString("customer"));
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -125,5 +125,4 @@ public class Job {
 			description = description.trim();
 
 	}
-
 }

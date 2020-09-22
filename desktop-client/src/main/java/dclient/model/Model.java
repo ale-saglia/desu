@@ -3,8 +3,10 @@ package dclient.model;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+
 import org.jasypt.properties.EncryptableProperties;
 
 import com.google.common.collect.BiMap;
@@ -22,9 +24,8 @@ public class Model {
 	ConMan conMan;
 
 	BiMap<String, String> accountCategories;
-	Collection<String> jobCategories;
-	Collection<String> jobTypes;
-
+	
+	Map<String, Set<String>> jobCategories;
 	public Model(String userPassword) throws IOException {
 		config = new Properties();
 		config.load(new FileInputStream(CONFIG_PATH + "config.properties"));
@@ -35,7 +36,6 @@ public class Model {
 
 		accountCategories = AccountDAO.getAccountCategories(conMan.getDBConnection());
 		jobCategories = JobDAO.getJobCategories(conMan.getDBConnection());
-		jobTypes = JobDAO.getJobTypes(conMan.getDBConnection());
 		
 		this.conMan.closeDBConnection();
 	}
@@ -48,12 +48,8 @@ public class Model {
 		return accountCategories;
 	}
 
-	public Collection<String> getJobCategories() {
+	public Map<String, Set<String>> getJobCat() {
 		return jobCategories;
-	}
-
-	public Collection<String> getJobTypes() {
-		return jobTypes;
 	}
 
 	public void refreshSession() {

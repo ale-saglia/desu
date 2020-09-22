@@ -64,7 +64,7 @@ public class RsppDAO {
 		}
 		return tableElements;
 	}
-
+	
 	/**
 	 * This function create a new RSPP that is passed as parameter. It does nothing
 	 * if another RSPP with same Job ID and start date already exist in the DB
@@ -291,7 +291,7 @@ public class RsppDAO {
 	 * @param conn    the Connection object to the DB
 	 * @param account the Account for which you want the note to be linked to
 	 * @param note    a String contains the note you want to be on the DB
-	 * @return
+	 * @return the number of database row that has been changed by the function
 	 */
 	public static int updateNote(Connection conn, Account account, String note) {
 		String query = "INSERT INTO deadlines.rspp_notes (fiscalcode, notes) VALUES ( ? , ? ) ON CONFLICT (fiscalcode) DO UPDATE SET notes = ? ";
@@ -346,10 +346,13 @@ public class RsppDAO {
 	}
 
 	/**
+	 * This function add to the dedicated table a match between an Rspp and an
+	 * invoice
+	 * 
 	 * @param conn    the Connection object to the DB
-	 * @param rspp
-	 * @param invoice
-	 * @return
+	 * @param rspp    the Rspp you want to me matched
+	 * @param invoice the Invoice you want to me matched
+	 * @return the number of database row that has been changed by the function
 	 */
 	public static int matchRSPPInvoice(Connection conn, Rspp rspp, Invoice invoice) {
 		String query = "insert into deadlines.rspp_invoices (rspp_id, rspp_start, invoice_id) values ( ? , ? , ? ) ";
@@ -402,17 +405,21 @@ public class RsppDAO {
 	}
 
 	/**
-	 * @param conn the Connection object to the DB
-	 * @param rspp
-	 * @return
+	 * This invoice returns a Collection<Integer> containg the month an Rspp has to
+	 * be invoiced
+	 * 
+	 * @param conn    the Connection object to the DB
+	 * @param account the Account for which you want to look the months for
+	 * @return a Collection<Integer> containg the months (from 1 to 12) when the
+	 *         Account needs to be invoiced for Rspp Job
 	 */
-	public static Collection<Integer> getInvoiceMonths(Connection conn, Rspp rspp) {
+	public static Collection<Integer> getInvoiceMonths(Connection conn, Account account) {
 		String sql = "select * from deadlines.rspp_invoices_months rim where customer = ? ";
 		Set<Integer> invoiceMonths = null;
 
 		try {
 			PreparedStatement st = conn.prepareStatement(sql);
-			st.setString(1, rspp.getJob().getCustomer().getFiscalCode());
+			st.setString(1, account.getFiscalCode());
 
 			ResultSet res = st.executeQuery();
 			if (res.next() == false)
@@ -437,8 +444,8 @@ public class RsppDAO {
 	 * This function retrieve all Invoice object related to a specific RSPP
 	 * 
 	 * @param conn the Connection object to the DB
-	 * @param rspp
-	 * @return
+	 * @param rspp the Rspp you want Invoice for
+	 * @return a Collection<Invoice> related to the passed Rspp
 	 */
 	public static Collection<Invoice> getInvoices(Connection conn, Rspp rspp) {
 		String query = "select i.* from( select invoice_id from deadlines.rspp_invoices ri where rspp_id = ? and rspp_start = ?) as vi, invoices.invoices i where vi.invoice_id = i.invoiceid";

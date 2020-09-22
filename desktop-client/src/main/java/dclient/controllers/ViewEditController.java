@@ -81,10 +81,10 @@ public class ViewEditController {
 	private TextField jobdDescriptionField;
 
 	@FXML
-	private ComboBox<String> categoryJobCombo;
+	private ComboBox<String> jobCategory;
 
 	@FXML
-	private ComboBox<String> categoryTypeCombo;
+	private ComboBox<String> jobType;
 
 	@FXML
 	private VBox paReferences;
@@ -150,8 +150,13 @@ public class ViewEditController {
 
 	public void setCombo() {
 		categoryAccountCombo.getItems().setAll(model.getAccountCategories().values());
-		categoryJobCombo.getItems().setAll(model.getJobCategories());
-		categoryTypeCombo.getItems().setAll(model.getJobTypes());
+		jobCategory.getItems().setAll(model.getJobCat().keySet());
+	}
+	
+	@FXML
+	public void updateJobCombo() {
+			jobType.getItems().clear();
+			jobType.getItems().addAll((model.getJobCat().get(jobCategory.getSelectionModel().getSelectedItem())));		
 	}
 
 	public void setRSPP(String jobID, LocalDate jobStart) {
@@ -192,8 +197,10 @@ public class ViewEditController {
 
 	private void setJobs() {
 		jobCodeField.setText(rspp.getJob().getId());
-		categoryJobCombo.setValue(rspp.getJob().getJobCategory());
-		categoryTypeCombo.setValue(rspp.getJob().getJobType());
+		System.out.println(rspp.getJob().getJobCategory() + " - " + rspp.getJob().getJobType());
+		jobCategory.setValue(rspp.getJob().getJobCategory());
+		updateJobCombo();
+		jobType.setValue(rspp.getJob().getJobType());
 		jobdDescriptionField.setText(rspp.getJob().getDescription());
 		noteField.setText(rsppNote);
 
@@ -230,7 +237,7 @@ public class ViewEditController {
 	}
 
 	private void setInvoiceMonth() {
-		invoiceMonths = RsppDAO.getInvoiceMonths(model.getConMan().getDBConnection(), rspp);
+		invoiceMonths = RsppDAO.getInvoiceMonths(model.getConMan().getDBConnection(), rspp.getJob().getCustomer());
 		if (invoiceMonths == null)
 			invoiceMonths = new HashSet<Integer>();
 
@@ -268,7 +275,7 @@ public class ViewEditController {
 		}
 
 		// Check if job needs to be updated
-		newJob = new Job(jobCodeField.getText(), categoryJobCombo.getValue(), categoryTypeCombo.getValue(),
+		newJob = new Job(jobCodeField.getText(), jobCategory.getValue(), jobType.getValue(),
 				jobdDescriptionField.getText(), newAccount);
 		if (rspp.getJob() instanceof JobPA) {
 			newJob = new JobPA(newJob, cigField.getText(), Integer.parseInt(decreeNumberField.getText()),

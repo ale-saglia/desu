@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeSet;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Sets;
@@ -25,15 +26,18 @@ import dclient.model.Rspp;
 
 public class RsppDAO {
 	/**
-	 * @param conn
-	 * @param config
-	 * @return
+	 * This function is meant to be a faster and efficent way to retrieve all te
+	 * data that is shown in the main view of the program
+	 * 
+	 * @param conn the Connection object to the DB
+	 * @param config the configuration file of the program (usually find under the .dclient folder in user settings)
+	 * @return a list of RSPPtableElement to be shown on the main view of the program
 	 */
 	public static List<RSPPtableElement> getRSPPTable(Connection conn, Properties config) {
 		String sql;
 		List<RSPPtableElement> tableElements = new LinkedList<RSPPtableElement>();
 		try {
-			sql = Resources.toString(ConnectDB.class.getResource("mainViewQuery.sql"), Charsets.UTF_8);
+			sql = Resources.toString(ConnectDB.class.getResource("dclient/db/mainViewQuery.sql"), Charsets.UTF_8);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
@@ -215,7 +219,7 @@ public class RsppDAO {
 		}
 
 	}
-	
+
 	public static int updateNote(Connection conn, String accountID, String note) {
 		String query = "INSERT INTO deadlines.rspp_notes (fiscalcode, notes) VALUES ( ? , ? ) ON CONFLICT (fiscalcode) DO UPDATE SET notes = ? ";
 
@@ -260,7 +264,7 @@ public class RsppDAO {
 			throw new RuntimeException("Error Connection Database");
 		}
 	}
-	
+
 	public static int matchRSPPInvoice(Connection conn, Rspp rspp, Invoice invoice) {
 		String query = "insert into deadlines.rspp_invoices (rspp_id, rspp_start, invoice_id) values ( ? , ? , ? ) ";
 		int rowsAffected = 0;
@@ -282,7 +286,7 @@ public class RsppDAO {
 		System.out.println("Rows updated JOBS_INVOICE => " + rowsAffected);
 		return rowsAffected;
 	}
-	
+
 	public static int updateInvoiceMonths(Connection conn, Rspp rspp, Set<Integer> invoiceMonths) {
 		String query = "INSERT INTO deadlines.rspp_invoices_months (customer, months) VALUES ( ? , ? ) ON CONFLICT (customer) DO UPDATE SET months = ? ";
 		int rowsAffected = 0;
@@ -330,5 +334,35 @@ public class RsppDAO {
 			return null;
 		else
 			return invoiceMonths;
+	}
+
+	/**
+	 * This function retrieve all Invoice object related to a specific RSPP
+	 * 
+	 * @param conn
+	 * @param rspp
+	 * @return
+	 */
+	public static Collection<Invoice> getInvoices(Connection conn, Rspp rspp) {
+		String query = "select i.* from( select invoice_id from deadlines.rspp_invoices ri where rspp_id = ? and rspp_start = ?) as vi, invoices.invoices i where vi.invoice_id = i.invoiceid";
+		Set<Invoice> invoicesMap = new TreeSet<Invoice>();
+
+		try {
+			PreparedStatement st = conn.prepareStatement(query);
+
+			st.setString(1, rspp.getJob().getId());
+			st.setDate(2, Date.valueOf(rspp.getStart()));
+
+			ResultSet res = st.executeQuery();
+
+			while (res.next())
+				invoicesMap.add(new Invoice(res));
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+
+		return invoicesMap;
 	}
 }

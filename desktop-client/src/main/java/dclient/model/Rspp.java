@@ -10,8 +10,8 @@ import java.util.Set;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
-import dclient.db.dao.InvoiceDAO;
 import dclient.db.dao.JobDAO;
+import dclient.db.dao.RsppDAO;
 
 public class Rspp {
 	Job job;
@@ -39,7 +39,7 @@ public class Rspp {
 			this.job = JobDAO.getJob(conn, res.getString("rspp_jobid"));
 			this.start = res.getDate("jobstart").toLocalDate();
 			this.end = res.getDate("jobend").toLocalDate();
-			this.invoices = InvoiceDAO.getInvoices(conn, this);
+			this.invoices = RsppDAO.getInvoices(conn, this);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

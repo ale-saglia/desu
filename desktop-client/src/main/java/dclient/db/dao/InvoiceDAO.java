@@ -3,39 +3,20 @@ package dclient.db.dao;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Set;
-import java.util.TreeSet;
 
 import dclient.model.Invoice;
-import dclient.model.Rspp;
 
 public class InvoiceDAO {
-	public static Collection<Invoice> getInvoices(Connection conn, Rspp rspp) {
-		String query = "select i.* from( select invoice_id from deadlines.rspp_invoices ri where rspp_id = ? and rspp_start = ?) as vi, invoices.invoices i where vi.invoice_id = i.invoiceid";
-		Set<Invoice> invoicesMap = new TreeSet<Invoice>();
-
-		try {
-			PreparedStatement st = conn.prepareStatement(query);
-
-			st.setString(1, rspp.getJob().getId());
-			st.setDate(2, Date.valueOf(rspp.getStart()));
-
-			ResultSet res = st.executeQuery();
-			
-			while(res.next())
-				invoicesMap.add(new Invoice(res));
-		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Errore connessione al database");
-			throw new RuntimeException("Error Connection Database");
-		}
-
-		return invoicesMap;
-	}
-	
+	/**
+	 * This function create a new Invoice in the database that correspond to the
+	 * object passed as paramenter. It does nothing if an Invoice with the same code
+	 * is already in the DB
+	 * 
+	 * @param conn    the Connection object to the DB
+	 * @param invoice the Invoice object to be created in the DB
+	 * @return the number of database row that has been changed by the function
+	 */
 	public static int newInvoice(Connection conn, Invoice invoice) {
 		String query = "insert into invoices.invoices (invoiceid, \"number\", emission, \"type\", payed, description) values ( ? , ? , ? , ? , ? , ? ) ";
 		int rowsAffected = 0;
@@ -60,6 +41,15 @@ public class InvoiceDAO {
 		return rowsAffected;
 	}
 
+	/**
+	 * This function update an existing Invoice in the DB to match the passed
+	 * Invoice object. It does nothing if the Invoice doesn't exist in the DB
+	 * 
+	 * @param conn the Connection object to the DB
+	 * @param oldInvoiceID the Invoice id to be updated in the DB
+	 * @param invoice the new updated Invoice that you want on the DB
+	 * @return the number of database row that has been changed by the function
+	 */
 	public static int updateInvoice(Connection conn, String oldInvoiceID, Invoice invoice) {
 		String query = "update invoices.invoices set invoiceid = ? , \"number\" = ? , emission = ? , \"type\" = ? , payed = ?, description = ? where invoiceid = ? ";
 		int rowsAffected = 0;

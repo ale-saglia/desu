@@ -1,4 +1,4 @@
-package dclient.db.dao;
+package dclient.db;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -7,15 +7,12 @@ import java.util.Properties;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
-import dclient.db.ConnectDB;
-import dclient.db.ConnectSSH;
-
-public class MainDAO {
+public class ConMan {
 	Properties config;
 	Session session;
 	private Connection tempConnection;
 
-	public MainDAO(Properties config) {
+	public ConMan(Properties config) {
 		this.config = config;
 		this.session = ConnectSSH.getSession(config);
 		this.tempConnection = ConnectDB.getConnection(session, config);
@@ -30,6 +27,8 @@ public class MainDAO {
 	}
 
 	public String closeSession() {
+		closeDBConnection();
+		
 		String message = null;
 		try {
 			message = "Closing: " + session.getPortForwardingL();
@@ -53,7 +52,8 @@ public class MainDAO {
 	
 	public void closeDBConnection() {
 		try {
-			tempConnection.close();
+			if(!tempConnection.isClosed())
+				tempConnection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

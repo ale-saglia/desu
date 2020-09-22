@@ -81,7 +81,7 @@ public class NewAccountController {
 			return;
 		}
 
-		int result = AccountDAO.newAccount(model.getDAO().getDBConnection(), account);
+		int result = AccountDAO.newAccount(model.getConMan().getDBConnection(), account);
 		
 		if (result >= 0) {
 			parent.refreshList();

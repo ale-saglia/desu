@@ -74,8 +74,8 @@ public class MainController {
 	Model model;
 
 	public void createTable() {
-		rsppElements = FXCollections.observableArrayList(RsppDAO.getRSPPTable(model.getDAO().getDBConnection(), model.getConfig()));
-		model.getDAO().closeDBConnection();
+		rsppElements = FXCollections.observableArrayList(RsppDAO.getRSPPTable(model.getConMan().getDBConnection(), model.getConfig()));
+		model.getConMan().closeDBConnection();
 		filteredrsppElements = new FilteredList<RSPPtableElement>(rsppElements);
 
 		nameColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("accountName"));

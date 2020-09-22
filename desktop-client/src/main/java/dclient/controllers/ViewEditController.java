@@ -1,6 +1,7 @@
 package dclient.controllers;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,7 +45,7 @@ public class ViewEditController {
 
 	private BiMap<String, Invoice> invoiceMap;
 
-	private Set<Integer> invoiceMonthsSet;
+	private Collection<Integer> invoiceMonths;
 	static final ImmutableBiMap<String, Integer> MONTH_MAP = new ImmutableBiMap.Builder<String, Integer>()
 			.put("Gennaio", 1).put("Febbraio", 2).put("Marzo", 3).put("Aprile", 4).put("Maggio", 5).put("Giugno", 6)
 			.put("Luglio", 7).put("Agosto", 8).put("Settembre", 9).put("Ottobre", 10).put("Novembre", 11)
@@ -154,8 +155,8 @@ public class ViewEditController {
 	}
 
 	public void setRSPP(String jobID, LocalDate jobStart) {
-		rspp = RsppDAO.getRSPP(model.getDAO().getDBConnection(), jobID, jobStart);
-		rsppNote = RsppDAO.getRSPPnote(model.getDAO().getDBConnection(), rspp.getJob().getCustomer().getFiscalCode());
+		rspp = RsppDAO.getRSPP(model.getConMan().getDBConnection(), jobID, jobStart);
+		rsppNote = RsppDAO.getRSPPnote(model.getConMan().getDBConnection(), rspp.getJob().getCustomer().getFiscalCode());
 		invoiceMap = rspp.getInvoiceMap();
 
 		invoiceBox.getItems().clear();
@@ -175,7 +176,7 @@ public class ViewEditController {
 		setInvoiceMonth();
 		setInvoice();
 
-		model.getDAO().closeDBConnection();
+		model.getConMan().closeDBConnection();
 		isChanged = false;
 	}
 
@@ -229,11 +230,11 @@ public class ViewEditController {
 	}
 
 	private void setInvoiceMonth() {
-		invoiceMonthsSet = RsppDAO.getInvoiceMonths(model.getDAO().getDBConnection(), rspp);
-		if (invoiceMonthsSet == null)
-			invoiceMonthsSet = new HashSet<Integer>();
+		invoiceMonths = RsppDAO.getInvoiceMonths(model.getConMan().getDBConnection(), rspp);
+		if (invoiceMonths == null)
+			invoiceMonths = new HashSet<Integer>();
 
-		for (Integer month : invoiceMonthsSet) {
+		for (Integer month : invoiceMonths) {
 			invoiceMonthCombo.getCheckModel().check(MONTH_MAP.inverse().get(month));
 		}
 	}
@@ -257,7 +258,7 @@ public class ViewEditController {
 		if (!newAccount.equals(rspp.getJob().getCustomer())) {
 			error = FieldsValidator.isAccountValid(newAccount);
 			if (error == null) {
-				AccountDAO.updateAccount(model.getDAO().getDBConnection(), rspp.getJob().getCustomer().getFiscalCode(), newAccount);
+				AccountDAO.updateAccount(model.getConMan().getDBConnection(), rspp.getJob().getCustomer().getFiscalCode(), newAccount);
 				isChanged = true;
 			} else {
 				warningWindows(error);
@@ -277,7 +278,7 @@ public class ViewEditController {
 			error = FieldsValidator.isJobValid(newJob);
 			if (error == null) {
 				//TODO check if right
-				JobDAO.updateJob(model.getDAO().getDBConnection(), newJob, rspp.getJob().getId());
+				JobDAO.updateJob(model.getConMan().getDBConnection(), newJob, rspp.getJob().getId());
 				isChanged = true;
 			} else {
 				warningWindows(error);
@@ -291,7 +292,7 @@ public class ViewEditController {
 				&& !noteField.getText().trim().equals(rsppNote)) {
 			error = FieldsValidator.isRSPPNoteValid(rsppNote);
 			if (error == null) {
-				RsppDAO.updateNote(model.getDAO().getDBConnection(), fiscalCodeText.getText(), noteField.getText());
+				RsppDAO.updateNote(model.getConMan().getDBConnection(), fiscalCodeText.getText(), noteField.getText());
 				isChanged = true;
 			} else {
 				warningWindows(error);
@@ -305,7 +306,7 @@ public class ViewEditController {
 		if (!newRSPP.equals(rspp)) {
 			error = FieldsValidator.isRSPPChangeValid(newRSPP);
 			if (error == null) {
-				RsppDAO.updateRSPP(model.getDAO().getDBConnection(), rspp.getJob().getId(), rspp.getStart(), newRSPP);
+				RsppDAO.updateRSPP(model.getConMan().getDBConnection(), rspp.getJob().getId(), rspp.getStart(), newRSPP);
 				isChanged = true;
 			} else {
 				warningWindows(error);
@@ -320,8 +321,8 @@ public class ViewEditController {
 			if (invoiceMonthCombo.getCheckModel().isChecked(MONTH_MAP.inverse().get(i)))
 				newInvoiceMonths.add(i);
 		}
-		if (!newInvoiceMonths.equals(invoiceMonthsSet))
-			RsppDAO.updateInvoiceMonths(model.getDAO().getDBConnection(), newRSPP, newInvoiceMonths);
+		if (!newInvoiceMonths.equals(invoiceMonths))
+			RsppDAO.updateInvoiceMonths(model.getConMan().getDBConnection(), newRSPP, newInvoiceMonths);
 
 		// Check if invoice needs to be updated
 		newInvoice = new Invoice(invoiceNumberField.getText(), invoiceEmissionDateField.getValue(),
@@ -340,11 +341,11 @@ public class ViewEditController {
 			}
 
 			if (invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()) == null) {
-				InvoiceDAO.newInvoice(model.getDAO().getDBConnection(), newInvoice);
-				RsppDAO.matchRSPPInvoice(model.getDAO().getDBConnection(), newRSPP, newInvoice);
+				InvoiceDAO.newInvoice(model.getConMan().getDBConnection(), newInvoice);
+				RsppDAO.matchRSPPInvoice(model.getConMan().getDBConnection(), newRSPP, newInvoice);
 				isChanged = true;
 			} else if (!newInvoice.equals(invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()))) {
-				InvoiceDAO.updateInvoice(model.getDAO().getDBConnection(), invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()).getId(), newInvoice);
+				InvoiceDAO.updateInvoice(model.getConMan().getDBConnection(), invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()).getId(), newInvoice);
 				isChanged = true;
 			}
 
@@ -354,7 +355,7 @@ public class ViewEditController {
 			System.out.println("Some elements were modified");
 			mainController.refresh();
 		}
-		model.getDAO().closeDBConnection();
+		model.getConMan().closeDBConnection();
 		closeButtonAction();
 	}
 

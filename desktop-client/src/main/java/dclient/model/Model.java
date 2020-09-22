@@ -10,16 +10,16 @@ import org.jasypt.properties.EncryptableProperties;
 import com.google.common.collect.BiMap;
 
 import dclient.Key;
+import dclient.db.ConMan;
 import dclient.db.dao.AccountDAO;
 import dclient.db.dao.JobDAO;
-import dclient.db.dao.MainDAO;
 
 public class Model {
 	InputStream cfg;
 	public final static String CONFIG_PATH = System.getProperty("user.home") + "/.dclient/";
 	Properties config;
 
-	MainDAO dao;
+	ConMan conMan;
 
 	BiMap<String, String> accountCategories;
 	List<String> jobCategories;
@@ -31,17 +31,17 @@ public class Model {
 		config = new EncryptableProperties((new Key(userPassword, config)).getEnc());
 		config.load(new FileInputStream(CONFIG_PATH + "config.properties"));
 
-		this.dao = new MainDAO(config);
+		this.conMan = new ConMan(config);
 
-		accountCategories = AccountDAO.getAccountCategories(dao.getDBConnection());
-		jobCategories = JobDAO.getJobCategories(dao.getDBConnection());
-		jobTypes = JobDAO.getJobTypes(dao.getDBConnection());
+		accountCategories = AccountDAO.getAccountCategories(conMan.getDBConnection());
+		jobCategories = JobDAO.getJobCategories(conMan.getDBConnection());
+		jobTypes = JobDAO.getJobTypes(conMan.getDBConnection());
 		
-		this.dao.closeDBConnection();
+		this.conMan.closeDBConnection();
 	}
 	
-	public MainDAO getDAO() {
-		return dao;
+	public ConMan getConMan() {
+		return conMan;
 	}
 
 	public BiMap<String, String> getAccountCategories() {
@@ -57,12 +57,12 @@ public class Model {
 	}
 
 	public void refreshSession() {
-		if (!dao.getSession().isConnected())
-			dao.newSession();
+		if (!conMan.getSession().isConnected())
+			conMan.newSession();
 	}
 
 	public String closeSession() {
-		return dao.closeSession();
+		return conMan.closeSession();
 	}
 
 	public Properties getConfig() {

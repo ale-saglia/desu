@@ -24,14 +24,23 @@ import dclient.model.Account;
 import dclient.model.Invoice;
 import dclient.model.Rspp;
 
+/**
+ * This class contains various static method that are specifically related to
+ * the RSPP feature ot the program
+ * 
+ * @author Alessandro Saglia
+ *
+ */
 public class RsppDAO {
 	/**
-	 * This function is meant to be a faster and efficent way to retrieve all te
+	 * This function is meant to be a faster and efficent way to retrieve all the
 	 * data that is shown in the main view of the program
 	 * 
-	 * @param conn the Connection object to the DB
-	 * @param config the configuration file of the program (usually find under the .dclient folder in user settings)
-	 * @return a list of RSPPtableElement to be shown on the main view of the program
+	 * @param conn   the Connection object to the DB
+	 * @param config the configuration file of the program (usually find under the
+	 *               .dclient folder in user settings)
+	 * @return a list of RSPPtableElement to be shown on the main view of the
+	 *         program
 	 */
 	public static List<RSPPtableElement> getRSPPTable(Connection conn, Properties config) {
 		String sql;
@@ -57,9 +66,12 @@ public class RsppDAO {
 	}
 
 	/**
-	 * @param conn
-	 * @param rspp
-	 * @return
+	 * This function create a new RSPP that is passed as parameter. It does nothing
+	 * if another RSPP with same Job ID and start date already exist in the DB
+	 * 
+	 * @param conn the Connection object to the DB
+	 * @param rspp the Rspp object that you want to be created on the DB.
+	 * @return the number of database row that has been changed by the function
 	 */
 	public static int newRSPP(Connection conn, Rspp rspp) {
 		String query = "insert into deadlines.rspp (rspp_jobid, jobstart, jobend) values (?, ?, ?)";
@@ -84,6 +96,17 @@ public class RsppDAO {
 		return 0;
 	}
 
+	/**
+	 * This function update RSPP with the ID and start date passed parameter. It
+	 * does nothing if an RSPP with that Job ID and start date doesn't exist in the
+	 * DB
+	 * 
+	 * @param conn        the Connection object to the DB
+	 * @param jobCode     the Job Id of the Rspp you want to edit
+	 * @param oldJobStart the Job Start of the Rspp you want to edit
+	 * @param rspp        the Rspp object that you want to be on the DB.
+	 * @return the number of database row that has been changed by the function
+	 */
 	public static int updateRSPP(Connection conn, String jobCode, LocalDate oldJobStart, Rspp rspp) {
 		String query = "update deadlines.rspp set jobstart = ? , jobend = ? "
 				+ "where rspp_jobid = ? and jobstart = ? ";
@@ -109,6 +132,13 @@ public class RsppDAO {
 		return rowsAffected;
 	}
 
+	/**
+	 * This function retrieve all the Rspp on the DB and create a collection with
+	 * them
+	 * 
+	 * @param conn the Connection object to the DB
+	 * @return a Collection<Rspp> of all the RSPP on the DB
+	 */
 	public static Collection<Rspp> getRSPPs(Connection conn) {
 		String sql = "select * from deadlines.rspp";
 		List<Rspp> rsppList = new LinkedList<Rspp>();
@@ -131,6 +161,15 @@ public class RsppDAO {
 		}
 	}
 
+	/**
+	 * This function retrieve all the Rspp related to a specific Account on the DB
+	 * and create a collection with them
+	 * 
+	 * @param conn    the Connection object to the DB
+	 * @param account the Account for which you want the related Rspp
+	 * @return a Collection<Rspp> of all the RSPP related on specific Account on the
+	 *         DB
+	 */
 	public static Collection<Rspp> getRSPPs(Connection conn, Account account) {
 		String sql = "select * from deadlines.rspp r, jobs.jobs j where r.rspp_jobid = j.jobs_id and customer = ? ";
 		List<Rspp> rsppList = new LinkedList<Rspp>();
@@ -155,6 +194,13 @@ public class RsppDAO {
 		}
 	}
 
+	/**
+	 * This function retrieve a specific Rspp related to the passed Invoice
+	 * 
+	 * @param conn    the Connection object to the DB
+	 * @param invoice the Invoice for which you want to get the Rspp
+	 * @return the Rspp related to the specific invoice
+	 */
 	public static Rspp getRSPP(Connection conn, Invoice invoice) {
 		String query = "select r.rspp_jobid, r.jobstart, r.jobend from deadlines.rspp r, deadlines.rspp_invoices ri where r.rspp_jobid = ri.rspp_id and r.jobstart = ri.rspp_start and ri.invoice_id = ? ";
 		Rspp rspp = null;
@@ -177,6 +223,15 @@ public class RsppDAO {
 		return rspp;
 	}
 
+	/**
+	 * This function retrieve the Rspp that match the passed Job Id and start date
+	 * 
+	 * @param conn     the Connection object to the DB
+	 * @param jobID    the String containing the searched Job Id
+	 * @param startJob the start date of the searched Rspp
+	 * @return an Rspp that match the job id and start date or null if has not been
+	 *         found
+	 */
 	public static Rspp getRSPP(Connection conn, String jobID, LocalDate startJob) {
 		String sql = "select * from deadlines.rspp r where r.rspp_jobid = ? and r.jobstart = ? ";
 		Rspp rspp;
@@ -309,7 +364,7 @@ public class RsppDAO {
 		return rowsAffected;
 	}
 
-	public static Set<Integer> getInvoiceMonths(Connection conn, Rspp rspp) {
+	public static Collection<Integer> getInvoiceMonths(Connection conn, Rspp rspp) {
 		String sql = "select * from deadlines.rspp_invoices_months rim where customer = ? ";
 		Set<Integer> invoiceMonths = null;
 

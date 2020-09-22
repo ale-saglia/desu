@@ -104,7 +104,7 @@ public class NewRSPPController {
 
 		rsppInfo.setDisable(true);
 
-		accountList = FXCollections.observableArrayList(AccountDAO.getAccounts(model.getDAO().getDBConnection()));
+		accountList = FXCollections.observableArrayList(AccountDAO.getAccounts(model.getConMan().getDBConnection()));
 		filteredAccountList = new FilteredList<Account>(accountList, s -> true);
 		accountListView.setItems(filteredAccountList);
 
@@ -141,7 +141,7 @@ public class NewRSPPController {
 		jobCategory.getItems().setAll(model.getJobCategories());
 		jobType.getItems().setAll(model.getJobTypes());
 
-		model.getDAO().closeDBConnection();
+		model.getConMan().closeDBConnection();
 	}
 
 	public void addNewAccount() {
@@ -169,9 +169,9 @@ public class NewRSPPController {
 	}
 
 	public void refreshList() {
-		accountList.setAll(AccountDAO.getAccounts(model.getDAO().getDBConnection()));
+		accountList.setAll(AccountDAO.getAccounts(model.getConMan().getDBConnection()));
 		accountListView.refresh();
-		model.getDAO().closeDBConnection();
+		model.getConMan().closeDBConnection();
 	}
 
 	public void selectAccount(Account keyAccount) {
@@ -190,7 +190,7 @@ public class NewRSPPController {
 		}
 
 		jobMap.clear();
-		for (Job job : JobDAO.getJobs(model.getDAO().getDBConnection(),
+		for (Job job : JobDAO.getJobs(model.getConMan().getDBConnection(),
 				accountListView.getSelectionModel().getSelectedItem()))
 			jobMap.put(job.getId(), job);
 
@@ -227,7 +227,7 @@ public class NewRSPPController {
 
 			jobDescriptionField.setText(job.getDescription());
 
-			rsppNotes.setText(RsppDAO.getRSPPnote(model.getDAO().getDBConnection(), job.getCustomer().getFiscalCode()));
+			rsppNotes.setText(RsppDAO.getRSPPnote(model.getConMan().getDBConnection(), job.getCustomer().getFiscalCode()));
 
 			if (job instanceof JobPA) {
 				JobPA jobPA = (JobPA) job;
@@ -236,7 +236,7 @@ public class NewRSPPController {
 				decreeDateField.setValue(jobPA.getDecreeDate());
 			}
 
-			Rspp lastRSPP = RsppDAO.getLastRSPP(model.getDAO().getDBConnection(),
+			Rspp lastRSPP = RsppDAO.getLastRSPP(model.getConMan().getDBConnection(),
 					accountListView.getSelectionModel().getSelectedItem());
 			if (lastRSPP != null) {
 				rsppStart.setValue(lastRSPP.getEnd().plusDays(1));
@@ -253,7 +253,7 @@ public class NewRSPPController {
 			setJobFieldsEditable(true);
 			paHbox.setVisible(accountListView.getSelectionModel().getSelectedItem().getCategory().contains("pa"));
 		}
-		model.getDAO().closeDBConnection();
+		model.getConMan().closeDBConnection();
 	}
 
 	private void clearFields() {
@@ -292,7 +292,7 @@ public class NewRSPPController {
 			String error = FieldsValidator.isJobValid(jobPA);
 
 			if (error == null)
-				JobDAO.addJobPAInfos(model.getDAO().getDBConnection(), jobPA);
+				JobDAO.addJobPAInfos(model.getConMan().getDBConnection(), jobPA);
 			else {
 				warningWindows(error);
 				return;
@@ -308,12 +308,12 @@ public class NewRSPPController {
 			String error = FieldsValidator.isJobValid(job);
 			if (error == null) {
 				if (!accountListView.getSelectionModel().getSelectedItem().getCategory().contains("pa"))
-					JobDAO.newJob(model.getDAO().getDBConnection(), job);
+					JobDAO.newJob(model.getConMan().getDBConnection(), job);
 				else {
 					job = new JobPA(job, cigField.getText(), decreeNumberField.getText(), decreeDateField.getValue());
 					error = FieldsValidator.isJobValid(job);
 					if (error == null)
-						JobDAO.newJob(model.getDAO().getDBConnection(), job);
+						JobDAO.newJob(model.getConMan().getDBConnection(), job);
 					else {
 						warningWindows(error);
 						return;
@@ -332,7 +332,7 @@ public class NewRSPPController {
 		Rspp rspp = new Rspp(job, rsppStart.getValue(), rsppEnd.getValue());
 		String error = FieldsValidator.isRSPPChangeValid(rspp);
 		if (error == null) {
-			RsppDAO.newRSPP(model.getDAO().getDBConnection(), rspp);
+			RsppDAO.newRSPP(model.getConMan().getDBConnection(), rspp);
 		} else
 			warningWindows(error);
 		enterAccount();

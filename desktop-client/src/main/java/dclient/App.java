@@ -12,6 +12,9 @@ import javafx.stage.Stage;
  * JavaFX App
  */
 public class App extends Application {
+	private static final int FIXED_WIDTH = 230;
+	private static final int FIXED_HEIGHT = 45;
+
 	@Override
 	public void start(Stage stage) {
 
@@ -24,6 +27,7 @@ public class App extends Application {
 			
 			scene.getStylesheets().add(PasswordController.class.getResource("application.css").toExternalForm());
 			stage.setScene(scene);
+			stage.setResizable(false);
 			stage.setTitle("Accedi");
 			stage.getIcons().add(new Image(App.class.getResourceAsStream("logo.png")));
 			stage.show();

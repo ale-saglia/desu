@@ -113,7 +113,6 @@ public class ConMan {
 
 		try {
 			// DB connection
-			Class.forName("org.postgresql.Driver");
 			String dbString = "jdbc:postgresql://" + config.getProperty("db.host") + ":" + session.setPortForwardingL(0,
 					config.getProperty("db.host"), Integer.parseInt(config.getProperty("db.port"))) + "/"
 					+ config.getProperty("db.database");

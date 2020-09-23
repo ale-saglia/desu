@@ -18,7 +18,7 @@ import dclient.db.dao.JobDAO;
 
 public class Model {
 	InputStream cfg;
-	public final static String CONFIG_PATH = System.getProperty("user.home") + "/.dclient/";
+	public static final String CONFIG_PATH = System.getProperty("user.home") + "/.dclient/";
 	Properties config;
 
 	ConMan conMan;

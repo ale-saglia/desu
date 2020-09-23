@@ -45,7 +45,7 @@ public class NewRSPPController {
 
 	BiMap<String, Job> jobMap;
 
-	final String NEW_RSPP = "Nuovo...";
+	static final String NEW_RSPP = "Nuovo...";
 
 	ObservableList<Account> accountList;
 	FilteredList<Account> filteredAccountList;
@@ -125,7 +125,7 @@ public class NewRSPPController {
 		});
 
 		filteredAccountList.predicateProperty().bind(javafx.beans.binding.Bindings.createObjectBinding(() -> {
-			// TODO search in both account name and descriptor
+			//TODO search in both account name and descriptor
 			String text = accountSearch.getText();
 			if (text == null || text.isEmpty()) {
 				return null;
@@ -336,10 +336,10 @@ public class NewRSPPController {
 
 		}
 
-		Rspp rspp = new Rspp(job, rsppStart.getValue(), rsppEnd.getValue());
-		String error = FieldsValidator.isRSPPChangeValid(rspp);
+		Rspp newRspp = new Rspp(job, rsppStart.getValue(), rsppEnd.getValue());
+		String error = FieldsValidator.isRSPPChangeValid(newRspp);
 		if (error == null) {
-			RsppDAO.newRSPP(model.getConMan().getDBConnection(), rspp);
+			RsppDAO.newRSPP(model.getConMan().getDBConnection(), newRspp);
 		} else
 			warningWindows(error);
 		enterAccount();

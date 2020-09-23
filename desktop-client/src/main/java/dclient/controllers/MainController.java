@@ -4,6 +4,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Predicate;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import dclient.DClient;
 import dclient.controllers.visualModels.RSPPtableElement;
 import dclient.db.dao.RsppDAO;
@@ -67,6 +70,8 @@ public class MainController {
 	@FXML
 	private Button viewEditButton;
 
+	private static Logger logger = LoggerFactory.getLogger("DClient");
+
 	private ObservableList<RSPPtableElement> rsppElements;
 	private FilteredList<RSPPtableElement> filteredrsppElements;
 	private SortedList<RSPPtableElement> sortedFilteredrsppElements;
@@ -74,9 +79,10 @@ public class MainController {
 	Model model;
 
 	public void createTable() {
-		rsppElements = FXCollections.observableArrayList(RsppDAO.getRSPPTable(model.getConMan().getDBConnection(), model.getConfig()));
+		rsppElements = FXCollections
+				.observableArrayList(RsppDAO.getRSPPTable(model.getConMan().getDBConnection(), model.getConfig()));
 		model.getConMan().closeDBConnection();
-		filteredrsppElements = new FilteredList<RSPPtableElement>(rsppElements);
+		filteredrsppElements = new FilteredList<>(rsppElements);
 
 		nameColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("accountName"));
 		deadlineColumn.setCellValueFactory(cellData -> cellData.getValue().jobEndProperty());
@@ -91,7 +97,8 @@ public class MainController {
 						setText(null);
 						setStyle("");
 					} else {
-						setText(DateTimeFormatter.ofPattern(model.getConfig().getProperty("dateFormat", "dd/MM/yyyy")).format(item));
+						setText(DateTimeFormatter.ofPattern(model.getConfig().getProperty("dateFormat", "dd/MM/yyyy"))
+								.format(item));
 					}
 				}
 			};
@@ -102,7 +109,6 @@ public class MainController {
 		payedColumn.setCellFactory(tc -> new CheckBoxTableCell<>());
 
 		noteColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("note"));
-
 
 		final ObjectProperty<Predicate<RSPPtableElement>> textFilter = new SimpleObjectProperty<>();
 		final ObjectProperty<Predicate<RSPPtableElement>> dateFilter = new SimpleObjectProperty<>();
@@ -136,24 +142,14 @@ public class MainController {
 	}
 
 	private boolean textFilter(final RSPPtableElement rspp) {
-		if (searchField.getText().isEmpty())
-			return true;
-
-		if (rspp.getAccountName() != null
-				&& rspp.getAccountName().toLowerCase().contains(searchField.getText().toLowerCase()))
-			return true;
-
-		if (rspp.getAccountDescriptor() != null
-				&& rspp.getAccountDescriptor().toLowerCase().contains(searchField.getText().toLowerCase()))
-			return true;
-
-		return false;
+		return (searchField.getText().isEmpty() || rspp.getAccountName() != null || (rspp.getAccountDescriptor() != null
+				&& rspp.getAccountDescriptor().toLowerCase().contains(searchField.getText().toLowerCase())));
 	}
 
 	private boolean dateFilter(final RSPPtableElement rspp) {
 		if (checkBoxDeadline.isSelected()) {
-			if (rspp.jobEndDate().isAfter(LocalDate.now()) && rspp.jobEndDate().isBefore(
-					LocalDate.now().plusDays(Integer.parseInt(model.getConfig().getProperty("rsppTable.daysAdvance", "14")))))
+			if (rspp.jobEndDate().isAfter(LocalDate.now()) && rspp.jobEndDate().isBefore(LocalDate.now()
+					.plusDays(Integer.parseInt(model.getConfig().getProperty("rsppTable.daysAdvance", "14")))))
 				return true;
 			else
 				return false;

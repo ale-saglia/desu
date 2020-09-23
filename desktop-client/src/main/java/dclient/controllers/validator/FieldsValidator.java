@@ -19,10 +19,7 @@ public class FieldsValidator {
 		if (foundAccount != null)
 			error += "- La partita IVA è già presente nel database per " + foundAccount.getName() + "\n";
 
-		if (error.isEmpty())
-			return null;
-		else
-			return error.trim();
+		return returnManager(error);
 	}
 
 	public static String isNewInvoiceDuplicate(Model model, Invoice invoice, Rspp rspp) {
@@ -32,17 +29,16 @@ public class FieldsValidator {
 		if (account != null)
 			error += "- La fattura è già presente nel database per " + account.getName();
 
-		Rspp fetchedRSPP= RsppDAO.getRSPP(model.getConMan().getDBConnection(), invoice);
+		Rspp fetchedRSPP = RsppDAO.getRSPP(model.getConMan().getDBConnection(), invoice);
 		if (fetchedRSPP != null && !rspp.equals(fetchedRSPP))
 			error += "- La fattura inserita è gia presente per la pratica " + fetchedRSPP.getJob().getId()
 					+ " con l'incarico tra il "
-					+ fetchedRSPP.getStart().format(DateTimeFormatter.ofPattern(model.getConfig().getProperty("dateFormat")))
-					+ " e il " + fetchedRSPP.getEnd().format(DateTimeFormatter.ofPattern(model.getConfig().getProperty("dateFormat")));
+					+ fetchedRSPP.getStart()
+							.format(DateTimeFormatter.ofPattern(model.getConfig().getProperty("dateFormat")))
+					+ " e il " + fetchedRSPP.getEnd()
+							.format(DateTimeFormatter.ofPattern(model.getConfig().getProperty("dateFormat")));
 
-		if (error.isEmpty())
-			return null;
-		else
-			return error.trim();
+		return returnManager(error);
 	}
 
 	/**
@@ -54,25 +50,20 @@ public class FieldsValidator {
 	public static String isAccountValid(Account account) {
 		String error = "";
 
-		if (account.getName() == null && account.getName().isBlank())
+		if (account.getName() == null)
 			error += "- La ragione sociale non può essere vuota\n";
 
 		if (account.getFiscalCode() == null)
 			error += "- Il codice fiscale non può essere nullo\n";
-		else {
-			String fiscaleCodeValidator = FiscalCodeValidator.validate(account.getFiscalCode());
-			if (fiscaleCodeValidator != null)
-				error += "- Il codice fiscale non è valido: " + fiscaleCodeValidator + "\n";
-		}
+		else if (FiscalCodeValidator.validate(account.getFiscalCode()) != null)
+			error += "- Il codice fiscale non è valido: " + FiscalCodeValidator.validate(account.getFiscalCode())
+					+ "\n";
 
 		if ((account.getNumberVAT() == null || account.getNumberVAT().isEmpty())
 				&& !account.getCategory().contains("b2c"))
 			error += "- La partita IVA non può essere nulla\n";
-		else {
-			String vatNumberValidator = VATNumberValidator.validate(account.getNumberVAT());
-			if (vatNumberValidator != null)
-				error += "- La partita IVA non è valida: " + vatNumberValidator + "\n";
-		}
+		else if (VATNumberValidator.validate(account.getNumberVAT()) != null)
+			error += "- La partita IVA non è valida: " + VATNumberValidator.validate(account.getNumberVAT()) + "\n";
 
 		if (account.getCategory() == null)
 			error += "- La categoria dell'account non può essere vuota\n";
@@ -83,10 +74,7 @@ public class FieldsValidator {
 
 		// TODO find a way to validate address
 
-		if (error.isEmpty())
-			return null;
-		else
-			return error.trim().trim();
+		return returnManager(error);
 	}
 
 	public static String isJobValid(Job job) {
@@ -99,16 +87,10 @@ public class FieldsValidator {
 				|| job.getJobType().isEmpty())
 			error += "- La categoria e/o la sottocategoria non sono state inserite\n";
 
-		if (job instanceof JobPA) {
-			String paError = isJobPAValid((JobPA) job);
-			if (paError != null)
-				error += paError;
-		}
+		if (job instanceof JobPA && isJobPAValid((JobPA) job) != null)
+			error += isJobPAValid((JobPA) job);
 
-		if (error.isEmpty())
-			return null;
-		else
-			return error.trim();
+		return returnManager(error);
 	}
 
 	public static String isRSPPNoteValid(String note) {
@@ -121,43 +103,37 @@ public class FieldsValidator {
 
 		if (rspp.getStart() == null || rspp.getEnd() == null)
 			error += "- La data di inzio incarico e/o la data di inizio incarico devono essere inserite\n";
-		else {
-			if (rspp.getStart().isAfter(rspp.getEnd()) || rspp.getStart().equals(rspp.getEnd()))
-				error += "- La data di inizio dell'incarico deve essere precedente a quella di fine dell'incarico\n";
-		}
+		else if (rspp.getStart().isAfter(rspp.getEnd()) || rspp.getStart().equals(rspp.getEnd()))
+			error += "- La data di inizio dell'incarico deve essere precedente a quella di fine dell'incarico\n";
 
-		if (error.isEmpty())
-			return null;
-		else
-			return error.trim();
+		return returnManager(error);
 	}
 
 	public static String isInvoiceValid(Invoice invoice) {
 		String error = "";
 
-		if (invoice.getNumber() != null) {
-			if (invoice.getNumber() <= 0)
-				error += "- La fattura deve essere un numero maggiore di 0\n";
-		} else
+		if (invoice.getNumber() == null)
 			error += "- La fattura non è un numero valido\n";
+		else if (invoice.getNumber() <= 0)
+			error += "- La fattura deve essere un numero maggiore di 0\n";
 
-		if (error.isEmpty())
-			return null;
-		else
-			return error.trim();
+		return returnManager(error);
 	}
 
 	private static String isJobPAValid(JobPA job) {
 		String error = "";
 
-		if (job.getDecreeNumber() != null) {
-			if (job.getDecreeNumber() < 0)
-				error += "- Il numero deve essere un numero maggiore di 0\n";
-		} else
+		if (job.getDecreeNumber() == null)
 			error += "- Il numero di determina non è in un formato valido\n";
+		else if (job.getDecreeNumber() < 0)
+			error += "- Il numero deve essere un numero maggiore di 0\n";
 
 		if (!job.getCig().matches("^[a-zA-Z0-9]{10,}$"))
 			error += "- Il CIG non è in un formato valido\n";
+		return returnManager(error);
+	}
+
+	private static String returnManager(String error) {
 		if (error.isEmpty())
 			return null;
 		else

@@ -16,7 +16,7 @@ public class Key {
 		this.config = config;
 		enc = new StandardPBEStringEncryptor();
 		enc.setAlgorithm(config.getProperty("enc.algorithm"));
-		enc.setPassword(hashPassword(password, System.getenv().get(config.getProperty("env.varName").toString())));
+		enc.setPassword(hashPassword(password, System.getenv().get(config.getProperty("env.varName"))));
 		enc.setIvGenerator(new RandomIvGenerator());
 	}
 

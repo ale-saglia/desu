@@ -8,7 +8,7 @@ module dclient {
 	requires transitive jasypt;
 	requires javafx.graphics;
 	requires com.google.common;
-	requires java.logging;
+	requires org.slf4j;
 	requires javafx.base;
 	requires org.controlsfx.controls;
 

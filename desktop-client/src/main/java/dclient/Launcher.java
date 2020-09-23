@@ -11,7 +11,7 @@ public class Launcher {
 		}
 		
 		else
-			App.main(args);
+			DClient.main(args);
 	}
 
 }

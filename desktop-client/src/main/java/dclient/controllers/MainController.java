@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Predicate;
 
-import dclient.App;
+import dclient.DClient;
 import dclient.controllers.visualModels.RSPPtableElement;
 import dclient.db.dao.RsppDAO;
 import dclient.model.Model;
@@ -202,7 +202,7 @@ public class MainController {
 				scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 				stage.setScene(scene);
 				stage.setTitle("Visualizza e/o modifica " + selectedItems.getAccountName());
-				stage.getIcons().add(new Image(App.class.getResourceAsStream("logo.png")));
+				stage.getIcons().add(new Image(DClient.class.getResourceAsStream("logo.png")));
 				stage.show();
 
 			} catch (final Exception e) {
@@ -234,7 +234,7 @@ public class MainController {
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			stage.setScene(scene);
 			stage.setTitle("Crea un nuovo RSPP");
-			stage.getIcons().add(new Image(App.class.getResourceAsStream("logo.png")));
+			stage.getIcons().add(new Image(DClient.class.getResourceAsStream("logo.png")));
 			stage.show();
 
 		} catch (final Exception e) {

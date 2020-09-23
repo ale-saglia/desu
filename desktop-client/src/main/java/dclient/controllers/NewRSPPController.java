@@ -5,7 +5,7 @@ import java.time.Period;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
-import dclient.App;
+import dclient.DClient;
 import dclient.controllers.validator.FieldsValidator;
 import dclient.db.dao.AccountDAO;
 import dclient.db.dao.JobDAO;
@@ -168,7 +168,7 @@ public class NewRSPPController {
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			stage.setScene(scene);
 			stage.setTitle("Crea campo anagrafica");
-			stage.getIcons().add(new Image(App.class.getResourceAsStream("logo.png")));
+			stage.getIcons().add(new Image(DClient.class.getResourceAsStream("logo.png")));
 			stage.show();
 
 		} catch (final Exception e) {

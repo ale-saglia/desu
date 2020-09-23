@@ -24,6 +24,7 @@ public class DClient extends Application {
 			
 			scene.getStylesheets().add(PasswordController.class.getResource("application.css").toExternalForm());
 			stage.setScene(scene);
+			stage.setResizable(false);
 			stage.setTitle("Accedi");
 			stage.getIcons().add(new Image(DClient.class.getResourceAsStream("logo.png")));
 			stage.show();

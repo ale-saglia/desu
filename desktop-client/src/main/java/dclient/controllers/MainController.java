@@ -230,7 +230,9 @@ public class MainController {
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			stage.setScene(scene);
 			stage.setTitle("Crea un nuovo RSPP");
-			stage.getIcons().add(new Image(DClient.class.getResourceAsStream("logo.png")));
+			stage.setMinHeight(745);
+			stage.setMinWidth(745);
+			stage.getIcons().add(new Image(App.class.getResourceAsStream("logo.png")));
 			stage.show();
 
 		} catch (final Exception e) {

@@ -35,6 +35,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 public class MainController {
 	@FXML
@@ -72,13 +73,13 @@ public class MainController {
 
 	private static Logger logger = LoggerFactory.getLogger("DClient");
 
-	private ObservableList<RSPPtableElement> rsppElements;
-	private FilteredList<RSPPtableElement> filteredrsppElements;
-	private SortedList<RSPPtableElement> sortedFilteredrsppElements;
-
 	Model model;
 
 	public void createTable() {
+		ObservableList<RSPPtableElement> rsppElements;
+		FilteredList<RSPPtableElement> filteredrsppElements;
+		SortedList<RSPPtableElement> sortedFilteredrsppElements;
+
 		rsppElements = FXCollections
 				.observableArrayList(RsppDAO.getRSPPTable(model.getConMan().getDBConnection(), model.getConfig()));
 		model.getConMan().closeDBConnection();
@@ -87,22 +88,28 @@ public class MainController {
 		nameColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("accountName"));
 		deadlineColumn.setCellValueFactory(cellData -> cellData.getValue().jobEndProperty());
 
-		deadlineColumn.setCellFactory(column -> {
-			return new TableCell<RSPPtableElement, LocalDate>() {
-				@Override
-				protected void updateItem(LocalDate item, boolean empty) {
-					super.updateItem(item, empty);
+		deadlineColumn.setCellFactory(
+				new Callback<TableColumn<RSPPtableElement, LocalDate>, TableCell<RSPPtableElement, LocalDate>>() {
+					@Override
+					public TableCell<RSPPtableElement, LocalDate> call(
+							TableColumn<RSPPtableElement, LocalDate> column) {
+						return new TableCell<RSPPtableElement, LocalDate>() {
+							@Override
+							protected void updateItem(LocalDate item, boolean empty) {
+								super.updateItem(item, empty);
 
-					if (item == null || empty) {
-						setText(null);
-						setStyle("");
-					} else {
-						setText(DateTimeFormatter.ofPattern(model.getConfig().getProperty("dateFormat", "dd/MM/yyyy"))
-								.format(item));
+								if (item == null || empty) {
+									setText(null);
+									setStyle("");
+								} else {
+									setText(DateTimeFormatter
+											.ofPattern(model.getConfig().getProperty("dateFormat", "dd/MM/yyyy"))
+											.format(item));
+								}
+							}
+						};
 					}
-				}
-			};
-		});
+				});
 		invoiceColumn.setCellValueFactory(new PropertyValueFactory<RSPPtableElement, String>("invoiceID"));
 
 		payedColumn.setCellValueFactory(f -> f.getValue().payedProperty());
@@ -231,7 +238,7 @@ public class MainController {
 			stage.show();
 
 		} catch (final Exception e) {
-			logger.error("Error opening new RSPP view:\n" + e.getMessage());
+			logger.error("Error opening new RSPP view:\n".concat(e.getMessage()));
 		}
 	}
 }

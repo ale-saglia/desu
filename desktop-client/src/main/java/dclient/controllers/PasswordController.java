@@ -2,6 +2,9 @@ package dclient.controllers;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import dclient.DClient;
 import dclient.model.Model;
 import javafx.application.Platform;
@@ -16,6 +19,8 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 public class PasswordController {
+	private static Logger logger = LoggerFactory.getLogger(DClient.class);
+
 	@FXML
 	private PasswordField passwordField;
 
@@ -64,13 +69,11 @@ public class PasswordController {
 			stage.setTitle("Scadenziario RSPP");
 			stage.getIcons().add(new Image(DClient.class.getResourceAsStream("logo.png")));
 			stage.show();
-			stage.setOnCloseRequest((EventHandler<WindowEvent>) new EventHandler<WindowEvent>() {
-				public void handle(WindowEvent we) {
-					System.out.println("\n" + model.closeSession());
+			stage.setOnCloseRequest((EventHandler<WindowEvent>) we -> {
+				logger.info("\n" + model.closeSession());
 
-					Platform.exit();
-					System.exit(0);
-				}
+				Platform.exit();
+				System.exit(0);
 			});
 
 		} catch (IOException e) {

@@ -148,23 +148,17 @@ public class MainController {
 
 	private boolean dateFilter(final RSPPtableElement rspp) {
 		if (checkBoxDeadline.isSelected()) {
-			if (rspp.jobEndDate().isAfter(LocalDate.now()) && rspp.jobEndDate().isBefore(LocalDate.now()
-					.plusDays(Integer.parseInt(model.getConfig().getProperty("rsppTable.daysAdvance", "14")))))
-				return true;
-			else
-				return false;
+			return rspp.jobEndDate().isAfter(LocalDate.now()) && rspp.jobEndDate().isBefore(LocalDate.now()
+					.plusDays(Integer.parseInt(model.getConfig().getProperty("rsppTable.daysAdvance", "14"))));
 		}
 		return true;
 	}
 
 	private boolean payedFilter(final RSPPtableElement rspp) {
-		if (checkBoxPayed.isSelected()) {
-			if (!rspp.getPayed())
-				return true;
-			else
-				return false;
-		}
-		return true;
+		if (checkBoxPayed.isSelected())
+			return !rspp.getPayed();
+		else
+			return true;
 	}
 
 	public void setModel(final Model model) {
@@ -202,7 +196,8 @@ public class MainController {
 				stage.show();
 
 			} catch (final Exception e) {
-				e.printStackTrace();
+				logger.error(
+						"Error opening edit view for element:\n" + selectedItems.toString() + "\n" + e.getMessage());
 			}
 		} else {
 			final Alert alert = new Alert(AlertType.WARNING);
@@ -232,11 +227,11 @@ public class MainController {
 			stage.setTitle("Crea un nuovo RSPP");
 			stage.setMinHeight(745);
 			stage.setMinWidth(745);
-			stage.getIcons().add(new Image(App.class.getResourceAsStream("logo.png")));
+			stage.getIcons().add(new Image(DClient.class.getResourceAsStream("logo.png")));
 			stage.show();
 
 		} catch (final Exception e) {
-			e.printStackTrace();
+			logger.error("Error opening new RSPP view:\n" + e.getMessage());
 		}
 	}
 }

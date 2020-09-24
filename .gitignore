@@ -18,7 +18,7 @@
 #########################################################
 
 #RSPP mail
-server-Side-Scripts/conf.yaml
+*.yaml
 
 
 #########################################################
@@ -29,7 +29,6 @@ server-Side-Scripts/conf.yaml
 
 # Ignore config files
 *.properties
-*.prefs
 
 # Java BUILD files
 desktop-client/bin

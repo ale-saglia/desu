@@ -10,12 +10,6 @@ public class JobPA extends Job {
 	Integer decreeNumber;
 	LocalDate decreeDate;
 
-	public JobPA(String id, String jobCategory, String jobType, String description, Account customer) {
-		super(id, jobCategory, jobType, description, customer);
-
-		trimAccountString();
-	}
-
 	public JobPA(Job job, String cig, int decreeNumber, LocalDate decreeDate) {
 		super(job.getId(), job.getJobCategory(), job.getJobType(), job.getDescription(), job.getCustomer());
 		this.cig = cig;
@@ -25,12 +19,20 @@ public class JobPA extends Job {
 		trimAccountString();
 	}
 
-	public JobPA(Connection conn, Job job, ResultSet res) {
+	public JobPA(Connection conn, ResultSet res) {
 		super(conn, res);
 		try {
 			this.cig = res.getString("cig");
-			this.decreeNumber = res.getInt("decree_number");
-			this.decreeDate = res.getDate("decree_date").toLocalDate();
+
+			if (res.getInt("decree_number") != 0)
+				this.decreeNumber = res.getInt("decree_number");
+			else
+				this.decreeNumber = null;
+
+			if (res.getDate("decree_date") != null)
+				this.decreeDate = res.getDate("decree_date").toLocalDate();
+			else
+				this.decreeDate = null;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

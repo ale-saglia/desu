@@ -122,7 +122,7 @@ public class AccountDAO {
 	 */
 	public static Account getAccount(Connection conn, String fiscalCode) {
 		String query = "select * from accounts.accounts a where a.fiscalcode = ? ";
-		Account account = null;
+		Account account;
 
 		try {
 			PreparedStatement st = conn.prepareStatement(query);
@@ -133,7 +133,7 @@ public class AccountDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");
-			throw new RuntimeException("Error Connection Database");
+			return null;
 		}
 		return account;
 	}

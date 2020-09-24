@@ -18,6 +18,9 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Sets;
 import com.google.common.io.Resources;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import dclient.controllers.visualModels.RSPPtableElement;
 import dclient.db.ConMan;
 import dclient.model.Account;
@@ -32,6 +35,8 @@ import dclient.model.Rspp;
  *
  */
 public class RsppDAO {
+	private static Logger logger = LoggerFactory.getLogger("DClient");
+
 	/**
 	 * This function is meant to be a faster and efficent way to retrieve all the
 	 * data that is shown in the main view of the program

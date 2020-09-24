@@ -38,7 +38,7 @@
             <TableColumn fx:id="deadlineColumn" editable="false" prefWidth="75.0" text="Scadenza" />
             <TableColumn fx:id="invoiceColumn" editable="false" prefWidth="75.0" sortable="false" text="Fattura" />
             <TableColumn fx:id="payedColumn" editable="false" maxWidth="70.0" minWidth="60.0" prefWidth="60.0" sortable="false" style="-fx-alignment: CENTER;" text="Pagato" />
-            <TableColumn fx:id="noteColumn" editable="false" prefWidth="75.0" sortable="false" text="Note" />
+            <TableColumn fx:id="noteColumn" editable="false" prefWidth="150.0" sortable="false" text="Note" />
          </columns>
       </TableView>
       <HBox minHeight="-Infinity" minWidth="-Infinity">

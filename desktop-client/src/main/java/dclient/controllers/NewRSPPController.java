@@ -144,7 +144,8 @@ public class NewRSPPController {
 
 	@FXML
 	public void updateJobCombo() {
-		if (jobCategory.getSelectionModel().getSelectedItem() == null || model.getJobCat().get(jobCategory.getSelectionModel().getSelectedItem()) == null)
+		if (jobCategory.getSelectionModel().getSelectedItem() == null
+				|| model.getJobCat().get(jobCategory.getSelectionModel().getSelectedItem()) == null)
 			jobType.setDisable(true);
 		else {
 			jobType.setDisable(false);
@@ -239,7 +240,10 @@ public class NewRSPPController {
 			if (job instanceof JobPA) {
 				JobPA jobPA = (JobPA) job;
 				cigField.setText(jobPA.getCig());
-				decreeNumberField.setText(Integer.toString(jobPA.getDecreeNumber()));
+				if (jobPA.getDecreeNumber() != null)
+					decreeNumberField.setText(Integer.toString(jobPA.getDecreeNumber()));
+				else
+					decreeNumberField.setText(null);
 				decreeDateField.setValue(jobPA.getDecreeDate());
 			}
 

@@ -135,8 +135,9 @@ public class JobDAO {
 			res.next();
 			job = new Job(conn, res);
 
-			if (job.isJobCustomerPA())
-				job = new JobPA(conn, job, res);
+			if (job.isJobCustomerPA()) {
+				job = new JobPA(conn, res);
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");
@@ -158,8 +159,13 @@ public class JobDAO {
 
 			st.setString(1, account.getFiscalCode());
 			ResultSet res = st.executeQuery();
-			while (res.next())
-				jobs.add(new Job(conn, res));
+			while (res.next()) {
+				if (account.getCategory().equals("pa"))
+					jobs.add(new JobPA(conn, res));
+				else
+					jobs.add(new Job(conn, res));
+			}
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");

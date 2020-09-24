@@ -17,15 +17,15 @@
 <?import javafx.scene.text.Font?>
 <?import org.controlsfx.control.CheckComboBox?>
 
-<VBox alignment="CENTER" prefHeight="263.0" prefWidth="680.0" spacing="20.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dclient.controllers.ViewEditController">
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dclient.controllers.ViewEditController">
     <children>
-      <VBox prefHeight="200.0" prefWidth="550.0">
+      <VBox>
          <children>
             <Label text="Anagrafica">
                <font>
                   <Font size="20.0" />
                </font></Label>
-            <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="490.0">
+            <HBox alignment="CENTER_LEFT">
                <children>
                   <Label maxWidth="-Infinity" minWidth="-Infinity" text="Ragione sociale">
                      <HBox.margin>
@@ -38,7 +38,7 @@
                   <Insets bottom="5.0" />
                </padding>
             </HBox>
-            <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="490.0">
+            <HBox alignment="CENTER_LEFT">
                <children>
                   <Label maxWidth="-Infinity" minWidth="-Infinity" text="Codice Fiscale">
                      <HBox.margin>
@@ -56,7 +56,7 @@
                   <Insets bottom="5.0" />
                </padding>
             </HBox>
-            <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="70.0" prefHeight="34.0" prefWidth="490.0">
+            <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="70.0">
                <children>
                   <Label maxWidth="-Infinity" minWidth="-Infinity" text="Tipologia">
                      <HBox.margin>
@@ -64,7 +64,7 @@
                      </HBox.margin>
                   </Label>
                   <ComboBox fx:id="categoryAccountCombo" editable="true" minWidth="-Infinity" HBox.hgrow="ALWAYS" />
-                  <HBox prefHeight="100.0" prefWidth="200.0" />
+                  <HBox HBox.hgrow="ALWAYS" />
                   <Label minWidth="-Infinity" text="Codice Ateco">
                      <padding>
                         <Insets left="15.0" right="7.0" />
@@ -76,20 +76,20 @@
                   <Insets bottom="5.0" />
                </padding>
             </HBox>
-            <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="490.0">
+            <HBox alignment="CENTER_LEFT">
                <children>
                   <Label maxWidth="-Infinity" minWidth="-Infinity" text="Sede Legale">
                      <HBox.margin>
                         <Insets right="10.0" />
                      </HBox.margin>
                   </Label>
-                  <TextField fx:id="addressField" prefHeight="26.0" prefWidth="538.0" HBox.hgrow="ALWAYS" />
+                  <TextField fx:id="addressField" HBox.hgrow="ALWAYS" />
                </children>
                <padding>
                   <Insets bottom="5.0" />
                </padding>
             </HBox>
-            <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="490.0">
+            <HBox alignment="CENTER_LEFT">
                <children>
                   <Label maxWidth="-Infinity" minWidth="-Infinity" text="Descrittore">
                      <HBox.margin>
@@ -102,24 +102,24 @@
                   <Insets bottom="5.0" />
                </padding>
             </HBox>
-            <HBox disable="true" prefHeight="100.0" prefWidth="200.0">
+            <HBox disable="true">
                <children>
-                  <Label maxWidth="85.0" minWidth="85.0" prefWidth="85.0" text="Contatti">
+                  <Label minWidth="-Infinity" text="Contatti">
                      <HBox.margin>
                         <Insets right="10.0" />
                      </HBox.margin>
                   </Label>
-                  <TableView prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                  <TableView prefHeight="70.0" HBox.hgrow="ALWAYS">
                     <columns>
                       <TableColumn prefWidth="157.0" text="Tipologia" />
-                      <TableColumn prefWidth="439.0" text="Valore" />
+                      <TableColumn maxWidth="-1.0" minWidth="-Infinity" prefWidth="-1.0" text="Valore" />
                     </columns>
                   </TableView>
                </children>
             </HBox>
          </children>
       </VBox>
-      <Separator prefWidth="200.0">
+      <Separator>
          <opaqueInsets>
             <Insets />
          </opaqueInsets>
@@ -127,14 +127,14 @@
             <Insets />
          </VBox.margin>
       </Separator>
-      <VBox prefHeight="200.0" prefWidth="550.0">
+      <VBox>
          <children>
             <Label text="Commessa">
                <font>
                   <Font size="20.0" />
                </font>
             </Label>
-            <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="490.0">
+            <HBox alignment="CENTER_LEFT">
                <children>
                   <Label minWidth="-Infinity" text="Codice">
                      <HBox.margin>
@@ -161,7 +161,7 @@
                   <Insets bottom="5.0" />
                </VBox.margin>
             </HBox>
-            <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="490.0">
+            <HBox alignment="CENTER_LEFT">
                <children>
                   <Label text="Descrizione">
                      <HBox.margin>
@@ -174,9 +174,9 @@
                   <Insets bottom="5.0" />
                </padding>
             </HBox>
-            <VBox fx:id="paReferences" prefHeight="200.0" prefWidth="100.0">
+            <VBox fx:id="paReferences" minHeight="-Infinity">
                <children>
-                  <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="490.0">
+                  <HBox alignment="CENTER_LEFT">
                      <children>
                         <Label text="CIG">
                            <HBox.margin>
@@ -224,10 +224,10 @@
                   <Insets bottom="5.0" />
                </VBox.margin>
             </Label>
-            <TextArea fx:id="noteField" prefHeight="200.0" prefWidth="200.0" />
+            <TextArea fx:id="noteField" minHeight="-Infinity" prefHeight="50.0" />
          </children>
       </VBox>
-      <Separator prefWidth="200.0">
+      <Separator>
          <opaqueInsets>
             <Insets />
          </opaqueInsets>
@@ -235,14 +235,14 @@
             <Insets />
          </VBox.margin>
       </Separator>
-      <VBox prefHeight="200.0" prefWidth="550.0" VBox.vgrow="ALWAYS">
+      <VBox VBox.vgrow="ALWAYS">
          <children>
             <Label text="Incarico">
                <font>
                   <Font size="20.0" />
                </font>
             </Label>
-            <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="490.0">
+            <HBox alignment="CENTER_LEFT">
                <children>
                   <Label text="Data Inizio">
                      <HBox.margin>
@@ -262,7 +262,7 @@
             <Insets right="7.0" />
          </padding>
       </VBox>
-      <Separator prefWidth="200.0">
+      <Separator>
          <opaqueInsets>
             <Insets />
          </opaqueInsets>
@@ -270,16 +270,16 @@
             <Insets />
          </VBox.margin>
       </Separator>
-      <VBox prefHeight="200.0" prefWidth="550.0">
+      <VBox>
          <children>
-            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT" VBox.vgrow="ALWAYS">
                <children>
                   <Label text="Dati fattura">
                      <font>
                         <Font size="20.0" />
                      </font>
                   </Label>
-                  <HBox prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+                  <HBox HBox.hgrow="ALWAYS" />
                   <HBox fx:id="invoiceComboParent" alignment="CENTER_LEFT" layoutX="110.0" layoutY="10.0">
                      <children>
                         <ComboBox fx:id="invoiceBox" minWidth="-Infinity" onAction="#setInvoice" />
@@ -327,7 +327,7 @@
                         <Insets right="5.0" />
                      </HBox.margin>
                   </Label>
-                  <CheckComboBox fx:id="invoiceMonthCombo" maxWidth="75.0" minWidth="-Infinity" />
+                  <CheckComboBox fx:id="invoiceMonthCombo" minWidth="-Infinity" />
                   <Label minWidth="-Infinity" text="Descrizione">
                      <padding>
                         <Insets left="15.0" right="5.0" />
@@ -345,7 +345,7 @@
             </HBox>
          </children>
       </VBox>
-      <ButtonBar prefHeight="40.0" prefWidth="200.0">
+      <ButtonBar>
         <buttons>
           <Button mnemonicParsing="false" onAction="#updateCheck" text="Salva ed Esci" />
             <Button fx:id="closeButton" layoutX="565.0" layoutY="10.0" mnemonicParsing="false" onAction="#closeButtonAction" text="Esci senza salvare" />

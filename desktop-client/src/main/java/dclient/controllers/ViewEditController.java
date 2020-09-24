@@ -197,7 +197,6 @@ public class ViewEditController {
 
 	private void setJobs() {
 		jobCodeField.setText(rspp.getJob().getId());
-		System.out.println(rspp.getJob().getJobCategory() + " - " + rspp.getJob().getJobType());
 		jobCategory.setValue(rspp.getJob().getJobCategory());
 		updateJobCombo();
 		jobType.setValue(rspp.getJob().getJobType());
@@ -205,10 +204,10 @@ public class ViewEditController {
 		noteField.setText(rsppNote);
 
 		if (rspp.getJob() instanceof JobPA) {
-			JobPA jobPA = (JobPA) rspp.getJob();
-			cigField.setText(jobPA.getCig());
-			decreeNumberField.setText(Integer.toString(jobPA.getDecreeNumber()));
-			decreeDateField.setValue(jobPA.getDecreeDate());
+			System.out.println("Ciao");
+			cigField.setText(((JobPA) rspp.getJob()).getCig());
+			decreeNumberField.setText(Integer.toString(((JobPA) rspp.getJob()).getDecreeNumber()));
+			decreeDateField.setValue(((JobPA) rspp.getJob()).getDecreeDate());
 		} else
 			paReferences.getChildren().clear();
 	}

@@ -41,39 +41,6 @@ public class JobDAO {
 	}
 
 	/**
-	 * This function retrieves the categories than can be associated to a Job
-	 * 
-	 * @param conn the Connection object to the DB
-	 * @return a Collection<String> containing all the categories a Job can be
-	 *         categorized of.
-	 */
-
-	/**
-	 * @param conn
-	 * @return
-	 */
-	public static Collection<String> getJobTypes(Connection conn) {
-		String sql = "select * from jobs.job_types jt ";
-		List<String> types = new ArrayList<String>();
-
-		try {
-			PreparedStatement st = conn.prepareStatement(sql);
-			ResultSet res = st.executeQuery();
-			while (res.next())
-				types.add(res.getString("types"));
-		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Errore connessione al database");
-			throw new RuntimeException("Error Connection Database");
-		}
-
-		if (types.size() > 0)
-			return types;
-		else
-			return null;
-	}
-
-	/**
 	 * @param conn
 	 * @param job
 	 * @return

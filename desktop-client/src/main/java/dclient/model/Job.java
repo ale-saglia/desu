@@ -37,10 +37,7 @@ public class Job {
 	}
 	
 	public boolean isJobCustomerPA() {
-		if(customer.getCategory() == "pa")
-			return true;
-		else
-			return false;
+		return customer.getCategory().equals("pa");
 	}
 
 	public String getId() {

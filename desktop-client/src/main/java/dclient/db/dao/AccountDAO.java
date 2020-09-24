@@ -122,7 +122,7 @@ public class AccountDAO {
 	 */
 	public static Account getAccount(Connection conn, String fiscalCode) {
 		String query = "select * from accounts.accounts a where a.fiscalcode = ? ";
-		Account account = null;
+		Account account;
 
 		try {
 			PreparedStatement st = conn.prepareStatement(query);
@@ -133,7 +133,7 @@ public class AccountDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");
-			throw new RuntimeException("Error Connection Database");
+			return null;
 		}
 		return account;
 	}
@@ -150,7 +150,7 @@ public class AccountDAO {
 	 */
 	public static Account getAccountFromVATNumber(Connection conn, String vatNumber) {
 		String query = "select * from accounts.accounts a where a.numbervat = ? ";
-		Account account = null;
+		Account account;
 
 		try {
 			PreparedStatement st = conn.prepareStatement(query);
@@ -161,7 +161,7 @@ public class AccountDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Errore connessione al database");
-			throw new RuntimeException("Error Connection Database");
+			return null;
 		}
 		return account;
 	}
@@ -180,7 +180,7 @@ public class AccountDAO {
 				+ "from accounts.accounts a, jobs.jobs j, invoices.invoices i, deadlines.rspp r "
 				+ "where a.fiscalcode = j.customer and r.invoiceid = i.invoiceid and r.rspp_jobid = j.jobs_id and "
 				+ "i.\"number\" = ? and i.\"type\" = ? and date_part('year', emission) = ? ";
-		Account account = null;
+		Account account;
 
 		try {
 			PreparedStatement st = conn.prepareStatement(query);
@@ -192,8 +192,7 @@ public class AccountDAO {
 			account = new Account(res);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			System.out.println("Errore connessione al database");
-			throw new RuntimeException("Error Connection Database");
+			return null;
 		}
 		return account;
 	}

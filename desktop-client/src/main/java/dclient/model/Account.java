@@ -28,8 +28,7 @@ public class Account {
 		trimAccountString();
 	}
 
-	public Account(ResultSet res) {
-		try {
+	public Account(ResultSet res) throws SQLException {
 			this.fiscalCode = res.getString("fiscalcode");
 			this.name = res.getString("name");
 			this.numberVAT = res.getString("numbervat");
@@ -37,9 +36,6 @@ public class Account {
 			this.legalAddress = res.getString("legal_address");
 			this.category = res.getString("customer_category");
 			this.descriptor = res.getString("descriptor");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 	}
 
 	public String getFiscalCode() {

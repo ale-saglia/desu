@@ -125,7 +125,7 @@ public class NewRSPPController {
 		});
 
 		filteredAccountList.predicateProperty().bind(javafx.beans.binding.Bindings.createObjectBinding(() -> {
-			//TODO search in both account name and descriptor
+			// TODO search in both account name and descriptor
 			String text = accountSearch.getText();
 			if (text == null || text.isEmpty()) {
 				return null;
@@ -297,9 +297,9 @@ public class NewRSPPController {
 
 		// Add JobPA details if job exist but missing it
 		if ((!cigField.getText().isEmpty() || !decreeNumberField.getText().isEmpty()
-				|| decreeDateField.getValue() != null) && job instanceof JobPA) {
+				|| ControllerCommon.getDate(model, decreeDateField) != null) && job instanceof JobPA) {
 			JobPA jobPA = new JobPA(job, cigField.getText(), Integer.valueOf(decreeNumberField.getText()),
-					decreeDateField.getValue());
+					ControllerCommon.getDate(model, decreeDateField));
 			String error = FieldsValidator.isJobValid(jobPA);
 
 			if (error == null)
@@ -321,7 +321,8 @@ public class NewRSPPController {
 				if (!accountListView.getSelectionModel().getSelectedItem().getCategory().contains("pa"))
 					JobDAO.newJob(model.getConMan().getDBConnection(), job);
 				else {
-					job = new JobPA(job, cigField.getText(), decreeNumberField.getText(), decreeDateField.getValue());
+					job = new JobPA(job, cigField.getText(), decreeNumberField.getText(),
+							ControllerCommon.getDate(model, decreeDateField));
 					error = FieldsValidator.isJobValid(job);
 					if (error == null)
 						JobDAO.newJob(model.getConMan().getDBConnection(), job);
@@ -340,7 +341,8 @@ public class NewRSPPController {
 
 		}
 
-		Rspp newRspp = new Rspp(job, rsppStart.getValue(), rsppEnd.getValue());
+		Rspp newRspp = new Rspp(job, ControllerCommon.getDate(model, rsppStart),
+				ControllerCommon.getDate(model, rsppEnd));
 		String error = FieldsValidator.isRSPPChangeValid(newRspp);
 		if (error == null) {
 			RsppDAO.newRSPP(model.getConMan().getDBConnection(), newRspp);

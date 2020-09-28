@@ -245,6 +245,11 @@ public class ViewEditController {
 		}
 	}
 
+	//TODO Implements this https://stackoverflow.com/questions/32346893/javafx-datepicker-not-updating-value
+	private LocalDate getDate(DatePicker datePicker){
+		return null;
+	}
+
 	/**
 	 * Check if fields has been edited, than check if fields are valid and finally
 	 * update only the edited fields to the DB.

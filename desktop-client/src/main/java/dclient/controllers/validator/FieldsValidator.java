@@ -102,7 +102,7 @@ public class FieldsValidator {
 		String error = "";
 
 		if (rspp.getStart() == null || rspp.getEnd() == null)
-			error += "- La data di inzio incarico e/o la data di inizio incarico devono essere inserite\n";
+			error += "- La data di inzio incarico e/o la data di inizio incarico devono essere inserite in un formato valido\n";
 		else if (rspp.getStart().isAfter(rspp.getEnd()) || rspp.getStart().equals(rspp.getEnd()))
 			error += "- La data di inizio dell'incarico deve essere precedente a quella di fine dell'incarico\n";
 
@@ -130,6 +130,10 @@ public class FieldsValidator {
 
 		if (!job.getCig().matches("^[a-zA-Z0-9]{10,}$"))
 			error += "- Il CIG non è in un formato valido\n";
+
+		if (job.getCig() == null)
+			error += "- La data del decreto è nulla o in un formato non valido\n";
+
 		return returnManager(error);
 	}
 

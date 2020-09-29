@@ -1,6 +1,8 @@
 package dclient.controllers;
 
+import java.time.LocalDate;
 import java.time.Period;
+import java.time.format.DateTimeFormatter;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -34,10 +36,13 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 public class NewRSPPController {
 	Model model;
 	Rspp rspp;
+
+	String datePattern;
 
 	boolean safeExit;
 
@@ -101,6 +106,7 @@ public class NewRSPPController {
 	public void initController(MainController parent, Model model) {
 		this.parent = parent;
 		this.model = model;
+		this.datePattern = model.getConfig().getProperty("dateFormat", "dd/MM/yyyy");
 
 		rsppInfo.setDisable(true);
 
@@ -140,6 +146,72 @@ public class NewRSPPController {
 		updateJobCombo();
 
 		model.getConMan().closeDBConnection();
+
+		decreeDateField.setConverter(new StringConverter<LocalDate>() {
+			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
+
+			@Override
+			public String toString(LocalDate date) {
+				if (date != null) {
+					return dateFormatter.format(date);
+				} else {
+					return "";
+				}
+			}
+
+			@Override
+			public LocalDate fromString(String string) {
+				if (string != null && !string.isEmpty()) {
+					return LocalDate.parse(string, dateFormatter);
+				} else {
+					return null;
+				}
+			}
+		});
+
+		rsppStart.setConverter(new StringConverter<LocalDate>() {
+			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
+
+			@Override
+			public String toString(LocalDate date) {
+				if (date != null) {
+					return dateFormatter.format(date);
+				} else {
+					return "";
+				}
+			}
+
+			@Override
+			public LocalDate fromString(String string) {
+				if (string != null && !string.isEmpty()) {
+					return LocalDate.parse(string, dateFormatter);
+				} else {
+					return null;
+				}
+			}
+		});
+
+		rsppEnd.setConverter(new StringConverter<LocalDate>() {
+			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
+
+			@Override
+			public String toString(LocalDate date) {
+				if (date != null) {
+					return dateFormatter.format(date);
+				} else {
+					return "";
+				}
+			}
+
+			@Override
+			public LocalDate fromString(String string) {
+				if (string != null && !string.isEmpty()) {
+					return LocalDate.parse(string, dateFormatter);
+				} else {
+					return null;
+				}
+			}
+		});
 	}
 
 	@FXML
@@ -297,9 +369,9 @@ public class NewRSPPController {
 
 		// Add JobPA details if job exist but missing it
 		if ((!cigField.getText().isEmpty() || !decreeNumberField.getText().isEmpty()
-				|| ControllerCommon.getDate(model, decreeDateField) != null) && job instanceof JobPA) {
+				|| decreeDateField.getValue() != null) && job instanceof JobPA) {
 			JobPA jobPA = new JobPA(job, cigField.getText(), Integer.valueOf(decreeNumberField.getText()),
-					ControllerCommon.getDate(model, decreeDateField));
+					decreeDateField.getValue());
 			String error = FieldsValidator.isJobValid(jobPA);
 
 			if (error == null)
@@ -321,8 +393,7 @@ public class NewRSPPController {
 				if (!accountListView.getSelectionModel().getSelectedItem().getCategory().contains("pa"))
 					JobDAO.newJob(model.getConMan().getDBConnection(), job);
 				else {
-					job = new JobPA(job, cigField.getText(), decreeNumberField.getText(),
-							ControllerCommon.getDate(model, decreeDateField));
+					job = new JobPA(job, cigField.getText(), decreeNumberField.getText(), decreeDateField.getValue());
 					error = FieldsValidator.isJobValid(job);
 					if (error == null)
 						JobDAO.newJob(model.getConMan().getDBConnection(), job);
@@ -341,8 +412,7 @@ public class NewRSPPController {
 
 		}
 
-		Rspp newRspp = new Rspp(job, ControllerCommon.getDate(model, rsppStart),
-				ControllerCommon.getDate(model, rsppEnd));
+		Rspp newRspp = new Rspp(job, rsppStart.getValue(), rsppEnd.getValue());
 		String error = FieldsValidator.isRSPPChangeValid(newRspp);
 		if (error == null) {
 			RsppDAO.newRSPP(model.getConMan().getDBConnection(), newRspp);

@@ -1,6 +1,7 @@
 package dclient.controllers;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,6 +34,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 public class ViewEditController {
 	private final String DEFAULT_NEW_INVOICE_TEXT = "Nuova fattura...";
@@ -40,6 +42,8 @@ public class ViewEditController {
 	private Model model;
 	private Rspp rspp;
 	private String rsppNote;
+
+	private String datePattern;
 
 	MainController mainController;
 
@@ -135,6 +139,116 @@ public class ViewEditController {
 	private Button closeButton;
 
 	@FXML
+	void initialize() {
+		assert nameField != null : "fx:id=\"nameField\" was not injected: check your FXML file 'edit.fxml'.";
+		assert fiscalCodeText != null : "fx:id=\"fiscalCodeText\" was not injected: check your FXML file 'edit.fxml'.";
+		assert numberVATField != null : "fx:id=\"numberVATField\" was not injected: check your FXML file 'edit.fxml'.";
+		assert categoryAccountCombo != null
+				: "fx:id=\"categoryAccountCombo\" was not injected: check your FXML file 'edit.fxml'.";
+		assert atecoCodeField != null : "fx:id=\"atecoCodeField\" was not injected: check your FXML file 'edit.fxml'.";
+		assert addressField != null : "fx:id=\"addressField\" was not injected: check your FXML file 'edit.fxml'.";
+		assert descriptorField != null
+				: "fx:id=\"descriptorField\" was not injected: check your FXML file 'edit.fxml'.";
+		assert jobCodeField != null : "fx:id=\"jobCodeField\" was not injected: check your FXML file 'edit.fxml'.";
+		assert jobCategory != null : "fx:id=\"jobCategory\" was not injected: check your FXML file 'edit.fxml'.";
+		assert jobType != null : "fx:id=\"jobType\" was not injected: check your FXML file 'edit.fxml'.";
+		assert jobdDescriptionField != null
+				: "fx:id=\"jobdDescriptionField\" was not injected: check your FXML file 'edit.fxml'.";
+		assert paReferences != null : "fx:id=\"paReferences\" was not injected: check your FXML file 'edit.fxml'.";
+		assert cigField != null : "fx:id=\"cigField\" was not injected: check your FXML file 'edit.fxml'.";
+		assert decreeNumberField != null
+				: "fx:id=\"decreeNumberField\" was not injected: check your FXML file 'edit.fxml'.";
+		assert decreeDateField != null
+				: "fx:id=\"decreeDateField\" was not injected: check your FXML file 'edit.fxml'.";
+		assert noteField != null : "fx:id=\"noteField\" was not injected: check your FXML file 'edit.fxml'.";
+		assert jobStartField != null : "fx:id=\"jobStartField\" was not injected: check your FXML file 'edit.fxml'.";
+		assert jobEndField != null : "fx:id=\"jobEndField\" was not injected: check your FXML file 'edit.fxml'.";
+		assert invoiceComboParent != null
+				: "fx:id=\"invoiceComboParent\" was not injected: check your FXML file 'edit.fxml'.";
+		assert invoiceBox != null : "fx:id=\"invoiceBox\" was not injected: check your FXML file 'edit.fxml'.";
+		assert invoiceNumberField != null
+				: "fx:id=\"invoiceNumberField\" was not injected: check your FXML file 'edit.fxml'.";
+		assert invoiceEmissionDateField != null
+				: "fx:id=\"invoiceEmissionDateField\" was not injected: check your FXML file 'edit.fxml'.";
+		assert invoiceTypeField != null
+				: "fx:id=\"invoiceTypeField\" was not injected: check your FXML file 'edit.fxml'.";
+		assert invoiceMonthCombo != null
+				: "fx:id=\"invoiceMonthCombo\" was not injected: check your FXML file 'edit.fxml'.";
+		assert invoiceDescription != null
+				: "fx:id=\"invoiceDescription\" was not injected: check your FXML file 'edit.fxml'.";
+		assert payedCheck != null : "fx:id=\"payedCheck\" was not injected: check your FXML file 'edit.fxml'.";
+		assert closeButton != null : "fx:id=\"closeButton\" was not injected: check your FXML file 'edit.fxml'.";
+
+		this.datePattern = model.getConfig().getProperty("dateFormat", "dd/MM/yyyy");
+		
+		decreeDateField.setConverter(new StringConverter<LocalDate>() {
+			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
+
+			@Override
+			public String toString(LocalDate date) {
+				if (date != null) {
+					return dateFormatter.format(date);
+				} else {
+					return "";
+				}
+			}
+
+			@Override
+			public LocalDate fromString(String string) {
+				if (string != null && !string.isEmpty()) {
+					return LocalDate.parse(string, dateFormatter);
+				} else {
+					return null;
+				}
+			}
+		});
+
+		jobStartField.setConverter(new StringConverter<LocalDate>() {
+			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
+
+			@Override
+			public String toString(LocalDate date) {
+				if (date != null) {
+					return dateFormatter.format(date);
+				} else {
+					return "";
+				}
+			}
+
+			@Override
+			public LocalDate fromString(String string) {
+				if (string != null && !string.isEmpty()) {
+					return LocalDate.parse(string, dateFormatter);
+				} else {
+					return null;
+				}
+			}
+		});
+
+		jobEndField.setConverter(new StringConverter<LocalDate>() {
+			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
+
+			@Override
+			public String toString(LocalDate date) {
+				if (date != null) {
+					return dateFormatter.format(date);
+				} else {
+					return "";
+				}
+			}
+
+			@Override
+			public LocalDate fromString(String string) {
+				if (string != null && !string.isEmpty()) {
+					return LocalDate.parse(string, dateFormatter);
+				} else {
+					return null;
+				}
+			}
+		});
+	}
+
+	@FXML
 	private void closeButtonAction() {
 		Stage stage = (Stage) closeButton.getScene().getWindow();
 		stage.close();
@@ -152,11 +266,11 @@ public class ViewEditController {
 		categoryAccountCombo.getItems().setAll(model.getAccountCategories().values());
 		jobCategory.getItems().setAll(model.getJobCat().keySet());
 	}
-	
+
 	@FXML
 	public void updateJobCombo() {
-			jobType.getItems().clear();
-			jobType.getItems().addAll((model.getJobCat().get(jobCategory.getSelectionModel().getSelectedItem())));		
+		jobType.getItems().clear();
+		jobType.getItems().addAll((model.getJobCat().get(jobCategory.getSelectionModel().getSelectedItem())));
 	}
 
 	public void setRSPP(String jobID, LocalDate jobStart) {
@@ -264,7 +378,8 @@ public class ViewEditController {
 		if (!newAccount.equals(rspp.getJob().getCustomer())) {
 			error = FieldsValidator.isAccountValid(newAccount);
 			if (error == null) {
-				AccountDAO.updateAccount(model.getConMan().getDBConnection(), rspp.getJob().getCustomer().getFiscalCode(), newAccount);
+				AccountDAO.updateAccount(model.getConMan().getDBConnection(),
+						rspp.getJob().getCustomer().getFiscalCode(), newAccount);
 				isChanged = true;
 			} else {
 				warningWindows(error);
@@ -283,7 +398,7 @@ public class ViewEditController {
 		if (!newJob.equals(rspp.getJob())) {
 			error = FieldsValidator.isJobValid(newJob);
 			if (error == null) {
-				//TODO check if right
+				// TODO check if right
 				JobDAO.updateJob(model.getConMan().getDBConnection(), newJob, rspp.getJob().getId());
 				isChanged = true;
 			} else {
@@ -294,8 +409,7 @@ public class ViewEditController {
 		}
 
 		// Check if rspp note needs to be updated
-		if (noteField.getText() != null
-				&& !noteField.getText().trim().equals(rsppNote)) {
+		if (noteField.getText() != null && !noteField.getText().trim().equals(rsppNote)) {
 			error = FieldsValidator.isRSPPNoteValid(rsppNote);
 			if (error == null) {
 				RsppDAO.updateNote(model.getConMan().getDBConnection(), newAccount, noteField.getText());
@@ -312,7 +426,8 @@ public class ViewEditController {
 		if (!newRSPP.equals(rspp)) {
 			error = FieldsValidator.isRSPPChangeValid(newRSPP);
 			if (error == null) {
-				RsppDAO.updateRSPP(model.getConMan().getDBConnection(), rspp.getJob().getId(), rspp.getStart(), newRSPP);
+				RsppDAO.updateRSPP(model.getConMan().getDBConnection(), rspp.getJob().getId(), rspp.getStart(),
+						newRSPP);
 				isChanged = true;
 			} else {
 				warningWindows(error);
@@ -351,7 +466,8 @@ public class ViewEditController {
 				RsppDAO.matchRSPPInvoice(model.getConMan().getDBConnection(), newRSPP, newInvoice);
 				isChanged = true;
 			} else if (!newInvoice.equals(invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()))) {
-				InvoiceDAO.updateInvoice(model.getConMan().getDBConnection(), invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()).getId(), newInvoice);
+				InvoiceDAO.updateInvoice(model.getConMan().getDBConnection(),
+						invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()).getId(), newInvoice);
 				isChanged = true;
 			}
 

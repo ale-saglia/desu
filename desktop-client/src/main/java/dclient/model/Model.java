@@ -68,4 +68,8 @@ public class Model {
 	public static String getConfigPath() {
 		return CONFIG_PATH;
 	}
+
+	public String getLocalDateFormat(){
+		return config.getProperty("dateFormat", "dd/MM/yyyy");
+	}
 }

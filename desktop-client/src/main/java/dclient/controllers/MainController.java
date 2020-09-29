@@ -103,7 +103,7 @@ public class MainController {
 									setStyle("");
 								} else {
 									setText(DateTimeFormatter
-											.ofPattern(model.getConfig().getProperty("dateFormat", "dd/MM/yyyy"))
+											.ofPattern(model.getLocalDateFormat())
 											.format(item));
 								}
 							}

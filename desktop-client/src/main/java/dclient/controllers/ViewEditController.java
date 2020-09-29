@@ -43,8 +43,6 @@ public class ViewEditController {
 	private Rspp rspp;
 	private String rsppNote;
 
-	private String datePattern;
-
 	MainController mainController;
 
 	private BiMap<String, Invoice> invoiceMap;
@@ -178,11 +176,9 @@ public class ViewEditController {
 				: "fx:id=\"invoiceDescription\" was not injected: check your FXML file 'edit.fxml'.";
 		assert payedCheck != null : "fx:id=\"payedCheck\" was not injected: check your FXML file 'edit.fxml'.";
 		assert closeButton != null : "fx:id=\"closeButton\" was not injected: check your FXML file 'edit.fxml'.";
-
-		this.datePattern = model.getConfig().getProperty("dateFormat", "dd/MM/yyyy");
 		
 		decreeDateField.setConverter(new StringConverter<LocalDate>() {
-			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
+			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(model.getLocalDateFormat());
 
 			@Override
 			public String toString(LocalDate date) {
@@ -204,7 +200,7 @@ public class ViewEditController {
 		});
 
 		jobStartField.setConverter(new StringConverter<LocalDate>() {
-			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
+			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(model.getLocalDateFormat());
 
 			@Override
 			public String toString(LocalDate date) {
@@ -226,7 +222,7 @@ public class ViewEditController {
 		});
 
 		jobEndField.setConverter(new StringConverter<LocalDate>() {
-			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
+			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(model.getLocalDateFormat());
 
 			@Override
 			public String toString(LocalDate date) {

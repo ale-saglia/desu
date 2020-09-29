@@ -106,7 +106,6 @@ public class NewRSPPController {
 	public void initController(MainController parent, Model model) {
 		this.parent = parent;
 		this.model = model;
-		this.datePattern = model.getConfig().getProperty("dateFormat", "dd/MM/yyyy");
 
 		rsppInfo.setDisable(true);
 
@@ -148,7 +147,7 @@ public class NewRSPPController {
 		model.getConMan().closeDBConnection();
 
 		decreeDateField.setConverter(new StringConverter<LocalDate>() {
-			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
+			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(model.getLocalDateFormat());
 
 			@Override
 			public String toString(LocalDate date) {
@@ -170,7 +169,7 @@ public class NewRSPPController {
 		});
 
 		rsppStart.setConverter(new StringConverter<LocalDate>() {
-			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
+			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(model.getLocalDateFormat());
 
 			@Override
 			public String toString(LocalDate date) {
@@ -192,7 +191,7 @@ public class NewRSPPController {
 		});
 
 		rsppEnd.setConverter(new StringConverter<LocalDate>() {
-			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
+			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(model.getLocalDateFormat());
 
 			@Override
 			public String toString(LocalDate date) {

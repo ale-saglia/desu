@@ -81,7 +81,7 @@ public class MainController {
 		SortedList<RSPPtableElement> sortedFilteredrsppElements;
 
 		rsppElements = FXCollections
-				.observableArrayList(RsppDAO.getRSPPTable(model.getConMan().getDBConnection(), model.getConfig()));
+				.observableArrayList(RsppDAO.getRSPPTable(model.getConMan().getDBConnection(), model.getLocalDateFormat()));
 		model.getConMan().closeDBConnection();
 		filteredrsppElements = new FilteredList<>(rsppElements);
 

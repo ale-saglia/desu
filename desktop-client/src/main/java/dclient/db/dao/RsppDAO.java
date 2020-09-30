@@ -47,29 +47,25 @@ public class RsppDAO {
 	 * @return a list of RSPPtableElement to be shown on the main view of the
 	 *         program
 	 */
-	public static List<RSPPtableElement> getRSPPTable(Connection conn, Properties config) {
+	public static List<RSPPtableElement> getRSPPTable(Connection conn, String dateFormat) {
 		String sql;
-		List<RSPPtableElement> tableElements = new LinkedList<RSPPtableElement>();
+		List<RSPPtableElement> tableElements = new LinkedList<>();
 		try {
 			sql = Resources.toString(ConMan.class.getResource("mainViewQuery.sql"), Charsets.UTF_8);
 		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
+			logger.error(e.getMessage());
+			return tableElements;
 		}
 
-		try {
-			PreparedStatement st = conn.prepareStatement(sql);
-			ResultSet res = st.executeQuery();
+		try (PreparedStatement st = conn.prepareStatement(sql); ResultSet res = st.executeQuery();) {
 			while (res.next())
-				tableElements.add(new RSPPtableElement(res, config.getProperty("dateFormat", null)));
+				tableElements.add(new RSPPtableElement(res, dateFormat));
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Errore connessione al database");
-			throw new RuntimeException("Error Connection Database");
+			logger.error(e.getMessage());
 		}
 		return tableElements;
 	}
-	
+
 	/**
 	 * This function create a new RSPP that is passed as parameter. It does nothing
 	 * if another RSPP with same Job ID and start date already exist in the DB
@@ -82,9 +78,7 @@ public class RsppDAO {
 		String query = "insert into deadlines.rspp (rspp_jobid, jobstart, jobend) values (?, ?, ?)";
 		int rowsAffected = 0;
 
-		try {
-			PreparedStatement st = conn.prepareStatement(query);
-
+		try (PreparedStatement st = conn.prepareStatement(query);) {
 			st.setString(1, rspp.getJob().getId());
 			st.setDate(2, Date.valueOf(rspp.getStart()));
 			st.setDate(3, Date.valueOf(rspp.getEnd()));
@@ -92,13 +86,9 @@ public class RsppDAO {
 			rowsAffected = st.executeUpdate();
 
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Errore connessione al database o campo già esistente");
-			return -1;
+			logger.error(e.getMessage());
 		}
-
-		System.out.println("Rows updated ACCOUNT => " + rowsAffected);
-		return 0;
+		return rowsAffected;
 	}
 
 	/**
@@ -118,9 +108,7 @@ public class RsppDAO {
 
 		int rowsAffected = 0;
 
-		try {
-			PreparedStatement st = conn.prepareStatement(query);
-
+		try (PreparedStatement st = conn.prepareStatement(query);) {
 			st.setDate(1, Date.valueOf(rspp.getStart()));
 			st.setDate(2, Date.valueOf(rspp.getEnd()));
 			st.setString(3, jobCode);
@@ -129,9 +117,7 @@ public class RsppDAO {
 			rowsAffected = st.executeUpdate();
 
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Errore connessione al database");
-			throw new RuntimeException("Error Connection Database");
+			logger.error(e.getMessage());
 		}
 
 		return rowsAffected;
@@ -148,11 +134,7 @@ public class RsppDAO {
 		String sql = "select * from deadlines.rspp";
 		List<Rspp> rsppList = new LinkedList<Rspp>();
 
-		try {
-			PreparedStatement st = conn.prepareStatement(sql);
-
-			ResultSet res = st.executeQuery();
-
+		try (PreparedStatement st = conn.prepareStatement(sql); ResultSet res = st.executeQuery();) {
 			while (res.next()) {
 				Rspp rspp = new Rspp(conn, res);
 				rsppList.add(rspp);
@@ -160,10 +142,9 @@ public class RsppDAO {
 			return rsppList;
 
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Errore connessione al database");
-			throw new RuntimeException("Error Connection Database");
+			logger.error(e.getMessage());
 		}
+		return null;
 	}
 
 	/**
@@ -193,9 +174,7 @@ public class RsppDAO {
 			return rsppList;
 
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Errore connessione al database");
-			throw new RuntimeException("Error Connection Database");
+			logger.error(e.getMessage());
 		}
 	}
 
@@ -220,9 +199,7 @@ public class RsppDAO {
 				return null;
 			rspp = new Rspp(conn, res);
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Errore connessione al database");
-			throw new RuntimeException("Error Connection Database");
+			logger.error(e.getMessage());
 		}
 
 		return rspp;
@@ -252,9 +229,7 @@ public class RsppDAO {
 			return rspp;
 
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Errore connessione al database");
-			throw new RuntimeException("Error Connection Database");
+			logger.error(e.getMessage());
 		}
 	}
 
@@ -282,9 +257,7 @@ public class RsppDAO {
 			return rspp;
 
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Errore connessione al database");
-			throw new RuntimeException("Error Connection Database");
+			logger.error(e.getMessage());
 		}
 
 	}
@@ -313,9 +286,7 @@ public class RsppDAO {
 			rowsAffected = st.executeUpdate();
 
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Errore connessione al database");
-			throw new RuntimeException("Error Connection Database");
+			logger.error(e.getMessage());
 		}
 		return rowsAffected;
 	}
@@ -344,9 +315,7 @@ public class RsppDAO {
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Errore connessione al database");
-			throw new RuntimeException("Error Connection Database");
+			logger.error(e.getMessage());
 		}
 	}
 
@@ -373,11 +342,8 @@ public class RsppDAO {
 			rowsAffected = st.executeUpdate();
 
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Errore connessione al database");
-			throw new RuntimeException("Error Connection Database");
+			logger.error(e.getMessage());
 		}
-		System.out.println("Rows updated JOBS_INVOICE => " + rowsAffected);
 		return rowsAffected;
 	}
 
@@ -391,9 +357,7 @@ public class RsppDAO {
 		String query = "INSERT INTO deadlines.rspp_invoices_months (customer, months) VALUES ( ? , ? ) ON CONFLICT (customer) DO UPDATE SET months = ? ";
 		int rowsAffected = 0;
 
-		try {
-			PreparedStatement st = conn.prepareStatement(query);
-
+		try (PreparedStatement st = conn.prepareStatement(query);) {
 			st.setString(1, rspp.getJob().getCustomer().getFiscalCode());
 			st.setArray(2, conn.createArrayOf("INTEGER", invoiceMonths.toArray()));
 			st.setArray(3, conn.createArrayOf("INTEGER", invoiceMonths.toArray()));
@@ -401,9 +365,7 @@ public class RsppDAO {
 			rowsAffected = st.executeUpdate();
 
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Errore connessione al database");
-			throw new RuntimeException("Error Connection Database");
+			logger.error(e.getMessage());
 		}
 
 		return rowsAffected;
@@ -422,8 +384,7 @@ public class RsppDAO {
 		String sql = "select * from deadlines.rspp_invoices_months rim where customer = ? ";
 		Set<Integer> invoiceMonths = null;
 
-		try {
-			PreparedStatement st = conn.prepareStatement(sql);
+		try (PreparedStatement st = conn.prepareStatement(sql);) {
 			st.setString(1, account.getFiscalCode());
 
 			ResultSet res = st.executeQuery();
@@ -432,14 +393,11 @@ public class RsppDAO {
 			else {
 				invoiceMonths = Sets.newHashSet(((Integer[]) res.getArray("months").getArray()));
 			}
-
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Errore connessione al database");
-			throw new RuntimeException("Error Connection Database");
+			logger.error(e.getMessage());
 		}
 
-		if (invoiceMonths == null || invoiceMonths.size() <= 0)
+		if (invoiceMonths == null || invoiceMonths.isEmpty())
 			return null;
 		else
 			return invoiceMonths;
@@ -454,7 +412,7 @@ public class RsppDAO {
 	 */
 	public static Collection<Invoice> getInvoices(Connection conn, Rspp rspp) {
 		String query = "select i.* from( select invoice_id from deadlines.rspp_invoices ri where rspp_id = ? and rspp_start = ?) as vi, invoices.invoices i where vi.invoice_id = i.invoiceid";
-		Set<Invoice> invoicesMap = new TreeSet<Invoice>();
+		Set<Invoice> invoicesMap = new TreeSet<>();
 
 		try {
 			PreparedStatement st = conn.prepareStatement(query);
@@ -467,9 +425,7 @@ public class RsppDAO {
 			while (res.next())
 				invoicesMap.add(new Invoice(res));
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Errore connessione al database");
-			throw new RuntimeException("Error Connection Database");
+			logger.error(e.getMessage());
 		}
 
 		return invoicesMap;

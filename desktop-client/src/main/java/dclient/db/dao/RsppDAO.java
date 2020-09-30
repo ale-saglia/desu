@@ -272,7 +272,7 @@ public class RsppDAO {
 	 * @return the number of database row that has been changed by the function
 	 */
 	public static int updateNote(Connection conn, Account account, String note) {
-		String query = "INSERT INTO deadlines.rspp_notes (fiscalcode, notes) VALUES ( ? , ? ) ON CONFLICT (fiscalcode) DO UPDATE SET notes = ? ";
+		String query = "INSERT INTO deadlines.rssp_account_details (fiscalcode, notes) VALUES ( ? , ? ) ON CONFLICT (fiscalcode) DO UPDATE SET notes = ? ";
 
 		int rowsAffected = 0;
 
@@ -299,7 +299,7 @@ public class RsppDAO {
 	 * @return a String containing the Rspp note of the given account
 	 */
 	public static String getRSPPnote(Connection conn, Account account) {
-		String sql = "select * from deadlines.rspp_notes r where r.fiscalcode = ? ";
+		String sql = "select * from deadlines.rssp_account_details r where r.fiscalcode = ? ";
 		String notes;
 
 		try {

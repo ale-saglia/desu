@@ -32,12 +32,14 @@ public class FieldsValidator {
 		if (account != null)
 			error += "- La fattura è già presente nel database per " + account.getName();
 
-		Rspp fetchedRSPP= RsppDAO.getRSPP(model.getConMan().getDBConnection(), invoice);
+		Rspp fetchedRSPP = RsppDAO.getRSPP(model.getConMan().getDBConnection(), invoice);
 		if (fetchedRSPP != null && !rspp.equals(fetchedRSPP))
 			error += "- La fattura inserita è gia presente per la pratica " + fetchedRSPP.getJob().getId()
 					+ " con l'incarico tra il "
-					+ fetchedRSPP.getStart().format(DateTimeFormatter.ofPattern(model.getConfig().getProperty("dateFormat")))
-					+ " e il " + fetchedRSPP.getEnd().format(DateTimeFormatter.ofPattern(model.getConfig().getProperty("dateFormat")));
+					+ fetchedRSPP.getStart()
+							.format(DateTimeFormatter.ofPattern(model.getConfig().getProperty("dateFormat")))
+					+ " e il " + fetchedRSPP.getEnd()
+							.format(DateTimeFormatter.ofPattern(model.getConfig().getProperty("dateFormat")));
 
 		if (error.isEmpty())
 			return null;
@@ -150,12 +152,8 @@ public class FieldsValidator {
 	private static String isJobPAValid(JobPA job) {
 		String error = "";
 
-		if (job.getDecreeNumber() != null) {
-			if (job.getDecreeNumber() < 0)
-				error += "- Il numero deve essere un numero maggiore di 0\n";
-		} else
-			error += "- Il numero di determina non è in un formato valido\n";
-
+		if (job.getDecreeNumber() != null && job.getDecreeNumber() < 0)
+			error += "- Il numero deve essere un numero maggiore di 0\n";
 		if (!job.getCig().matches("^[a-zA-Z0-9]{10,}$"))
 			error += "- Il CIG non è in un formato valido\n";
 		if (error.isEmpty())

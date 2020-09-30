@@ -298,8 +298,7 @@ public class NewRSPPController {
 		// Add JobPA details if job exist but missing it
 		if ((!cigField.getText().isEmpty() || !decreeNumberField.getText().isEmpty()
 				|| decreeDateField.getValue() != null) && job instanceof JobPA) {
-			JobPA jobPA = new JobPA(job, cigField.getText(), Integer.valueOf(decreeNumberField.getText()),
-					decreeDateField.getValue());
+			JobPA jobPA = new JobPA(job, cigField.getText(), decreeNumberField.getText(), decreeDateField.getValue());
 			String error = FieldsValidator.isJobValid(jobPA);
 
 			if (error == null)

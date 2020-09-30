@@ -188,11 +188,17 @@ public class JobDAO {
 
 			st.setString(1, jobPA.getId());
 			st.setString(2, jobPA.getCig());
-			st.setInt(3, jobPA.getDecreeNumber());
+			if(jobPA.getDecreeNumber() != null)
+				st.setInt(3, jobPA.getDecreeNumber());
+			else
+				st.setNull(3, java.sql.Types.INTEGER);
 			st.setDate(4, Date.valueOf(jobPA.getDecreeDate()));
 
 			st.setString(5, jobPA.getCig());
-			st.setInt(6, jobPA.getDecreeNumber());
+			if(jobPA.getDecreeNumber() != null)
+				st.setInt(6, jobPA.getDecreeNumber());
+			else
+				st.setNull(6, java.sql.Types.INTEGER);
 			st.setDate(7, Date.valueOf(jobPA.getDecreeDate()));
 
 			rowsAffected = st.executeUpdate();

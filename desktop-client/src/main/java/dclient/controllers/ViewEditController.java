@@ -152,11 +152,11 @@ public class ViewEditController {
 		categoryAccountCombo.getItems().setAll(model.getAccountCategories().values());
 		jobCategory.getItems().setAll(model.getJobCat().keySet());
 	}
-	
+
 	@FXML
 	public void updateJobCombo() {
-			jobType.getItems().clear();
-			jobType.getItems().addAll((model.getJobCat().get(jobCategory.getSelectionModel().getSelectedItem())));		
+		jobType.getItems().clear();
+		jobType.getItems().addAll((model.getJobCat().get(jobCategory.getSelectionModel().getSelectedItem())));
 	}
 
 	public void setRSPP(String jobID, LocalDate jobStart) {
@@ -206,7 +206,7 @@ public class ViewEditController {
 		if (rspp.getJob() instanceof JobPA) {
 			System.out.println("Ciao");
 			cigField.setText(((JobPA) rspp.getJob()).getCig());
-			decreeNumberField.setText(Integer.toString(((JobPA) rspp.getJob()).getDecreeNumber()));
+			decreeNumberField.setText(((JobPA) rspp.getJob()).getDecreeNumberString());
 			decreeDateField.setValue(((JobPA) rspp.getJob()).getDecreeDate());
 		} else
 			paReferences.getChildren().clear();
@@ -264,7 +264,8 @@ public class ViewEditController {
 		if (!newAccount.equals(rspp.getJob().getCustomer())) {
 			error = FieldsValidator.isAccountValid(newAccount);
 			if (error == null) {
-				AccountDAO.updateAccount(model.getConMan().getDBConnection(), rspp.getJob().getCustomer().getFiscalCode(), newAccount);
+				AccountDAO.updateAccount(model.getConMan().getDBConnection(),
+						rspp.getJob().getCustomer().getFiscalCode(), newAccount);
 				isChanged = true;
 			} else {
 				warningWindows(error);
@@ -277,13 +278,12 @@ public class ViewEditController {
 		newJob = new Job(jobCodeField.getText(), jobCategory.getValue(), jobType.getValue(),
 				jobdDescriptionField.getText(), newAccount);
 		if (rspp.getJob() instanceof JobPA) {
-			newJob = new JobPA(newJob, cigField.getText(), Integer.parseInt(decreeNumberField.getText()),
-					decreeDateField.getValue());
+			newJob = new JobPA(newJob, cigField.getText(), decreeNumberField.getText(), decreeDateField.getValue());
 		}
 		if (!newJob.equals(rspp.getJob())) {
 			error = FieldsValidator.isJobValid(newJob);
 			if (error == null) {
-				//TODO check if right
+				// TODO check if right
 				JobDAO.updateJob(model.getConMan().getDBConnection(), newJob, rspp.getJob().getId());
 				isChanged = true;
 			} else {
@@ -294,8 +294,7 @@ public class ViewEditController {
 		}
 
 		// Check if rspp note needs to be updated
-		if (noteField.getText() != null
-				&& !noteField.getText().trim().equals(rsppNote)) {
+		if (noteField.getText() != null && !noteField.getText().trim().equals(rsppNote)) {
 			error = FieldsValidator.isRSPPNoteValid(rsppNote);
 			if (error == null) {
 				RsppDAO.updateNote(model.getConMan().getDBConnection(), newAccount, noteField.getText());
@@ -312,7 +311,8 @@ public class ViewEditController {
 		if (!newRSPP.equals(rspp)) {
 			error = FieldsValidator.isRSPPChangeValid(newRSPP);
 			if (error == null) {
-				RsppDAO.updateRSPP(model.getConMan().getDBConnection(), rspp.getJob().getId(), rspp.getStart(), newRSPP);
+				RsppDAO.updateRSPP(model.getConMan().getDBConnection(), rspp.getJob().getId(), rspp.getStart(),
+						newRSPP);
 				isChanged = true;
 			} else {
 				warningWindows(error);
@@ -351,7 +351,8 @@ public class ViewEditController {
 				RsppDAO.matchRSPPInvoice(model.getConMan().getDBConnection(), newRSPP, newInvoice);
 				isChanged = true;
 			} else if (!newInvoice.equals(invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()))) {
-				InvoiceDAO.updateInvoice(model.getConMan().getDBConnection(), invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()).getId(), newInvoice);
+				InvoiceDAO.updateInvoice(model.getConMan().getDBConnection(),
+						invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()).getId(), newInvoice);
 				isChanged = true;
 			}
 

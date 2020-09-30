@@ -316,7 +316,7 @@ public class ViewEditController {
 		if (rspp.getJob() instanceof JobPA) {
 			System.out.println("Ciao");
 			cigField.setText(((JobPA) rspp.getJob()).getCig());
-			decreeNumberField.setText(Integer.toString(((JobPA) rspp.getJob()).getDecreeNumber()));
+			decreeNumberField.setText(((JobPA) rspp.getJob()).getDecreeNumberString());
 			decreeDateField.setValue(((JobPA) rspp.getJob()).getDecreeDate());
 		} else
 			paReferences.getChildren().clear();
@@ -388,8 +388,7 @@ public class ViewEditController {
 		newJob = new Job(jobCodeField.getText(), jobCategory.getValue(), jobType.getValue(),
 				jobdDescriptionField.getText(), newAccount);
 		if (rspp.getJob() instanceof JobPA) {
-			newJob = new JobPA(newJob, cigField.getText(), Integer.parseInt(decreeNumberField.getText()),
-					decreeDateField.getValue());
+			newJob = new JobPA(newJob, cigField.getText(), decreeNumberField.getText(), decreeDateField.getValue());
 		}
 		if (!newJob.equals(rspp.getJob())) {
 			error = FieldsValidator.isJobValid(newJob);

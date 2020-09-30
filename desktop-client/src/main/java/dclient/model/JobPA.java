@@ -57,6 +57,14 @@ public class JobPA extends Job {
 		return decreeNumber;
 	}
 
+	public String getDecreeNumberString() {
+		try{
+			return decreeNumber.toString();
+		} catch (NullPointerException npe){
+			return null;
+		}
+	}
+
 	public LocalDate getDecreeDate() {
 		return decreeDate;
 	}

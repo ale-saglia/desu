@@ -123,11 +123,8 @@ public class FieldsValidator {
 	private static String isJobPAValid(JobPA job) {
 		String error = "";
 
-		if (job.getDecreeNumber() == null)
-			error += "- Il numero di determina non è in un formato valido\n";
-		else if (job.getDecreeNumber() < 0)
+		if (job.getDecreeNumber() != null && job.getDecreeNumber() < 0)
 			error += "- Il numero deve essere un numero maggiore di 0\n";
-
 		if (!job.getCig().matches("^[a-zA-Z0-9]{10,}$"))
 			error += "- Il CIG non è in un formato valido\n";
 

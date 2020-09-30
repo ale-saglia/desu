@@ -40,7 +40,7 @@ from
 		and r.jobstart = uni.rspp_start) invoiceInfo,
 	jobs.jobs j,
 	accounts.accounts a
-left join deadlines.rspp_notes rn on
+left join deadlines.rssp_account_details rn on
 	a.fiscalcode = rn.fiscalcode
 where
 	j.jobs_id = jobid

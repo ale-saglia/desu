@@ -42,7 +42,7 @@ def getJobInDealine(conn):
         query = (
             "select uni.\"name\", uni.jobend, uni.invoice_id, rn.notes from(select * from ( select r.rspp_jobid, r.jobstart, r.jobend, string_agg(ri.invoice_id, ', ') as invoice_id from deadlines.rspp_invoices ri right outer join deadlines.rspp r on r.rspp_jobid = ri.rspp_id and r.jobstart = ri.rspp_start group by r.rspp_jobid, r.jobstart) as inv_data, accounts.accounts a, jobs.jobs j where a.fiscalcode = j.customer and j.jobs_id = inv_data.rspp_jobid and jobend between current_date and current_date + interval '"
             + str(cfg["General"]["daysAdvance"]) +
-            " DAYS') as uni left join deadlines.rspp_notes rn on rn.fiscalcode = uni.fiscalcode "
+            " DAYS') as uni left join deadlines.rssp_account_details rn on rn.fiscalcode = uni.fiscalcode "
         )
         cursor.execute(query)
 
@@ -67,7 +67,7 @@ def getJobExpiredWithoutInvoice(conn):
         cursor = conn.cursor()
 
         query = (
-            "select uni.\"name\", uni.jobend, rn.notes from( select * from ( select r.rspp_jobid, r.jobstart, r.jobend, string_agg(ri.invoice_id, ', ') as invoice_id from deadlines.rspp_invoices ri right outer join deadlines.rspp r on r.rspp_jobid = ri.rspp_id and r.jobstart = ri.rspp_start group by r.rspp_jobid, r.jobstart) as inv_data, accounts.accounts a, jobs.jobs j where a.fiscalcode = j.customer and j.jobs_id = inv_data.rspp_jobid and jobend < current_date and invoice_id isnull) as uni left join deadlines.rspp_notes rn on rn.fiscalcode = uni.fiscalcode "
+            "select uni.\"name\", uni.jobend, rn.notes from( select * from ( select r.rspp_jobid, r.jobstart, r.jobend, string_agg(ri.invoice_id, ', ') as invoice_id from deadlines.rspp_invoices ri right outer join deadlines.rspp r on r.rspp_jobid = ri.rspp_id and r.jobstart = ri.rspp_start group by r.rspp_jobid, r.jobstart) as inv_data, accounts.accounts a, jobs.jobs j where a.fiscalcode = j.customer and j.jobs_id = inv_data.rspp_jobid and jobend < current_date and invoice_id isnull) as uni left join deadlines.rssp_account_details rn on rn.fiscalcode = uni.fiscalcode "
         )
         cursor.execute(query)
 

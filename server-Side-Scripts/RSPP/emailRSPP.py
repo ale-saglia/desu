@@ -1,19 +1,17 @@
 import psycopg2
-
 import smtplib
 from email.message import EmailMessage
-
 from datetime import date, timedelta
-
 import yaml
 from pathlib import Path
 
 global cfg
 
-
-def main():
-    mailText = mailComposer()
-    mailSender(mailText)
+#Need to create 3 modular pieces of the mail
+# - a: need to retrieve only the RSPP that ends and does not have another JOB starting after them
+# - b: need to retrieve the RSPP to be invoice in the current month
+# - c: need to retrieve the RSPP the RSPP that should had been invoice in 
+# the previous months but has been forgotten or the one without a month
 
 
 def connect():
@@ -147,10 +145,10 @@ def mailSender(message):
     print(message)
     try:
         server = smtplib.SMTP(cfg["Email"]["smtpServer"],
-                                  cfg["Email"]["smtpPort"])
+                              cfg["Email"]["smtpPort"])
         server.ehlo()
         server.starttls()
-        server.ehlo                         
+        server.ehlo
         server.login(cfg["Email"]["user"], cfg["Email"]["password"])
 
         message['From'] = cfg["Email"]["mailFrom"]
@@ -170,4 +168,5 @@ if __name__ == "__main__":
     with open(confPath, 'r') as f:
         cfg = yaml.safe_load(f)
 
-    main()
+    mailText = mailComposer()
+    mailSender(mailText)

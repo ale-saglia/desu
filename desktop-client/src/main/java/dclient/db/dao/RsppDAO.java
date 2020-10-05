@@ -10,7 +10,6 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -84,7 +83,6 @@ public class RsppDAO {
 			st.setDate(3, Date.valueOf(rspp.getEnd()));
 
 			rowsAffected = st.executeUpdate();
-
 		} catch (SQLException e) {
 			logger.error(e.getMessage());
 		}
@@ -132,19 +130,17 @@ public class RsppDAO {
 	 */
 	public static Collection<Rspp> getRSPPs(Connection conn) {
 		String sql = "select * from deadlines.rspp";
-		List<Rspp> rsppList = new LinkedList<Rspp>();
+		List<Rspp> rsppList = new LinkedList<>();
 
 		try (PreparedStatement st = conn.prepareStatement(sql); ResultSet res = st.executeQuery();) {
 			while (res.next()) {
 				Rspp rspp = new Rspp(conn, res);
 				rsppList.add(rspp);
 			}
-			return rsppList;
-
 		} catch (SQLException e) {
 			logger.error(e.getMessage());
 		}
-		return null;
+		return rsppList;
 	}
 
 	/**
@@ -158,24 +154,20 @@ public class RsppDAO {
 	 */
 	public static Collection<Rspp> getRSPPs(Connection conn, Account account) {
 		String sql = "select * from deadlines.rspp r, jobs.jobs j where r.rspp_jobid = j.jobs_id and customer = ? ";
-		List<Rspp> rsppList = new LinkedList<Rspp>();
+		List<Rspp> rsppList = new LinkedList<>();
 
-		try {
-			PreparedStatement st = conn.prepareStatement(sql);
-
+		try (PreparedStatement st = conn.prepareStatement(sql);) {
 			st.setString(1, account.getFiscalCode());
-
-			ResultSet res = st.executeQuery();
-
-			while (res.next()) {
-				Rspp rspp = new Rspp(conn, res);
-				rsppList.add(rspp);
+			try (ResultSet res = st.executeQuery();) {
+				while (res.next()) {
+					Rspp rspp = new Rspp(conn, res);
+					rsppList.add(rspp);
+				}
 			}
-			return rsppList;
-
 		} catch (SQLException e) {
 			logger.error(e.getMessage());
 		}
+		return rsppList;
 	}
 
 	/**
@@ -189,19 +181,15 @@ public class RsppDAO {
 		String query = "select r.rspp_jobid, r.jobstart, r.jobend from deadlines.rspp r, deadlines.rspp_invoices ri where r.rspp_jobid = ri.rspp_id and r.jobstart = ri.rspp_start and ri.invoice_id = ? ";
 		Rspp rspp = null;
 
-		try {
-			PreparedStatement st = conn.prepareStatement(query);
-
+		try (PreparedStatement st = conn.prepareStatement(query);) {
 			st.setString(1, invoice.getId());
-
-			ResultSet res = st.executeQuery();
-			if (res.next() == false)
-				return null;
-			rspp = new Rspp(conn, res);
+			try (ResultSet res = st.executeQuery();) {
+				if (res.next())
+					rspp = new Rspp(conn, res);
+			}
 		} catch (SQLException e) {
 			logger.error(e.getMessage());
 		}
-
 		return rspp;
 	}
 
@@ -216,21 +204,20 @@ public class RsppDAO {
 	 */
 	public static Rspp getRSPP(Connection conn, String jobID, LocalDate startJob) {
 		String sql = "select * from deadlines.rspp r where r.rspp_jobid = ? and r.jobstart = ? ";
-		Rspp rspp;
+		Rspp rspp = null;
 
-		try {
-			PreparedStatement st = conn.prepareStatement(sql);
+		try (PreparedStatement st = conn.prepareStatement(sql);) {
 			st.setString(1, jobID);
 			st.setDate(2, Date.valueOf(startJob));
 
-			ResultSet res = st.executeQuery();
-			res.next();
-			rspp = new Rspp(conn, res);
-			return rspp;
-
+			try (ResultSet res = st.executeQuery();) {
+				res.next();
+				rspp = new Rspp(conn, res);
+			}
 		} catch (SQLException e) {
 			logger.error(e.getMessage());
 		}
+		return rspp;
 	}
 
 	/**
@@ -246,20 +233,17 @@ public class RsppDAO {
 		String sql = "select * from deadlines.rspp r, jobs.jobs j where r.rspp_jobid = j.jobs_id and customer = ? order by jobend desc LIMIT 1 ";
 		Rspp rspp = null;
 
-		try {
-			PreparedStatement st = conn.prepareStatement(sql);
+		try (PreparedStatement st = conn.prepareStatement(sql);) {
 			st.setString(1, account.getFiscalCode());
 
-			ResultSet res = st.executeQuery();
-			if (res.next() == false)
-				return null;
-			rspp = new Rspp(conn, res);
-			return rspp;
-
+			try (ResultSet res = st.executeQuery();) {
+				if (res.next())
+					rspp = new Rspp(conn, res);
+			}
 		} catch (SQLException e) {
 			logger.error(e.getMessage());
 		}
-
+		return rspp;
 	}
 
 	/**
@@ -276,9 +260,7 @@ public class RsppDAO {
 
 		int rowsAffected = 0;
 
-		try {
-			PreparedStatement st = conn.prepareStatement(query);
-
+		try (PreparedStatement st = conn.prepareStatement(query);) {
 			st.setString(1, account.getFiscalCode());
 			st.setString(2, note);
 			st.setString(3, note);
@@ -296,27 +278,24 @@ public class RsppDAO {
 	 * 
 	 * @param conn    the Connection object to the DB
 	 * @param account the Account for which you want the Rspp note
-	 * @return a String containing the Rspp note of the given account
+	 * @return a String containing the Rspp note of the given account or an empty
+	 *         String if not find
 	 */
 	public static String getRSPPnote(Connection conn, Account account) {
 		String sql = "select * from deadlines.rssp_account_details r where r.fiscalcode = ? ";
-		String notes;
+		String note = "";
 
-		try {
-			PreparedStatement st = conn.prepareStatement(sql);
+		try (PreparedStatement st = conn.prepareStatement(sql);) {
 			st.setString(1, account.getFiscalCode());
 
-			ResultSet res = st.executeQuery();
-			if (res.next() == false)
-				return "";
-			else {
-				notes = res.getString("notes");
-				return notes;
+			try (ResultSet res = st.executeQuery();) {
+				if (res.next())
+					note = res.getString("notes");
 			}
-
 		} catch (SQLException e) {
 			logger.error(e.getMessage());
 		}
+		return note;
 	}
 
 	/**
@@ -332,15 +311,12 @@ public class RsppDAO {
 		String query = "insert into deadlines.rspp_invoices (rspp_id, rspp_start, invoice_id) values ( ? , ? , ? ) ";
 		int rowsAffected = 0;
 
-		try {
-			PreparedStatement st = conn.prepareStatement(query);
-
+		try (PreparedStatement st = conn.prepareStatement(query);) {
 			st.setString(1, rspp.getJob().getId());
 			st.setDate(2, Date.valueOf(rspp.getStart()));
 			st.setString(3, invoice.getId());
 
 			rowsAffected = st.executeUpdate();
-
 		} catch (SQLException e) {
 			logger.error(e.getMessage());
 		}
@@ -382,25 +358,19 @@ public class RsppDAO {
 	 */
 	public static Collection<Integer> getInvoiceMonths(Connection conn, Account account) {
 		String sql = "select * from deadlines.rspp_invoices_months rim where customer = ? ";
-		Set<Integer> invoiceMonths = null;
+		Set<Integer> invoiceMonths = new TreeSet<>();
 
 		try (PreparedStatement st = conn.prepareStatement(sql);) {
 			st.setString(1, account.getFiscalCode());
 
-			ResultSet res = st.executeQuery();
-			if (res.next() == false)
-				return null;
-			else {
-				invoiceMonths = Sets.newHashSet(((Integer[]) res.getArray("months").getArray()));
+			try (ResultSet res = st.executeQuery();) {
+				if (res.next())
+					invoiceMonths = Sets.newHashSet(((Integer[]) res.getArray("months").getArray()));
 			}
 		} catch (SQLException e) {
 			logger.error(e.getMessage());
 		}
-
-		if (invoiceMonths == null || invoiceMonths.isEmpty())
-			return null;
-		else
-			return invoiceMonths;
+		return invoiceMonths;
 	}
 
 	/**
@@ -414,20 +384,17 @@ public class RsppDAO {
 		String query = "select i.* from( select invoice_id from deadlines.rspp_invoices ri where rspp_id = ? and rspp_start = ?) as vi, invoices.invoices i where vi.invoice_id = i.invoiceid";
 		Set<Invoice> invoicesMap = new TreeSet<>();
 
-		try {
-			PreparedStatement st = conn.prepareStatement(query);
-
+		try (PreparedStatement st = conn.prepareStatement(query);) {
 			st.setString(1, rspp.getJob().getId());
 			st.setDate(2, Date.valueOf(rspp.getStart()));
 
-			ResultSet res = st.executeQuery();
-
-			while (res.next())
-				invoicesMap.add(new Invoice(res));
+			try (ResultSet res = st.executeQuery();) {
+				while (res.next())
+					invoicesMap.add(new Invoice(res));
+			}
 		} catch (SQLException e) {
 			logger.error(e.getMessage());
 		}
-
 		return invoicesMap;
 	}
 }

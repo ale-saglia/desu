@@ -10,9 +10,14 @@ import java.util.List;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import dclient.model.*;
 
 public class AccountDAO {
+	private static Logger logger = LoggerFactory.getLogger("DClient");
+
 	/**
 	 * This function is meant to add a single object (Account) to the DB and does
 	 * nothing if exist another account with the same primary key.
@@ -26,9 +31,7 @@ public class AccountDAO {
 		String query = "insert into accounts.accounts (fiscalcode,\"name\",numbervat,atecocode,legal_address,customer_category,descriptor) values ( ? , ? , ? , ? , ? , ? , ? ) ";
 		int rowsAffected = 0;
 
-		try {
-			PreparedStatement st = conn.prepareStatement(query);
-
+		try (PreparedStatement st = conn.prepareStatement(query);) {
 			st.setString(1, account.getFiscalCode());
 			st.setString(2, account.getName());
 			st.setString(3, account.getNumberVAT());
@@ -39,13 +42,9 @@ public class AccountDAO {
 
 			rowsAffected = st.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Errore connessione al database o campo già esistente");
-			return -1;
+			logger.error(e.getMessage());
 		}
-
-		System.out.println("Rows updated ACCOUNT => " + rowsAffected);
-		return 0;
+		return rowsAffected;
 	}
 
 	/**
@@ -61,9 +60,7 @@ public class AccountDAO {
 		String query = "UPDATE accounts.accounts SET fiscalcode = ?, \"name\" = ?, numbervat = ?, atecocode = ?, legal_address = ?, customer_category = ? , descriptor = ? WHERE fiscalcode = ? ";
 		int rowsAffected = 0;
 
-		try {
-			PreparedStatement st = conn.prepareStatement(query);
-
+		try (PreparedStatement st = conn.prepareStatement(query);) {
 			st.setString(1, account.getFiscalCode());
 			st.setString(2, account.getName());
 			st.setString(3, account.getNumberVAT());
@@ -75,11 +72,8 @@ public class AccountDAO {
 
 			rowsAffected = st.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Errore connessione al database");
-			throw new RuntimeException("Error Connection Database");
+			logger.error(e.getMessage());
 		}
-
 		return rowsAffected;
 	}
 
@@ -91,23 +85,15 @@ public class AccountDAO {
 	 */
 	public static List<Account> getAccounts(Connection conn) {
 		String query = "select * from accounts.accounts order by \"name\"";
-		List<Account> accounts = new ArrayList<Account>();
+		List<Account> accounts = new ArrayList<>();
 
-		try {
-			PreparedStatement st = conn.prepareStatement(query);
-			ResultSet res = st.executeQuery();
+		try (PreparedStatement st = conn.prepareStatement(query); ResultSet res = st.executeQuery();) {
 			while (res.next())
 				accounts.add(new Account(res));
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Errore connessione al database");
-			throw new RuntimeException("Error Connection Database");
+			logger.error(e.getMessage());
 		}
-
-		if (accounts.size() > 0)
-			return accounts;
-		else
-			return null;
+		return accounts;
 	}
 
 	/**
@@ -122,18 +108,16 @@ public class AccountDAO {
 	 */
 	public static Account getAccount(Connection conn, String fiscalCode) {
 		String query = "select * from accounts.accounts a where a.fiscalcode = ? ";
-		Account account;
+		Account account = null;
 
-		try {
-			PreparedStatement st = conn.prepareStatement(query);
+		try (PreparedStatement st = conn.prepareStatement(query);) {
 			st.setString(1, fiscalCode);
-			ResultSet res = st.executeQuery();
-			res.next();
-			account = new Account(res);
+			try (ResultSet res = st.executeQuery();) {
+				res.next();
+				account = new Account(res);
+			}
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Errore connessione al database");
-			return null;
+			logger.error(e.getMessage());
 		}
 		return account;
 	}
@@ -150,18 +134,16 @@ public class AccountDAO {
 	 */
 	public static Account getAccountFromVATNumber(Connection conn, String vatNumber) {
 		String query = "select * from accounts.accounts a where a.numbervat = ? ";
-		Account account;
+		Account account = null;
 
-		try {
-			PreparedStatement st = conn.prepareStatement(query);
+		try (PreparedStatement st = conn.prepareStatement(query);) {
 			st.setString(1, vatNumber);
-			ResultSet res = st.executeQuery();
-			res.next();
-			account = new Account(res);
+			try (ResultSet res = st.executeQuery();) {
+				res.next();
+				account = new Account(res);
+			}
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Errore connessione al database");
-			return null;
+			logger.error(e.getMessage());
 		}
 		return account;
 	}

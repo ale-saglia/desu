@@ -80,8 +80,8 @@ public class MainController {
 		FilteredList<RSPPtableElement> filteredrsppElements;
 		SortedList<RSPPtableElement> sortedFilteredrsppElements;
 
-		rsppElements = FXCollections
-				.observableArrayList(RsppDAO.getRSPPTable(model.getConMan().getDBConnection(), model.getLocalDateFormat()));
+		rsppElements = FXCollections.observableArrayList(
+				RsppDAO.getRSPPTable(model.getConMan().getDBConnection(), model.getLocalDateFormat()));
 		model.getConMan().closeDBConnection();
 		filteredrsppElements = new FilteredList<>(rsppElements);
 
@@ -102,9 +102,7 @@ public class MainController {
 									setText(null);
 									setStyle("");
 								} else {
-									setText(DateTimeFormatter
-											.ofPattern(model.getLocalDateFormat())
-											.format(item));
+									setText(DateTimeFormatter.ofPattern(model.getLocalDateFormat()).format(item));
 								}
 							}
 						};
@@ -149,8 +147,10 @@ public class MainController {
 	}
 
 	private boolean textFilter(final RSPPtableElement rspp) {
-		return (searchField.getText().isEmpty() || rspp.getAccountName() != null || (rspp.getAccountDescriptor() != null
-				&& rspp.getAccountDescriptor().toLowerCase().contains(searchField.getText().toLowerCase())));
+		return (searchField.getText().isEmpty() || ((rspp.getAccountName() != null
+				&& rspp.getAccountName().toLowerCase().contains(searchField.getText().toLowerCase()))
+				|| (rspp.getAccountDescriptor() != null
+						&& rspp.getAccountDescriptor().toLowerCase().contains(searchField.getText().toLowerCase()))));
 	}
 
 	private boolean dateFilter(final RSPPtableElement rspp) {
@@ -203,8 +203,7 @@ public class MainController {
 				stage.show();
 
 			} catch (final Exception e) {
-				logger.error(
-						"Error opening edit view for element:\n" + selectedItems.toString() + "\n" + e.getMessage());
+				logger.error("Error opening edit view for element:\n" + selectedItems.toString(), e);
 			}
 		} else {
 			final Alert alert = new Alert(AlertType.WARNING);

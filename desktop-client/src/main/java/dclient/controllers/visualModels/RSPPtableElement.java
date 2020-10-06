@@ -4,6 +4,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -12,6 +16,8 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class RSPPtableElement {
+	private static Logger logger = LoggerFactory.getLogger("DClient");
+
 	String jobID;
 	LocalDate jobStart;
 
@@ -24,25 +30,6 @@ public class RSPPtableElement {
 	StringProperty invoiceID;
 	BooleanProperty payed;
 	StringProperty note;
-
-	public RSPPtableElement(String name, String descriptor, String category, LocalDate jobEnd, String invoiceID,
-			Boolean payed, String note, String jobID, LocalDate jobStart, String dateFormat) {
-		this.jobID = jobID;
-		this.jobStart = jobStart;
-
-		this.jobEnd = new SimpleObjectProperty<LocalDate>(jobEnd);
-		this.accountName = new SimpleStringProperty(name);
-		this.accountDescriptor = new SimpleStringProperty(descriptor);
-		this.note = new SimpleStringProperty(note);
-		this.category = new SimpleStringProperty(category);
-		this.invoiceID = new SimpleStringProperty(invoiceID);
-		this.payed = new SimpleBooleanProperty(payed);
-
-		if (dateFormat != null)
-			this.formatter = DateTimeFormatter.ofPattern(dateFormat);
-		else
-			this.formatter = DateTimeFormatter.ISO_DATE;
-	}
 
 	public RSPPtableElement(ResultSet res, String dateFormat) {
 		try {
@@ -62,9 +49,7 @@ public class RSPPtableElement {
 			else
 				this.formatter = DateTimeFormatter.ISO_DATE;
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Errore connessione al database");
-			throw new RuntimeException("Error Connection Database");
+			logger.error(e.getMessage());
 		}
 	}
 
@@ -135,4 +120,13 @@ public class RSPPtableElement {
 	public String getNote() {
 		return note.get();
 	}
+
+	@Override
+	public String toString() {
+		return "RSPPtableElement [accountDescriptor=" + accountDescriptor + ", accountName=" + accountName
+				+ ", category=" + category + ", formatter=" + formatter + ", invoiceID=" + invoiceID + ", jobEnd="
+				+ jobEnd + ", jobID=" + jobID + ", jobStart=" + jobStart + ", note=" + note + ", payed=" + payed + "]";
+	}
+
+	
 }

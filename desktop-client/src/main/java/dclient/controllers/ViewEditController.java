@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.controlsfx.control.CheckComboBox;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
@@ -37,7 +39,8 @@ import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
 public class ViewEditController {
-	private final String DEFAULT_NEW_INVOICE_TEXT = "Nuova fattura...";
+	private static Logger logger = LoggerFactory.getLogger("DClient");
+	private static final  String DEFAULT_NEW_INVOICE_TEXT = "Nuova fattura...";
 
 	private Model model;
 	private Rspp rspp;
@@ -137,46 +140,17 @@ public class ViewEditController {
 	private Button closeButton;
 
 	@FXML
-	void initialize() {
-		assert nameField != null : "fx:id=\"nameField\" was not injected: check your FXML file 'edit.fxml'.";
-		assert fiscalCodeText != null : "fx:id=\"fiscalCodeText\" was not injected: check your FXML file 'edit.fxml'.";
-		assert numberVATField != null : "fx:id=\"numberVATField\" was not injected: check your FXML file 'edit.fxml'.";
-		assert categoryAccountCombo != null
-				: "fx:id=\"categoryAccountCombo\" was not injected: check your FXML file 'edit.fxml'.";
-		assert atecoCodeField != null : "fx:id=\"atecoCodeField\" was not injected: check your FXML file 'edit.fxml'.";
-		assert addressField != null : "fx:id=\"addressField\" was not injected: check your FXML file 'edit.fxml'.";
-		assert descriptorField != null
-				: "fx:id=\"descriptorField\" was not injected: check your FXML file 'edit.fxml'.";
-		assert jobCodeField != null : "fx:id=\"jobCodeField\" was not injected: check your FXML file 'edit.fxml'.";
-		assert jobCategory != null : "fx:id=\"jobCategory\" was not injected: check your FXML file 'edit.fxml'.";
-		assert jobType != null : "fx:id=\"jobType\" was not injected: check your FXML file 'edit.fxml'.";
-		assert jobdDescriptionField != null
-				: "fx:id=\"jobdDescriptionField\" was not injected: check your FXML file 'edit.fxml'.";
-		assert paReferences != null : "fx:id=\"paReferences\" was not injected: check your FXML file 'edit.fxml'.";
-		assert cigField != null : "fx:id=\"cigField\" was not injected: check your FXML file 'edit.fxml'.";
-		assert decreeNumberField != null
-				: "fx:id=\"decreeNumberField\" was not injected: check your FXML file 'edit.fxml'.";
-		assert decreeDateField != null
-				: "fx:id=\"decreeDateField\" was not injected: check your FXML file 'edit.fxml'.";
-		assert noteField != null : "fx:id=\"noteField\" was not injected: check your FXML file 'edit.fxml'.";
-		assert jobStartField != null : "fx:id=\"jobStartField\" was not injected: check your FXML file 'edit.fxml'.";
-		assert jobEndField != null : "fx:id=\"jobEndField\" was not injected: check your FXML file 'edit.fxml'.";
-		assert invoiceComboParent != null
-				: "fx:id=\"invoiceComboParent\" was not injected: check your FXML file 'edit.fxml'.";
-		assert invoiceBox != null : "fx:id=\"invoiceBox\" was not injected: check your FXML file 'edit.fxml'.";
-		assert invoiceNumberField != null
-				: "fx:id=\"invoiceNumberField\" was not injected: check your FXML file 'edit.fxml'.";
-		assert invoiceEmissionDateField != null
-				: "fx:id=\"invoiceEmissionDateField\" was not injected: check your FXML file 'edit.fxml'.";
-		assert invoiceTypeField != null
-				: "fx:id=\"invoiceTypeField\" was not injected: check your FXML file 'edit.fxml'.";
-		assert invoiceMonthCombo != null
-				: "fx:id=\"invoiceMonthCombo\" was not injected: check your FXML file 'edit.fxml'.";
-		assert invoiceDescription != null
-				: "fx:id=\"invoiceDescription\" was not injected: check your FXML file 'edit.fxml'.";
-		assert payedCheck != null : "fx:id=\"payedCheck\" was not injected: check your FXML file 'edit.fxml'.";
-		assert closeButton != null : "fx:id=\"closeButton\" was not injected: check your FXML file 'edit.fxml'.";
-		
+	private void closeButtonAction() {
+		Stage stage = (Stage) closeButton.getScene().getWindow();
+		stage.close();
+	}
+
+	public void setModel(Model model) {
+		this.model = model;
+		setDatePickerConverter();
+	}
+
+	private void setDatePickerConverter(){
 		decreeDateField.setConverter(new StringConverter<LocalDate>() {
 			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(model.getLocalDateFormat());
 
@@ -244,16 +218,6 @@ public class ViewEditController {
 		});
 	}
 
-	@FXML
-	private void closeButtonAction() {
-		Stage stage = (Stage) closeButton.getScene().getWindow();
-		stage.close();
-	}
-
-	public void setModel(Model model) {
-		this.model = model;
-	}
-
 	public void setMainControllerRef(MainController mainController) {
 		this.mainController = mainController;
 	}
@@ -314,7 +278,6 @@ public class ViewEditController {
 		noteField.setText(rsppNote);
 
 		if (rspp.getJob() instanceof JobPA) {
-			System.out.println("Ciao");
 			cigField.setText(((JobPA) rspp.getJob()).getCig());
 			decreeNumberField.setText(((JobPA) rspp.getJob()).getDecreeNumberString());
 			decreeDateField.setValue(((JobPA) rspp.getJob()).getDecreeDate());
@@ -469,7 +432,7 @@ public class ViewEditController {
 		}
 
 		if (isChanged) {
-			System.out.println("Some elements were modified");
+			logger.info("Some elements were edited in the DB");
 			mainController.refresh();
 		}
 		model.getConMan().closeDBConnection();

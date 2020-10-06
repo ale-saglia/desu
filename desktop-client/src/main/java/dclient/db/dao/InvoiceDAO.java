@@ -5,9 +5,14 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import dclient.model.Invoice;
 
 public class InvoiceDAO {
+	private static Logger logger = LoggerFactory.getLogger("DClient");
+
 	/**
 	 * This function create a new Invoice in the database that correspond to the
 	 * object passed as paramenter. It does nothing if an Invoice with the same code
@@ -21,9 +26,7 @@ public class InvoiceDAO {
 		String query = "insert into invoices.invoices (invoiceid, \"number\", emission, \"type\", payed, description) values ( ? , ? , ? , ? , ? , ? ) ";
 		int rowsAffected = 0;
 
-		try {
-			PreparedStatement st = conn.prepareStatement(query);
-
+		try (PreparedStatement st = conn.prepareStatement(query);){
 			st.setString(1, invoice.getId());
 			st.setInt(2, invoice.getNumber());
 			st.setDate(3, Date.valueOf(invoice.getEmission()));
@@ -33,11 +36,8 @@ public class InvoiceDAO {
 
 			rowsAffected = st.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Errore connessione al database");
-			throw new RuntimeException("Error Connection Database");
+			logger.error(e.getMessage());
 		}
-		System.out.println("Rows updated INVOICE => " + rowsAffected);
 		return rowsAffected;
 	}
 
@@ -54,9 +54,7 @@ public class InvoiceDAO {
 		String query = "update invoices.invoices set invoiceid = ? , \"number\" = ? , emission = ? , \"type\" = ? , payed = ?, description = ? where invoiceid = ? ";
 		int rowsAffected = 0;
 
-		try {
-			PreparedStatement st = conn.prepareStatement(query);
-
+		try (PreparedStatement st = conn.prepareStatement(query);){
 			st.setString(1, invoice.getId());
 			st.setInt(2, invoice.getNumber());
 			st.setDate(3, Date.valueOf(invoice.getEmission()));
@@ -67,11 +65,8 @@ public class InvoiceDAO {
 
 			rowsAffected = st.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Errore connessione al database");
-			throw new RuntimeException("Error Connection Database");
+			logger.error(e.getMessage());
 		}
-		System.out.println("Rows updated INVOICE => " + rowsAffected);
 		return rowsAffected;
 	}
 }

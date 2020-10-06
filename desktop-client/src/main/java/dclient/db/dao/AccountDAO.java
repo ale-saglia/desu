@@ -162,19 +162,19 @@ public class AccountDAO {
 				+ "from accounts.accounts a, jobs.jobs j, invoices.invoices i, deadlines.rspp r "
 				+ "where a.fiscalcode = j.customer and r.invoiceid = i.invoiceid and r.rspp_jobid = j.jobs_id and "
 				+ "i.\"number\" = ? and i.\"type\" = ? and date_part('year', emission) = ? ";
-		Account account;
+		Account account = null;
 
-		try {
-			PreparedStatement st = conn.prepareStatement(query);
+		try (PreparedStatement st = conn.prepareStatement(query);) {
 			st.setInt(1, invoice.getNumber());
 			st.setString(2, invoice.getType());
 			st.setInt(3, invoice.getEmission().getYear());
 
-			ResultSet res = st.executeQuery();
-			account = new Account(res);
+			try (ResultSet res = st.executeQuery();) {
+				res.next();
+				account = new Account(res);
+			}
 		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
+			logger.error(e.getMessage());
 		}
 		return account;
 	}
@@ -190,18 +190,13 @@ public class AccountDAO {
 		String sql = "select * from accounts.accounts_categories ac ";
 		BiMap<String, String> categories = HashBiMap.create();
 
-		try {
-			PreparedStatement st = conn.prepareStatement(sql);
-			ResultSet res = st.executeQuery();
+		try (PreparedStatement st = conn.prepareStatement(sql); ResultSet res = st.executeQuery();) {
 			while (res.next()) {
 				categories.put(res.getString("categories"), res.getString("extended"));
 			}
-			return categories;
-
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Errore connessione al database");
-			throw new RuntimeException("Error Connection Database");
+			logger.error(e.getMessage());
 		}
+		return categories;
 	}
 }

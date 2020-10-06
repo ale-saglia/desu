@@ -5,6 +5,8 @@ import calendar
 
 import psycopg2
 
+import argparse
+
 import smtplib
 from email.message import EmailMessage
 
@@ -16,7 +18,29 @@ global cfg
 
 
 def main():
-    mailSender(accountingModule())
+    parser = argparse.ArgumentParser(
+        description=
+        'A server side script to create a mail notification for DESU')
+    parser.add_argument(
+        '-m',
+        action='store',
+        dest='module',
+        help='Modules you want to run with the script',
+    )
+    parser.add_argument(
+        '-e',
+        action='append',
+        dest='mailAddresses',
+        default=[],
+        help='All the email you want the result to be sented to',
+    )
+
+    if parser.parse_args().module == "accounting":
+        mailSender(accountingModule(parser.parse_args().mailAddresses))
+    elif parser.parse_args().module == "management":
+        mailSender(managementModule(parser.parse_args().mailAddresses))
+    else:
+        print("Invalid or missing module name")
 
 
 def connect():
@@ -36,7 +60,7 @@ def connect():
         return conn
 
 
-def accountingModule():
+def accountingModule(emailAdresses):
     conn = connect()
 
     subject = "Incarichi da fatturare per il mese di " + calendar.month_name[
@@ -46,9 +70,9 @@ def accountingModule():
     #Create message portion for regular current Invoice
     invoiceInMonth = getInvoiceForCurrentMonth(conn)
     if invoiceInMonth:
-        msg += "Ecco gli incarichi da fatturare durante questo mese\n"
+        msg += "Ecco gli incarichi da fatturare durante questo mese"
         for row in invoiceInMonth:
-            msg += "Ragione sociale: " + row[0]
+            msg += "\nRagione sociale: " + row[0]
             msg += "\n"
             msg += "Scadenza " + row[1].strftime('%d/%m/%Y')
             msg += "\n"
@@ -79,13 +103,13 @@ def accountingModule():
         mail['Subject'] = subject
 
         mail['From'] = cfg["Email"]["mailFrom"]
-        mail['To'] = cfg["Email"]["mailTo"]
+        mail['To'] = emailAdresses
         return mail
     else:
         exit()
 
 
-def managementModule():
+def managementModule(emailAdresses):
     conn = connect()
 
     subject = "Incarichi in scadenza nei prossimi " + str(
@@ -95,7 +119,7 @@ def managementModule():
     expiringRSPP = getJobInDealine(conn)
     if expiringRSPP:
         msg += "I seguenti incarichi sono scaduti o scadranno nei prossimi " + str(
-            cfg["General"]["daysAdvance"]) + " giorni\n"
+            cfg["General"]["daysAdvance"]) + " giorni\n\n"
         for row in expiringRSPP:
             msg += "Ragione sociale: " + row[0]
             msg += "\n"
@@ -112,7 +136,7 @@ def managementModule():
         mail['Subject'] = subject
 
         mail['From'] = cfg["Email"]["mailFrom"]
-        mail['To'] = cfg["Email"]["mailTo"]
+        mail['To'] = emailAdresses
         return mail
     else:
         exit()
@@ -202,7 +226,7 @@ def mailSender(message):
         server.login(cfg["Email"]["user"], cfg["Email"]["password"])
 
         server.send_message(message)
-        print("Mail sent to " + cfg["Email"]["mailTo"])
+        print("Mail sent")
     except:
         print('Something went wrong...')
         return

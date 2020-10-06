@@ -311,7 +311,7 @@ public class ViewEditController {
 	private void setInvoiceMonth() {
 		invoiceMonths = RsppDAO.getInvoiceMonths(model.getConMan().getDBConnection(), rspp.getJob().getCustomer());
 		if (invoiceMonths == null)
-			invoiceMonths = new HashSet<Integer>();
+			invoiceMonths = new HashSet<>();
 
 		for (Integer month : invoiceMonths) {
 			invoiceMonthCombo.getCheckModel().check(MONTH_MAP.inverse().get(month));
@@ -395,7 +395,7 @@ public class ViewEditController {
 		}
 
 		// Check if invoice months need to be updated
-		newInvoiceMonths = new HashSet<Integer>();
+		newInvoiceMonths = new HashSet<>();
 		for (int i = 1; i <= MONTH_MAP.size(); i++) {
 			if (invoiceMonthCombo.getCheckModel().isChecked(MONTH_MAP.inverse().get(i)))
 				newInvoiceMonths.add(i);
@@ -407,9 +407,9 @@ public class ViewEditController {
 		newInvoice = new Invoice(invoiceNumberField.getText(), invoiceEmissionDateField.getValue(),
 				newAccount.getCategory(), payedCheck.isSelected(), invoiceDescription.getText());
 
-		if (!(newInvoice.equals(invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem())))
-				&& !((invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()) == null
-						&& newInvoice.getId() == null))) {
+		if (!newInvoice.equals(invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()))
+				&& !(invoiceMap.get(invoiceBox.getSelectionModel().getSelectedItem()) == null
+						&& newInvoice.getId() == null)) {
 			error = FieldsValidator.isInvoiceValid(newInvoice);
 			if (error != null) {
 				warningWindows(error);

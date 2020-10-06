@@ -36,7 +36,7 @@ public class RSPPtableElement {
 			this.jobID = res.getString("jobid");
 			this.jobStart = res.getDate("jobstart").toLocalDate();
 
-			this.jobEnd = new SimpleObjectProperty<LocalDate>(res.getDate("jobend").toLocalDate());
+			this.jobEnd = new SimpleObjectProperty<>(res.getDate("jobend").toLocalDate());
 			this.accountName = new SimpleStringProperty(res.getString("name"));
 			this.accountDescriptor = new SimpleStringProperty(res.getString("descriptor"));
 			this.note = new SimpleStringProperty(res.getString("notes"));

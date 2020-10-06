@@ -1,17 +1,22 @@
+#!/usr/bin/python
+
+import locale
+import calendar
+
 import psycopg2
+
 import smtplib
 from email.message import EmailMessage
-from datetime import date, timedelta
+
 import yaml
 from pathlib import Path
+from datetime import datetime
 
 global cfg
 
-#Need to create 3 modular pieces of the mail
-# - a: need to retrieve only the RSPP that ends and does not have another JOB starting after them
-# - b: need to retrieve the RSPP to be invoice in the current month
-# - c: need to retrieve the RSPP the RSPP that should had been invoice in 
-# the previous months but has been forgotten or the one without a month
+
+def main():
+    mailSender(accountModule())
 
 
 def connect():
@@ -31,6 +36,76 @@ def connect():
         return conn
 
 
+def accountModule():
+    conn = connect()
+
+    subject = "Incarichi da fatturare per il mese di " + calendar.month_name[
+        datetime.now().month].capitalize()
+    msg = ""
+
+    #Create message portion for regular current Invoice
+    invoiceInMonth = getInvoiceForCurrentMonth(conn)
+    if invoiceInMonth:
+        msg += "Ecco gli incarichi da fatturare durante questo mese\n"
+        for row in invoiceInMonth:
+            msg += "Ragione sociale: " + row[0]
+            msg += "\n"
+            msg += "Scadenza " + row[1].strftime('%d/%m/%Y')
+            msg += "\n"
+            if (row[2] != None):
+                msg += "Note: " + row[2]
+    msg = msg.strip()
+
+    #Create message portion for rspp of previous months without an invoice yet
+    expiredRSPP = getJobExpiredWithoutInvoice(conn)
+    if invoiceInMonth:
+        msg += "\n\nSono state inoltre trovati i seguenti incarichi scaduti e senza fattura\n"
+        for row in invoiceInMonth:
+            msg += "Ragione sociale: " + row[0]
+            msg += "\n"
+            msg += "Scadenza " + row[1].strftime('%d/%m/%Y')
+            msg += "\n"
+            if (row[2] != None):
+                msg += "Note: " + row[2]
+            msg += "\n\n"
+    msg = msg.strip()
+
+    print(subject)
+    print(msg)
+
+    mail = EmailMessage()
+    mail.set_content(msg)
+    mail['Subject'] = subject
+
+    message['From'] = cfg["Email"]["mailFrom"]
+    message['To'] = cfg["Email"]["mailTo"]
+
+    return mail
+
+
+def getInvoiceForCurrentMonth(conn):
+    try:
+        if conn is None:
+            return
+        cursor = conn.cursor()
+
+        query = (
+            "select a.\"name\" as \"Ragione Sociale\", r.jobend as Scadenza, rad.notes as Note from deadlines.rspp r, deadlines.rspp_invoices_months rim, jobs.jobs j, accounts.accounts a left join deadlines.rssp_account_details rad on rad.fiscalcode = a.fiscalcode where r.rspp_jobid = j.jobs_id and a.fiscalcode = j.customer and j.customer = rim.customer and r.jobstart < now() and r.jobend > now() and extract (month from CURRENT_DATE) = any(rim.months) and rad.expired is not true order by a.\"name\" "
+        )
+        cursor.execute(query)
+
+        # Row 0 should contain account name, row 1 should contains the deadline and row 2 should contain the notes or NULL if the note was not found
+        results = list(cursor.fetchall())
+
+        if results is not None:
+            return results
+        else:
+            return
+
+    except psycopg2.Error as error:
+        print("Failed to read data from table", error)
+
+
 def getJobInDealine(conn):
     try:
         if conn is None:
@@ -38,16 +113,16 @@ def getJobInDealine(conn):
         cursor = conn.cursor()
 
         query = (
-            "select uni.\"name\", uni.jobend, uni.invoice_id, rn.notes from(select * from ( select r.rspp_jobid, r.jobstart, r.jobend, string_agg(ri.invoice_id, ', ') as invoice_id from deadlines.rspp_invoices ri right outer join deadlines.rspp r on r.rspp_jobid = ri.rspp_id and r.jobstart = ri.rspp_start group by r.rspp_jobid, r.jobstart) as inv_data, accounts.accounts a, jobs.jobs j where a.fiscalcode = j.customer and j.jobs_id = inv_data.rspp_jobid and jobend between current_date and current_date + interval '"
+            "select main.\"name\", main.job_end, rad.notes from ( select a.\"name\", a.fiscalcode , max(r.jobend) as job_end from accounts.accounts a, jobs.jobs j, deadlines.rspp r where j.customer = a.fiscalcode and j.jobs_id = r.rspp_jobid and r.jobend < (now() + interval '"
             + str(cfg["General"]["daysAdvance"]) +
-            " DAYS') as uni left join deadlines.rssp_account_details rn on rn.fiscalcode = uni.fiscalcode "
+            "' day) and not (a.name in ( select a.name from accounts.accounts a, jobs.jobs j, deadlines.rspp r where r.jobend > (now() + interval '"
+            + str(cfg["General"]["daysAdvance"]) +
+            "' day) and j.jobs_id = r.rspp_jobid and a.fiscalcode = j.customer)) and not (a.fiscalcode in ( select rn.fiscalcode from deadlines.rssp_account_details rn where rn.expired is true)) group by a.name, a.fiscalcode order by a.name) as main left join deadlines.rssp_account_details rad on rad.fiscalcode = main.fiscalcode "
         )
         cursor.execute(query)
 
         # Row 0 should contain account name and row 1 should contains the deadline
         results = list(cursor.fetchall())
-
-        print(results)
 
         if results is not None:
             return results
@@ -65,14 +140,12 @@ def getJobExpiredWithoutInvoice(conn):
         cursor = conn.cursor()
 
         query = (
-            "select uni.\"name\", uni.jobend, rn.notes from( select * from ( select r.rspp_jobid, r.jobstart, r.jobend, string_agg(ri.invoice_id, ', ') as invoice_id from deadlines.rspp_invoices ri right outer join deadlines.rspp r on r.rspp_jobid = ri.rspp_id and r.jobstart = ri.rspp_start group by r.rspp_jobid, r.jobstart) as inv_data, accounts.accounts a, jobs.jobs j where a.fiscalcode = j.customer and j.jobs_id = inv_data.rspp_jobid and jobend < current_date and invoice_id isnull) as uni left join deadlines.rssp_account_details rn on rn.fiscalcode = uni.fiscalcode "
+            "select uni.\"name\", uni.jobend, rad.notes from( select * from ( select r.rspp_jobid, r.jobstart, r.jobend, string_agg(ri.invoice_id, ', ') as invoice_id from deadlines.rspp_invoices ri right outer join deadlines.rspp r on r.rspp_jobid = ri.rspp_id and r.jobstart = ri.rspp_start group by r.rspp_jobid, r.jobstart) as inv_data, accounts.accounts a, jobs.jobs j where a.fiscalcode = j.customer and j.jobs_id = inv_data.rspp_jobid and jobend < current_date and invoice_id isnull) as uni left join deadlines.rssp_account_details rad on rad.fiscalcode = uni.fiscalcode "
         )
         cursor.execute(query)
 
         # Row 0 should contain account name and row 1 should contains the deadline
         results = list(cursor.fetchall())
-
-        print(results)
 
         if results is not None:
             return results
@@ -81,64 +154,6 @@ def getJobExpiredWithoutInvoice(conn):
 
     except psycopg2.Error as error:
         print("Failed to read data from table", error)
-
-
-def mailComposer():
-    msg = ""
-    conn = connect()
-
-    resultSet = getJobInDealine(conn)
-    if resultSet:
-        msg += "Ecco gli incarichi in scadenza nei prossimi " + \
-            str(cfg["General"]["daysAdvance"]) + " giorni\n"
-        for row in resultSet:
-            msg += "Ragione sociale: " + row[0]
-            msg += "\n"
-            msg += "Scadenza" + row[1].strftime('%d/%m/%Y')
-            msg += "\n"
-            msg += "Codice fattura: " + row[2]
-            msg += "\n"
-            if (row[3] != None):
-                msg += "Note: " + row[3]
-            else:
-                msg += "Note: " + ""
-            msg += "\n\n"
-    msg = msg.strip()
-
-    resultSet = getJobExpiredWithoutInvoice(conn)
-    if resultSet:
-        if (msg != ""):
-            msg += "\n\n"
-        else:
-            msg += "Non sono stati trovati incarichi in scadenza nel periodo in questione\n\n"
-
-        msg += "Sono stati trovati i seguenti incarichi scaduti e privi di indicazioni sulla fattura\n"
-        for row in resultSet:
-            msg += "Ragione sociale: " + row[0]
-            msg += "\n"
-            msg += "Scaduto il " + row[1].strftime('%d/%m/%Y')
-            msg += "\n"
-            if (row[2] != None):
-                msg += "Note: " + row[2]
-            else:
-                msg += "Note: " + ""
-            msg += "\n\n"
-    msg = msg.strip()
-
-    if (msg == ""):
-        exit()
-
-    if (conn):
-        conn.close()
-        print("The database connection is closed")
-
-    message = EmailMessage()
-    message.set_content(msg)
-    message['Subject'] = "RSPP in scadenza tra il " + date.today().strftime('%d/%m/%Y') + \
-        " e il " + \
-        (date.today() + timedelta(cfg["General"]
-                                  ["daysAdvance"])).strftime('%d/%m/%Y')
-    return message
 
 
 def mailSender(message):
@@ -150,9 +165,6 @@ def mailSender(message):
         server.starttls()
         server.ehlo
         server.login(cfg["Email"]["user"], cfg["Email"]["password"])
-
-        message['From'] = cfg["Email"]["mailFrom"]
-        message['To'] = cfg["Email"]["mailTo"]
 
         server.send_message(message)
         print("Mail sent to " + cfg["Email"]["mailTo"])
@@ -168,5 +180,5 @@ if __name__ == "__main__":
     with open(confPath, 'r') as f:
         cfg = yaml.safe_load(f)
 
-    mailText = mailComposer()
-    mailSender(mailText)
+    locale.setlocale(locale.LC_ALL, cfg["General"]["locale"])
+    main()

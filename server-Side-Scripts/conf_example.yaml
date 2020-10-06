@@ -2,6 +2,7 @@
 
 General:
   daysAdvance:
+  locale:
 
 Database:
   host:

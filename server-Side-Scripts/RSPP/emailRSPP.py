@@ -16,7 +16,7 @@ global cfg
 
 
 def main():
-    mailSender(accountModule())
+    mailSender(accountingModule())
 
 
 def connect():
@@ -36,7 +36,7 @@ def connect():
         return conn
 
 
-def accountModule():
+def accountingModule():
     conn = connect()
 
     subject = "Incarichi da fatturare per il mese di " + calendar.month_name[
@@ -58,29 +58,64 @@ def accountModule():
 
     #Create message portion for rspp of previous months without an invoice yet
     expiredRSPP = getJobExpiredWithoutInvoice(conn)
-    if invoiceInMonth:
+    if expiredRSPP:
         msg += "\n\nSono state inoltre trovati i seguenti incarichi scaduti e senza fattura\n"
-        for row in invoiceInMonth:
+        for row in expiredRSPP:
             msg += "Ragione sociale: " + row[0]
             msg += "\n"
             msg += "Scadenza " + row[1].strftime('%d/%m/%Y')
             msg += "\n"
             if (row[2] != None):
-                msg += "Note: " + row[2]
-            msg += "\n\n"
+                msg += "Note: " + row[2] + "\n"
+            msg += "\n"
     msg = msg.strip()
 
     print(subject)
     print(msg)
 
-    mail = EmailMessage()
-    mail.set_content(msg)
-    mail['Subject'] = subject
+    if (msg != ""):
+        mail = EmailMessage()
+        mail.set_content(msg)
+        mail['Subject'] = subject
 
-    message['From'] = cfg["Email"]["mailFrom"]
-    message['To'] = cfg["Email"]["mailTo"]
+        mail['From'] = cfg["Email"]["mailFrom"]
+        mail['To'] = cfg["Email"]["mailTo"]
+        return mail
+    else:
+        exit()
 
-    return mail
+
+def managementModule():
+    conn = connect()
+
+    subject = "Incarichi in scadenza nei prossimi " + str(
+        cfg["General"]["daysAdvance"]) + " giorni."
+    msg = ""
+
+    expiringRSPP = getJobInDealine(conn)
+    if expiringRSPP:
+        msg += "I seguenti incarichi sono scaduti o scadranno nei prossimi " + str(
+            cfg["General"]["daysAdvance"]) + " giorni\n"
+        for row in expiringRSPP:
+            msg += "Ragione sociale: " + row[0]
+            msg += "\n"
+            msg += "Scadenza " + row[1].strftime('%d/%m/%Y')
+            msg += "\n"
+            if (row[2] != None):
+                msg += "Note: " + row[2] + "\n"
+            msg += "\n"
+    msg = msg.strip()
+
+    if (msg != ""):
+        mail = EmailMessage()
+        mail.set_content(msg)
+        mail['Subject'] = subject
+
+        mail['From'] = cfg["Email"]["mailFrom"]
+        mail['To'] = cfg["Email"]["mailTo"]
+        return mail
+    else:
+        exit()
 
 
 def getInvoiceForCurrentMonth(conn):
@@ -140,7 +175,7 @@ def getJobExpiredWithoutInvoice(conn):
         cursor = conn.cursor()
 
         query = (
-            "select uni.\"name\", uni.jobend, rad.notes from( select * from ( select r.rspp_jobid, r.jobstart, r.jobend, string_agg(ri.invoice_id, ', ') as invoice_id from deadlines.rspp_invoices ri right outer join deadlines.rspp r on r.rspp_jobid = ri.rspp_id and r.jobstart = ri.rspp_start group by r.rspp_jobid, r.jobstart) as inv_data, accounts.accounts a, jobs.jobs j where a.fiscalcode = j.customer and j.jobs_id = inv_data.rspp_jobid and jobend < current_date and invoice_id isnull) as uni left join deadlines.rssp_account_details rad on rad.fiscalcode = uni.fiscalcode "
+            "select a.\"name\", r.jobend, rad.notes from deadlines.rspp r, jobs.jobs j, accounts.accounts a left join deadlines.rssp_account_details rad on rad.fiscalcode = a.fiscalcode where r.rspp_jobid = j.jobs_id and j.customer = a.fiscalcode and r.jobend <= now() and not exists ( select 1 from deadlines.rspp_invoices ri where r.rspp_jobid = ri.rspp_id and r.jobstart = ri.rspp_start) and a.fiscalcode not in ( select customer from deadlines.rspp_invoices_months rim where extract (month from CURRENT_DATE) = any(rim.months)) "
         )
         cursor.execute(query)
 

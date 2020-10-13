@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import com.google.common.base.Throwables;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,6 +129,4 @@ public class RSPPtableElement {
 				+ ", category=" + category + ", formatter=" + formatter + ", invoiceID=" + invoiceID + ", jobEnd="
 				+ jobEnd + ", jobID=" + jobID + ", jobStart=" + jobStart + ", note=" + note + ", payed=" + payed + "]";
 	}
-
-	
 }

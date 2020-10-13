@@ -144,7 +144,7 @@ public class NewRSPPController {
 
 		jobMap = HashBiMap.create();
 
-		jobCategory.getItems().setAll(model.getJobCat().keySet());
+		jobCategory.getItems().setAll(model.getJobCategories());
 		updateJobCombo();
 
 		model.getConMan().closeDBConnection();
@@ -219,11 +219,11 @@ public class NewRSPPController {
 	@FXML
 	public void updateJobCombo() {
 		if (jobCategory.getSelectionModel().getSelectedItem() == null
-				|| model.getJobCat().get(jobCategory.getSelectionModel().getSelectedItem()) == null)
+				|| model.getTypesOfCategory(jobCategory.getSelectionModel().getSelectedItem()) == null)
 			jobType.setDisable(true);
 		else {
 			jobType.setDisable(false);
-			jobType.getItems().setAll(model.getJobCat().get(jobCategory.getSelectionModel().getSelectedItem()));
+			jobType.getItems().setAll(model.getTypesOfCategory(jobCategory.getSelectionModel().getSelectedItem()));
 		}
 	}
 
@@ -302,7 +302,7 @@ public class NewRSPPController {
 			paHbox.setVisible(job instanceof JobPA);
 
 			jobNumber.setText(job.getId());
-			jobCategory.getItems().setAll(model.getJobCat().keySet());
+			jobCategory.getItems().setAll(model.getJobCategories());
 			jobCategory.getSelectionModel().select(job.getJobCategory());
 			updateJobCombo();
 			jobType.getSelectionModel().select(job.getJobType());

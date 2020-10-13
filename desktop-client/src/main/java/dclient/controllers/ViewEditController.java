@@ -224,13 +224,13 @@ public class ViewEditController {
 
 	public void setCombo() {
 		categoryAccountCombo.getItems().setAll(model.getAccountCategories().values());
-		jobCategory.getItems().setAll(model.getJobCat().keySet());
+		jobCategory.getItems().setAll(model.getJobCategories());
 	}
 
 	@FXML
 	public void updateJobCombo() {
 		jobType.getItems().clear();
-		jobType.getItems().addAll((model.getJobCat().get(jobCategory.getSelectionModel().getSelectedItem())));
+		jobType.getItems().addAll((model.getTypesOfCategory(jobCategory.getSelectionModel().getSelectedItem())));
 	}
 
 	public void setRSPP(String jobID, LocalDate jobStart) {

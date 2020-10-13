@@ -23,10 +23,10 @@ import java.util.stream.Stream;
 import dclient.Key;
 
 public class KeyEncrypt {
-	private final int DEFAULT_PASSWORD_LENGHT = 64;
-	private final String DEFAULT_ENV_VARIABLE = "DCLIENT";
-	private final String DEFAULT_ENCRYPTION_ALGORITHM = "PBEWithHMACSHA512AndAES_256";
-	private final String DEFAULT_PASSWORD_VALID_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%*()_+-=[]";
+	private static final int DEFAULT_PASSWORD_LENGHT = 64;
+	private static final String DEFAULT_ENV_VARIABLE = "DCLIENT";
+	private static final String DEFAULT_ENCRYPTION_ALGORITHM = "PBEWithHMACSHA512AndAES_256";
+	private static final String DEFAULT_PASSWORD_VALID_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%*()_+-=[]";
 
 	private int passwordLenght;
 	private String passwordValidChars;
@@ -142,13 +142,17 @@ public class KeyEncrypt {
 				});
 
 				for (Path file : stream.collect(Collectors.toList())) {
-					Runtime.getRuntime().exec("sed \"/" + envName + "/c\\export " + envName + " = " + envPassword + "\" " + file.toString() + 
-					"&& grep -qF 'export " + envName + "' " + file.toString() + " || echo 'export " + envName + " = " + envPassword + "' >> " + file.toString());
+					Runtime.getRuntime()
+							.exec("sed \"/" + envName + "/c\\export " + envName + " = " + envPassword + "\" "
+									+ file.toString() + "&& grep -qF 'export " + envName + "' " + file.toString()
+									+ " || echo 'export " + envName + " = " + envPassword + "' >> " + file.toString());
 				}
 
 				stream.close();
 			}
-		} catch (IOException e) {
+		} catch (
+
+		IOException e) {
 			e.printStackTrace();
 		}
 
@@ -160,7 +164,7 @@ public class KeyEncrypt {
 
 	private void setSSH() {
 		sshPassword = passwordGenerator();
-		logger.info("Generated password for ssh:" + sshPassword);
+		logger.info("Generated password for ssh: ".concat(sshPassword));
 		String command = ("ssh-keygen -f " + installationFolder + sshFileName + " -t rsa  -b 4096 -C "
 				+ sshNameIdentifier + " -N \"" + sshPassword + "\"");
 
@@ -213,8 +217,7 @@ public class KeyEncrypt {
 		installProperties.setProperty("ssh.port", config.getProperty("ssh.port", "22"));
 
 		installProperties.setProperty("env.varName", config.getProperty("env.varName", DEFAULT_ENV_VARIABLE));
-		installProperties.setProperty("enc.algorithm",
-				config.getProperty("enc.algorithm", DEFAULT_ENCRYPTION_ALGORITHM));
+		installProperties.setProperty("enc.algorithm", envAlgorithm);
 
 		File file = new File(installationFolder + "/config.properties");
 		FileOutputStream fileOut;

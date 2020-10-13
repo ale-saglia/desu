@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import com.google.common.base.Throwables;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
@@ -41,7 +42,7 @@ public class ConMan {
 		try {
 			message = "Closing: " + session.getPortForwardingL();
 		} catch (JSchException e) {
-			e.printStackTrace();
+			logger.warn(Throwables.getStackTraceAsString(e));
 		}
 		this.session.disconnect();
 		return message;
@@ -53,7 +54,7 @@ public class ConMan {
 				tempConnection = ConMan.getDBConnection(session, config);
 			return tempConnection;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.error(Throwables.getStackTraceAsString(e));
 			return null;
 		}
 	}
@@ -63,7 +64,7 @@ public class ConMan {
 			if (!tempConnection.isClosed())
 				tempConnection.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.warn(Throwables.getStackTraceAsString(e));
 		}
 	}
 
@@ -92,8 +93,7 @@ public class ConMan {
 			logger.info("Port Forwarded");
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e.getClass().getName() + ": " + e.getMessage());
+			logger.warn(Throwables.getStackTraceAsString(e));
 
 			final Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Impossibile connettersi al database!");
@@ -121,8 +121,7 @@ public class ConMan {
 					(config.getProperty("db.password")));
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e.getClass().getName() + ": " + e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return conn;
 	}

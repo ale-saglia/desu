@@ -148,9 +148,7 @@ def getInvoiceForCurrentMonth(conn):
             return
         cursor = conn.cursor()
 
-        query = (
-            "select a.\"name\" as \"Ragione Sociale\", r.jobend as Scadenza, rad.notes as Note from deadlines.rspp r, deadlines.rspp_invoices_months rim, jobs.jobs j, accounts.accounts a left join deadlines.rssp_account_details rad on rad.fiscalcode = a.fiscalcode where r.rspp_jobid = j.jobs_id and a.fiscalcode = j.customer and j.customer = rim.customer and r.jobstart < now() and r.jobend > now() and extract (month from CURRENT_DATE) = any(rim.months) and rad.expired is not true order by a.\"name\" "
-        )
+        query = ("select \"ragione sociale\", \"fine incarico\", note from deadlines.current_month_invoices ")
         cursor.execute(query)
 
         # Row 0 should contain account name, row 1 should contains the deadline and row 2 should contain the notes or NULL if the note was not found
@@ -198,9 +196,7 @@ def getJobExpiredWithoutInvoice(conn):
             return
         cursor = conn.cursor()
 
-        query = (
-            "select a.\"name\", r.jobend, rad.notes from deadlines.rspp r, jobs.jobs j, accounts.accounts a left join deadlines.rssp_account_details rad on rad.fiscalcode = a.fiscalcode where r.rspp_jobid = j.jobs_id and j.customer = a.fiscalcode and r.jobend <= now() and not exists ( select 1 from deadlines.rspp_invoices ri where r.rspp_jobid = ri.rspp_id and r.jobstart = ri.rspp_start) and a.fiscalcode not in ( select customer from deadlines.rspp_invoices_months rim where extract (month from CURRENT_DATE) = any(rim.months)) "
-        )
+        query = ("select \"name\", jobend, notes from deadlines.expired_rspp_without_invoice erwi where \"name\" not in (select \"ragione sociale\" from deadlines.current_month_invoices cmi) ")
         cursor.execute(query)
 
         # Row 0 should contain account name and row 1 should contains the deadline

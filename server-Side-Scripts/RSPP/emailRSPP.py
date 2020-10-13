@@ -231,7 +231,7 @@ def mailSender(message):
 
 
 if __name__ == "__main__":
-    confPath = Path(__file__).resolve().parents[1] / 'conf.yaml'
+    confPath = Path(__file__).resolve().parents[0] / 'conf.yaml'
     with open(confPath, 'r') as f:
         cfg = yaml.safe_load(f)
 

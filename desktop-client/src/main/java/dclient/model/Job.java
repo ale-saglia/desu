@@ -36,6 +36,10 @@ public class Job {
 		}
 	}
 	
+	public static boolean isJobCustomerPA(Account account) {
+		return account.category.equals("pa");
+	}
+
 	public boolean isJobCustomerPA() {
 		return customer.getCategory().equals("pa");
 	}

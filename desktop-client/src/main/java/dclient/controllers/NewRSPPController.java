@@ -376,7 +376,7 @@ public class NewRSPPController {
 
 			String error = FieldsValidator.isJobValid(job);
 			if (error == null) {
-				if (!accountListView.getSelectionModel().getSelectedItem().getCategory().contains("pa"))
+				if (!Job.isJobCustomerPA(accountListView.getSelectionModel().getSelectedItem()))
 					JobDAO.newJob(model.getConMan().getDBConnection(), job);
 				else {
 					job = new JobPA(job, cigField.getText(), decreeNumberField.getText(), decreeDateField.getValue());

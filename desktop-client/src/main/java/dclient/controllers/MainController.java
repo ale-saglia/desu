@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Predicate;
 
+import com.google.common.base.Throwables;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -211,7 +213,6 @@ public class MainController {
 			alert.setHeaderText("Riga RSPP non selezionata");
 			alert.setContentText(
 					"Come fare?\nPer utilizzare la funziona \"visualizza e modifica\" di questo programma occorre selezionare la riga della tabella e successivamente procedere cliccando il pulsante.");
-
 			alert.showAndWait();
 		}
 
@@ -237,7 +238,7 @@ public class MainController {
 			stage.show();
 
 		} catch (final Exception e) {
-			logger.error("Error opening new RSPP view:\n".concat(e.getMessage()));
+			logger.error("Error opening new RSPP view:\n".concat(Throwables.getStackTraceAsString(e)));
 		}
 	}
 }

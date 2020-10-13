@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.base.Throwables;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
@@ -42,7 +43,7 @@ public class AccountDAO {
 
 			rowsAffected = st.executeUpdate();
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return rowsAffected;
 	}
@@ -72,7 +73,7 @@ public class AccountDAO {
 
 			rowsAffected = st.executeUpdate();
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return rowsAffected;
 	}
@@ -91,7 +92,7 @@ public class AccountDAO {
 			while (res.next())
 				accounts.add(new Account(res));
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return accounts;
 	}
@@ -117,7 +118,7 @@ public class AccountDAO {
 				account = new Account(res);
 			}
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return account;
 	}
@@ -143,7 +144,7 @@ public class AccountDAO {
 				account = new Account(res);
 			}
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return account;
 	}
@@ -174,7 +175,7 @@ public class AccountDAO {
 				account = new Account(res);
 			}
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return account;
 	}
@@ -195,7 +196,7 @@ public class AccountDAO {
 				categories.put(res.getString("categories"), res.getString("extended"));
 			}
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return categories;
 	}

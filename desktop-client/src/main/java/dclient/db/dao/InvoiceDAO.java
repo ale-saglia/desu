@@ -5,6 +5,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import com.google.common.base.Throwables;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +38,7 @@ public class InvoiceDAO {
 
 			rowsAffected = st.executeUpdate();
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return rowsAffected;
 	}
@@ -65,7 +67,7 @@ public class InvoiceDAO {
 
 			rowsAffected = st.executeUpdate();
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return rowsAffected;
 	}

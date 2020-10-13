@@ -49,7 +49,7 @@ public class RSPPtableElement {
 			else
 				this.formatter = DateTimeFormatter.ISO_DATE;
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 	}
 

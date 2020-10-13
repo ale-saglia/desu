@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Throwables;
 import com.google.common.collect.Sets;
 import com.google.common.io.Resources;
 
@@ -52,7 +53,7 @@ public class RsppDAO {
 		try {
 			sql = Resources.toString(ConMan.class.getResource("mainViewQuery.sql"), Charsets.UTF_8);
 		} catch (IOException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 			return tableElements;
 		}
 
@@ -60,7 +61,7 @@ public class RsppDAO {
 			while (res.next())
 				tableElements.add(new RSPPtableElement(res, dateFormat));
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return tableElements;
 	}
@@ -84,7 +85,7 @@ public class RsppDAO {
 
 			rowsAffected = st.executeUpdate();
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return rowsAffected;
 	}
@@ -115,7 +116,7 @@ public class RsppDAO {
 			rowsAffected = st.executeUpdate();
 
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 
 		return rowsAffected;
@@ -138,7 +139,7 @@ public class RsppDAO {
 				rsppList.add(rspp);
 			}
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return rsppList;
 	}
@@ -165,7 +166,7 @@ public class RsppDAO {
 				}
 			}
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return rsppList;
 	}
@@ -188,7 +189,7 @@ public class RsppDAO {
 					rspp = new Rspp(conn, res);
 			}
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return rspp;
 	}
@@ -215,7 +216,7 @@ public class RsppDAO {
 				rspp = new Rspp(conn, res);
 			}
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return rspp;
 	}
@@ -241,7 +242,7 @@ public class RsppDAO {
 					rspp = new Rspp(conn, res);
 			}
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return rspp;
 	}
@@ -268,7 +269,7 @@ public class RsppDAO {
 			rowsAffected = st.executeUpdate();
 
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return rowsAffected;
 	}
@@ -293,7 +294,7 @@ public class RsppDAO {
 					note = res.getString("notes");
 			}
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return note;
 	}
@@ -318,7 +319,7 @@ public class RsppDAO {
 
 			rowsAffected = st.executeUpdate();
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return rowsAffected;
 	}
@@ -341,7 +342,7 @@ public class RsppDAO {
 			rowsAffected = st.executeUpdate();
 
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 
 		return rowsAffected;
@@ -368,7 +369,7 @@ public class RsppDAO {
 					invoiceMonths = Sets.newHashSet(((Integer[]) res.getArray("months").getArray()));
 			}
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return invoiceMonths;
 	}
@@ -393,7 +394,7 @@ public class RsppDAO {
 					invoicesMap.add(new Invoice(res));
 			}
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return invoicesMap;
 	}

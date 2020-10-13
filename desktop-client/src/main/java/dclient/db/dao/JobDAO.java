@@ -13,6 +13,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import com.google.common.base.Throwables;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +39,7 @@ public class JobDAO {
 				cat.get(category).add(res.getString("types"));
 			}
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return cat;
 	}
@@ -62,7 +64,7 @@ public class JobDAO {
 			if (job instanceof JobPA)
 				rowsAffected += updateJobPA(conn, (JobPA) job);
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return rowsAffected;
 	}
@@ -90,7 +92,7 @@ public class JobDAO {
 			if (job instanceof JobPA)
 				rowsAffected += updateJobPA(conn, (JobPA) job);
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return rowsAffected;
 	}
@@ -120,7 +122,7 @@ public class JobDAO {
 
 			rowsAffected += st.executeUpdate();
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return rowsAffected;
 	}
@@ -145,7 +147,7 @@ public class JobDAO {
 					job = new JobPA(conn, res);
 			}
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return job;
 	}
@@ -170,7 +172,7 @@ public class JobDAO {
 			}
 
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return jobs;
 	}
@@ -205,7 +207,7 @@ public class JobDAO {
 			rowsAffected = st.executeUpdate();
 
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return rowsAffected;
 	}
@@ -220,7 +222,7 @@ public class JobDAO {
 				isJobPAExisting = res.next();
 			}
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 		return isJobPAExisting;
 	}

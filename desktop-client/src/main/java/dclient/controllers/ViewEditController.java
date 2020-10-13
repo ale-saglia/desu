@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import org.controlsfx.control.CheckComboBox;
@@ -27,7 +28,9 @@ import dclient.model.Rspp;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
@@ -453,5 +456,23 @@ public class ViewEditController {
 		setRSPP();
 		invoiceBox.getSelectionModel().select(invoiceTemp);
 		alert.showAndWait();
+	}
+
+	private int confirmationWarningWindow(String message) {
+		Alert alert = new Alert(AlertType.WARNING);
+		alert.setTitle("Attenzione, per continuare è necessaria la conferma manuale");
+		alert.setHeaderText("Sono stati rilevati i seguenti campi non validi:");
+		alert.setContentText(message);
+
+		ButtonType buttonTypeConfirm = new ButtonType("Conferma");
+		ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+
+		alert.getButtonTypes().setAll(buttonTypeConfirm, buttonTypeCancel);
+		Optional<ButtonType> result = alert.showAndWait();
+		alert.close();
+		if (result.get() == buttonTypeConfirm) {
+			return 1;
+		} else
+			return -1;
 	}
 }

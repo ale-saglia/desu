@@ -86,10 +86,6 @@ public class FieldsValidator {
 		if (job.getJobCategory() == null || job.getJobCategory().isEmpty() || job.getJobType() == null
 				|| job.getJobType().isEmpty())
 			error += "- La categoria e/o la sottocategoria non sono state inserite\n";
-
-		if (job instanceof JobPA && isJobPAValid((JobPA) job) != null)
-			error += isJobPAValid((JobPA) job);
-
 		return returnManager(error);
 	}
 
@@ -120,7 +116,7 @@ public class FieldsValidator {
 		return returnManager(error);
 	}
 
-	private static String isJobPAValid(JobPA job) {
+	public static String isJobPAValid(JobPA job) {
 		String error = "";
 
 		if (job.getDecreeNumber() != null && job.getDecreeNumber() < 0)

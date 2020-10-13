@@ -5,8 +5,12 @@ import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
+import com.google.common.base.Throwables;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import dclient.DClient;
 import dclient.controllers.validator.FieldsValidator;
@@ -57,6 +61,8 @@ public class NewRSPPController {
 
 	ObservableList<Account> accountList;
 	FilteredList<Account> filteredAccountList;
+
+	private static Logger logger = LoggerFactory.getLogger("DClient");
 
 	@FXML
 	private TextField accountSearch;
@@ -247,7 +253,7 @@ public class NewRSPPController {
 			stage.show();
 
 		} catch (final Exception e) {
-			e.printStackTrace();
+			logger.error(Throwables.getStackTraceAsString(e));
 		}
 	}
 
@@ -367,25 +373,30 @@ public class NewRSPPController {
 
 	@FXML
 	public void addRSPP() {
+		addRSPP(false);
+	}
+
+	public void addRSPP(boolean closeAfter) {
 		Job job = jobMap.get(jobCombo.getSelectionModel().getSelectedItem());
 
 		// Add new Job if it is missing
 		if (job == null) {
 			job = new Job(jobNumber.getText(), jobCategory.getValue(), jobType.getValue(),
 					jobDescriptionField.getText(), accountListView.getSelectionModel().getSelectedItem());
-
 			String error = FieldsValidator.isJobValid(job);
 			if (error == null) {
 				if (!Job.isJobCustomerPA(accountListView.getSelectionModel().getSelectedItem()))
 					JobDAO.newJob(model.getConMan().getDBConnection(), job);
 				else {
 					job = new JobPA(job, cigField.getText(), decreeNumberField.getText(), decreeDateField.getValue());
-					error = FieldsValidator.isJobValid(job);
+					error = FieldsValidator.isJobPAValid((JobPA) job);
 					if (error == null)
 						JobDAO.newJob(model.getConMan().getDBConnection(), job);
 					else {
-						warningWindows(error);
-						return;
+						if(confirmationWarningWindow(error) >= 0)
+							JobDAO.newJob(model.getConMan().getDBConnection(), job);
+						else
+							return;
 					}
 				}
 
@@ -410,7 +421,7 @@ public class NewRSPPController {
 
 	@FXML
 	public void saveAndClose() {
-		addRSPP();
+		addRSPP(true);
 		if (safeExit)
 			closeButtonAction();
 	}
@@ -426,11 +437,11 @@ public class NewRSPPController {
 		alert.showAndWait();
 	}
 
-	private void confirmationWarningWindow(String message){
-		confirmationWarningWindow(message, false);
+	private int confirmationWarningWindow(String message) {
+		return confirmationWarningWindow(message, false);
 	}
 
-	private void confirmationWarningWindow(String message, boolean closeAfterAlert){
+	private int confirmationWarningWindow(String message, boolean closeAfterAlert) {
 		Alert alert = new Alert(AlertType.WARNING);
 		alert.setTitle("Attenzione, per continuare è necessaria la conferma manuale");
 		alert.setHeaderText("Sono stati rilevati i seguenti campi non validi:");
@@ -441,13 +452,14 @@ public class NewRSPPController {
 
 		alert.getButtonTypes().setAll(buttonTypeConfirm, buttonTypeCancel);
 		Optional<ButtonType> result = alert.showAndWait();
-		if (result.get() == buttonTypeConfirm){
-			alert.close();
-			if(closeAfterAlert)
-				saveAndClose();
+		alert.close();
+		if (result.get() == buttonTypeConfirm) {
+			if (closeAfterAlert)
+				return 1;
 			else
-				addRSPP();
-		}
+				return 0;
+		} else
+			return -1;
 	}
 
 	@FXML

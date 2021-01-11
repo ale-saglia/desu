@@ -87,7 +87,6 @@ def accountingModule(emailAdresses):
         for row in expiredRSPP:
             msg += "Ragione sociale: " + row[3]
             msg += "\n"
-            msg += "Mese/i di fatturazione: "
             msg += "Scaduto il " + row[2].strftime('%d/%m/%Y')
             msg += "\n"
             if (row[5] != None):

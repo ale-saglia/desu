@@ -72,12 +72,12 @@ def accountingModule(emailAdresses):
     if invoiceInMonth:
         msg += "Ecco gli incarichi da fatturare durante questo mese"
         for row in invoiceInMonth:
-            msg += "\nRagione sociale: " + row[0]
+            msg += "\nRagione sociale: " + row[3]
             msg += "\n"
-            msg += "Scadenza " + row[1].strftime('%d/%m/%Y')
+            msg += "Scadenza " + row[2].strftime('%d/%m/%Y')
             msg += "\n"
             if (row[2] != None):
-                msg += "Note: " + row[2]
+                msg += "Note: " + row[5]
     msg = msg.strip()
 
     #Create message portion for rspp of previous months without an invoice yet
@@ -85,12 +85,12 @@ def accountingModule(emailAdresses):
     if expiredRSPP:
         msg += "\n\nSono state inoltre trovati i seguenti incarichi scaduti e senza fattura\n"
         for row in expiredRSPP:
-            msg += "Ragione sociale: " + row[0]
+            msg += "Ragione sociale: " + row[3]
             msg += "\n"
-            msg += "Scadenza " + row[1].strftime('%d/%m/%Y')
+            msg += "Scadenza " + row[2].strftime('%d/%m/%Y')
             msg += "\n"
             if (row[2] != None):
-                msg += "Note: " + row[2] + "\n"
+                msg += "Note: " + row[5] + "\n"
             msg += "\n"
     msg = msg.strip()
 
@@ -148,7 +148,9 @@ def getInvoiceForCurrentMonth(conn):
             return
         cursor = conn.cursor()
 
-        query = ("select \"ragione sociale\", \"fine incarico\", note from deadlines.current_month_invoices ")
+        query = (
+            "select * from deadlines.current_month_invoices "
+        )
         cursor.execute(query)
 
         # Row 0 should contain account name, row 1 should contains the deadline and row 2 should contain the notes or NULL if the note was not found
@@ -196,7 +198,9 @@ def getJobExpiredWithoutInvoice(conn):
             return
         cursor = conn.cursor()
 
-        query = ("select \"name\", jobend, notes from deadlines.expired_rspp_without_invoice erwi where \"name\" not in (select \"ragione sociale\" from deadlines.current_month_invoices cmi) ")
+        query = (
+            "select * from deadlines.expired_rspp_without_invoice "
+        )
         cursor.execute(query)
 
         # Row 0 should contain account name and row 1 should contains the deadline
@@ -231,7 +235,7 @@ def mailSender(message):
 
 
 if __name__ == "__main__":
-    confPath = Path(__file__).resolve().parents[0] / 'conf.yaml'
+    confPath = Path(__file__).resolve().parents[1] / 'conf.yaml'
     with open(confPath, 'r') as f:
         cfg = yaml.safe_load(f)
 

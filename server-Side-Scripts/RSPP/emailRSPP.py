@@ -76,20 +76,21 @@ def accountingModule(emailAdresses):
             msg += "\n"
             msg += "Scadenza " + row[2].strftime('%d/%m/%Y')
             msg += "\n"
-            if (row[2] != None):
+            if (row[5] != None):
                 msg += "Note: " + row[5]
     msg = msg.strip()
 
     #Create message portion for rspp of previous months without an invoice yet
     expiredRSPP = getJobExpiredWithoutInvoice(conn)
     if expiredRSPP:
-        msg += "\n\nSono state inoltre trovati i seguenti incarichi scaduti e senza fattura\n"
+        msg += "\n\nSono state inoltre trovati i seguenti incarichi scaduti da più di 3 mesi e senza fattura\n"
         for row in expiredRSPP:
             msg += "Ragione sociale: " + row[3]
             msg += "\n"
-            msg += "Scadenza " + row[2].strftime('%d/%m/%Y')
+            msg += "Mese/i di fatturazione: "
+            msg += "Scaduto il " + row[2].strftime('%d/%m/%Y')
             msg += "\n"
-            if (row[2] != None):
+            if (row[5] != None):
                 msg += "Note: " + row[5] + "\n"
             msg += "\n"
     msg = msg.strip()
@@ -235,7 +236,7 @@ def mailSender(message):
 
 
 if __name__ == "__main__":
-    confPath = Path(__file__).resolve().parents[1] / 'conf.yaml'
+    confPath = Path(__file__).resolve().parents[0] / 'conf.yaml'
     with open(confPath, 'r') as f:
         cfg = yaml.safe_load(f)
 

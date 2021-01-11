@@ -72,12 +72,12 @@ def accountingModule(emailAdresses):
     if invoiceInMonth:
         msg += "Ecco gli incarichi da fatturare durante questo mese"
         for row in invoiceInMonth:
-            msg += "\nRagione sociale: " + row[0]
+            msg += "\nRagione sociale: " + row[3]
             msg += "\n"
-            msg += "Scadenza " + row[1].strftime('%d/%m/%Y')
+            msg += "Scadenza " + row[2].strftime('%d/%m/%Y')
             msg += "\n"
             if (row[2] != None):
-                msg += "Note: " + row[2]
+                msg += "Note: " + row[5]
     msg = msg.strip()
 
     #Create message portion for rspp of previous months without an invoice yet
@@ -85,12 +85,12 @@ def accountingModule(emailAdresses):
     if expiredRSPP:
         msg += "\n\nSono state inoltre trovati i seguenti incarichi scaduti e senza fattura\n"
         for row in expiredRSPP:
-            msg += "Ragione sociale: " + row[0]
+            msg += "Ragione sociale: " + row[3]
             msg += "\n"
-            msg += "Scadenza " + row[1].strftime('%d/%m/%Y')
+            msg += "Scadenza " + row[2].strftime('%d/%m/%Y')
             msg += "\n"
             if (row[2] != None):
-                msg += "Note: " + row[2] + "\n"
+                msg += "Note: " + row[5] + "\n"
             msg += "\n"
     msg = msg.strip()
 
@@ -149,7 +149,7 @@ def getInvoiceForCurrentMonth(conn):
         cursor = conn.cursor()
 
         query = (
-            "select a.\"name\" as \"Ragione Sociale\", r.jobend as Scadenza, rad.notes as Note from deadlines.rspp r, deadlines.rspp_invoices_months rim, jobs.jobs j, accounts.accounts a left join deadlines.rssp_account_details rad on rad.fiscalcode = a.fiscalcode where r.rspp_jobid = j.jobs_id and a.fiscalcode = j.customer and j.customer = rim.customer and r.jobstart < now() and r.jobend > now() and extract (month from CURRENT_DATE) = any(rim.months) and rad.expired is not true order by a.\"name\" "
+            "select * from deadlines.current_month_invoices "
         )
         cursor.execute(query)
 
@@ -199,7 +199,7 @@ def getJobExpiredWithoutInvoice(conn):
         cursor = conn.cursor()
 
         query = (
-            "select a.\"name\", r.jobend, rad.notes from deadlines.rspp r, jobs.jobs j, accounts.accounts a left join deadlines.rssp_account_details rad on rad.fiscalcode = a.fiscalcode where r.rspp_jobid = j.jobs_id and j.customer = a.fiscalcode and r.jobend <= now() and not exists ( select 1 from deadlines.rspp_invoices ri where r.rspp_jobid = ri.rspp_id and r.jobstart = ri.rspp_start) and a.fiscalcode not in ( select customer from deadlines.rspp_invoices_months rim where extract (month from CURRENT_DATE) = any(rim.months)) "
+            "select * from deadlines.expired_rspp_without_invoice "
         )
         cursor.execute(query)
 

@@ -74,6 +74,8 @@ def accountingModule(emailAdresses):
         for row in invoiceInMonth:
             msg += "\nRagione sociale: " + row[3]
             msg += "\n"
+            msg += "Tipo di incarico: " + row[4]
+            msg += "\n"
             msg += "Scadenza " + row[2].strftime('%d/%m/%Y')
             msg += "\n"
             if (row[5] != None):
@@ -86,6 +88,8 @@ def accountingModule(emailAdresses):
         msg += "\n\nSono state inoltre trovati i seguenti incarichi scaduti da più di 3 mesi e senza fattura\n"
         for row in expiredRSPP:
             msg += "Ragione sociale: " + row[3]
+            msg += "\n"
+            msg += "Tipo di incarico: " + row[4]
             msg += "\n"
             msg += "Scaduto il " + row[2].strftime('%d/%m/%Y')
             msg += "\n"

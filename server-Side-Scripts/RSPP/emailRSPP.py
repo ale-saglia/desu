@@ -72,9 +72,9 @@ def accountingModule(emailAdresses):
     if invoiceInMonth:
         msg += "Ecco gli incarichi da fatturare durante questo mese"
         for row in invoiceInMonth:
-            msg += "\nRagione sociale: " + row[3]
+            msg += "\nRagione sociale: " + row[13]
             msg += "\n"
-            msg += "Tipo di incarico: " + row[4]
+            msg += "Tipo di incarico: " + row[10]
             msg += "\n"
             msg += "Scadenza " + row[2].strftime('%d/%m/%Y')
             msg += "\n"
@@ -87,9 +87,9 @@ def accountingModule(emailAdresses):
     if expiredRSPP:
         msg += "\n\nSono state inoltre trovati i seguenti incarichi scaduti da più di 3 mesi e senza fattura\n"
         for row in expiredRSPP:
-            msg += "Ragione sociale: " + row[3]
+            msg += "Ragione sociale: " + row[13]
             msg += "\n"
-            msg += "Tipo di incarico: " + row[4]
+            msg += "Tipo di incarico: " + row[10]
             msg += "\n"
             msg += "Scaduto il " + row[2].strftime('%d/%m/%Y')
             msg += "\n"
@@ -203,7 +203,7 @@ def getJobExpiredWithoutInvoice(conn):
         cursor = conn.cursor()
 
         query = (
-            "select * from deadlines.expired_rspp_without_invoice "
+            "select * from deadlines.expired_without_invoice "
         )
         cursor.execute(query)
 

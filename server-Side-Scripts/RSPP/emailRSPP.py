@@ -79,7 +79,9 @@ def accountingModule(emailAdresses):
             msg += "Scadenza " + row[2].strftime('%d/%m/%Y')
             msg += "\n"
             if (row[5] != None):
-                msg += "Note: " + row[5]
+                msg += "Note cliente: " + row[5]
+            if (row[11] != None):
+                msg += "Note lavoro: " + row[11]
     msg = msg.strip()
 
     #Create message portion for rspp of previous months without an invoice yet
@@ -94,7 +96,7 @@ def accountingModule(emailAdresses):
             msg += "Scaduto il " + row[2].strftime('%d/%m/%Y')
             msg += "\n"
             if (row[5] != None):
-                msg += "Note: " + row[5] + "\n"
+                msg += "Note cliente: " + row[5] + "\n"
             msg += "\n"
     msg = msg.strip()
 
